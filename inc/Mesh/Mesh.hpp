@@ -6,31 +6,43 @@
 
 namespace fea
 {
-	class Node;
-	class Element;
+	namespace mesh
+	{
+		namespace nodes
+		{
+			class Node;
+		}
+		namespace elements
+		{
+			class Element;
+		}
+	}
 }
 
 namespace fea
 {
-	class Mesh
+	namespace mesh
 	{
-	public:
-		//constructor
-		Mesh(void);
-
-		//destructor
-		~Mesh(void);
-
-		//data
-		Node* node(uint32_t) const;
-		const std::vector<Node*>& nodes(void) const;
-
-		Element* element(uint32_t) const;
-		const std::vector<Element*>& elements(void) const;
-
-	private:
-		//data
-		std::vector<Node*> m_nodes;
-		std::vector<Element*> m_elements;
-	};
+		class Mesh
+		{
+		public:
+			//constructor
+			Mesh(void);
+	
+			//destructor
+			~Mesh(void);
+	
+			//data
+			nodes::Node* node(uint32_t) const;
+			const std::vector<nodes::Node*>& nodes(void) const;
+	
+			elements::Element* element(uint32_t) const;
+			const std::vector<elements::Element*>& elements(void) const;
+	
+		private:
+			//data
+			std::vector<nodes::Node*> m_nodes;
+			std::vector<elements::Element*> m_elements;
+		};
+	}
 }

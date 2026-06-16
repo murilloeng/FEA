@@ -3,34 +3,37 @@
 
 namespace fea
 {
-	//constructor
-	Mesh::Mesh(void)
+	namespace mesh
 	{
-		return;
-	}
+		//constructor
+		Mesh::Mesh(void)
+		{
+			return;
+		}
+		
+		//destructor
+		Mesh::~Mesh(void)
+		{
+			return;
+		}
 	
-	//destructor
-	Mesh::~Mesh(void)
-	{
-		return;
-	}
-
-	//data
-	Node* Mesh::node(uint32_t index) const
-	{
-		return m_nodes[index];
-	}
-	const std::vector<Node*>& Mesh::nodes(void) const
-	{
-		return m_nodes;
-	}
-
-	Element* Mesh::element(uint32_t index) const
-	{
-		return m_elements[index];
-	}
-	const std::vector<Element*>& Mesh::elements(void) const
-	{
-		return m_elements;
+		//data
+		nodes::Node* Mesh::node(uint32_t index) const
+		{
+			return m_nodes[index];
+		}
+		const std::vector<nodes::Node*>& Mesh::nodes(void) const
+		{
+			return m_nodes;
+		}
+	
+		elements::Element* Mesh::element(uint32_t index) const
+		{
+			return m_elements[index];
+		}
+		const std::vector<elements::Element*>& Mesh::elements(void) const
+		{
+			return m_elements;
+		}
 	}
 }
