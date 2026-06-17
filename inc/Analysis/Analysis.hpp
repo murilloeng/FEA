@@ -1,12 +1,23 @@
 #pragma once
 
+//std
+#include <cstdio>
+#include <cstdint>
+
 namespace fea
 {
-	class Model;
+	namespace models
+	{
+		class Model;
+	}
 	namespace analysis
 	{
-		class Solver;
 		class Assembler;
+		namespace solvers
+		{
+			class Solver;
+			enum class Type : uint32_t;
+		}
 	}
 }
 
@@ -16,35 +27,52 @@ namespace fea
 	{
 		class Analysis
 		{
-		public:
-			//constructor
+		private:
+			//constructors
 			Analysis(void);
 
 			//destructor
 			~Analysis(void);
 
+			//serialization
+			void load(FILE*);
+			void save(FILE*) const;
+
+			void load_results(void);
+			void save_results(void) const;
+
+		public:
 			//data
-			static Model* model(void);
-			Solver* solver(void) const;
+			bool silent(bool);
+			bool silent(void) const;
+			bool solved(void) const;
 			Assembler* assembler(void) const;
+			solvers::Solver* solver(void) const;
+			solvers::Solver* solver(solvers::Type);
+
+			static models::Model* model(void);
+
+			//solve
+			bool solve(bool = false);
 
 		private:
 			//analysis
-			void check(void);
-			void setup(void);
-			void record(void);
-			void update(void);
-			void restore(void);
-			void compute(void);
-
-			//friends
-			friend class fea::Model;
+			bool check(void) const;
+			void setup(void) const;
+			void update(void) const;
+			void restore(void) const;
+			void apply_dof(void) const;
 
 			//data
-			Solver* m_solver;
+			bool m_silent;
+			bool m_solved;
 			Assembler* m_assembler;
+			solvers::Solver* m_solver;
+			static models::Model* m_model;
 
-			static Model* m_model;
+			//friends
+			friend class models::Model;
+			friend class analysis::Assembler;
 		};
 	}
 }
