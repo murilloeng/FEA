@@ -52,7 +52,7 @@ namespace fea
 				heat_flux_2			= 1ULL << 40,
 				heat_flux_3			= 1ULL << 41,
 				//last
-				last
+				Last
 			};
 		}
 	}

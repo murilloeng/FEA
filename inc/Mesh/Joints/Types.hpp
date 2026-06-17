@@ -17,7 +17,7 @@ namespace fea
 				Spherical		= 1 << 3,
 				Revolute2D		= 1 << 4,
 				Revolute3D		= 1 << 5,
-				last
+				Last
 			};
 		}
 	}

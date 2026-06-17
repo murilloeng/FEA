@@ -16,7 +16,7 @@ namespace fea
 				SineWave,
 				Constant,
 				Quadratic,
-				last
+				Last
 			};
 		}
 	}

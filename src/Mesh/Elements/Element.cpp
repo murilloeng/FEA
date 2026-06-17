@@ -267,7 +267,7 @@ namespace fea
 					"F₁", "F₂", "F₃", "M₁", "M₂", "M₃", 
 					"F₁₁", "F₂₂", "F₁₂", "F₁₃", "F₂₃", "M₁₁", "M₂₂", "M₁₂", "Q₁", "Q₂", "Q₃"
 				};
-				for(uint32_t i = 0; elements::State(1ULL << i) < elements::State::last; i++)
+				for(uint32_t i = 0; elements::State(1ULL << i) < elements::State::Last; i++)
 				{
 					if(elements::State(1ULL << i) == state)
 					{
@@ -350,7 +350,7 @@ namespace fea
 				for(uint32_t i = 0; i < m_nodes.size(); i++)
 				{
 					const uint32_t ds = dof_set(i);
-					for(uint32_t j = 1; j < (uint32_t) nodes::dof::last; j <<= 1)
+					for(uint32_t j = 1; j < (uint32_t) nodes::dof::Last; j <<= 1)
 					{
 						if(ds & j)
 						{
@@ -400,7 +400,7 @@ namespace fea
 				for(uint32_t i = 0; i < m_nodes.size(); i++)
 				{
 					const uint32_t ds = dof_set(i);
-					for(uint32_t dof = 1; dof < uint32_t(nodes::dof::last); dof <<= 1)
+					for(uint32_t dof = 1; dof < uint32_t(nodes::dof::Last); dof <<= 1)
 					{
 						if(ds & dof)
 						{
@@ -419,7 +419,7 @@ namespace fea
 				for(uint32_t i = 0; i < m_nodes.size(); i++)
 				{
 					const uint32_t ds = dof_set(i);
-					for(uint32_t dof = 1; dof < (uint32_t) nodes::dof::last; dof <<= 1)
+					for(uint32_t dof = 1; dof < (uint32_t) nodes::dof::Last; dof <<= 1)
 					{
 						if(ds & dof)
 						{
@@ -438,7 +438,7 @@ namespace fea
 				for(uint32_t i = 0; i < m_nodes.size(); i++)
 				{
 					const uint32_t ds = dof_set(i);
-					for(uint32_t dof = 1; dof < (uint32_t) nodes::dof::last; dof <<= 1)
+					for(uint32_t dof = 1; dof < (uint32_t) nodes::dof::Last; dof <<= 1)
 					{
 						if(ds & dof)
 						{

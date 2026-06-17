@@ -9,23 +9,23 @@ namespace fea
 	{
 		enum class force : uint32_t
 		{
-			N, kN, last
+			N, kN, Last
 		};
 		enum class length : uint32_t
 		{
-			mm, cm, m, last
+			mm, cm, m, Last
 		};
 		enum class moment : uint32_t
 		{
-			Nmm, Nm, kNm, last
+			Nmm, Nm, kNm, Last
 		};
 		enum class stress : uint32_t
 		{
-			Pa, kPa, MPa, GPa, last
+			Pa, kPa, MPa, GPa, Last
 		};
 		enum class temperature : uint32_t
 		{
-			C, K, last
+			C, K, Last
 		};
 
 		const char* name(force);

@@ -70,7 +70,7 @@ namespace fea
 					}
 				};
 				//create
-				for(uint32_t i = 0; i < uint32_t(Type::last); i++)
+				for(uint32_t i = 0; i < uint32_t(Type::Last); i++)
 				{
 					if(uint32_t(type) == i)
 					{

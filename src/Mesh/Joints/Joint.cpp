@@ -351,7 +351,7 @@ namespace fea
 				m_dof_index.clear();
 				for(uint32_t i = 0; i < m_nodes.size(); i++)
 				{
-					for(uint32_t j = 1; j < (uint32_t) nodes::dof::last; j <<= 1)
+					for(uint32_t j = 1; j < (uint32_t) nodes::dof::Last; j <<= 1)
 					{
 						if(dof_set(i) & j)
 						{

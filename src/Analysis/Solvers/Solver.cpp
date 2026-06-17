@@ -95,7 +95,7 @@ namespace fea
 					[&solver](void){ solver = new TransientNonlinear; }
 				};
 				//create
-				for(uint32_t i = 0; 1U << i < uint32_t(Type::last); i++)
+				for(uint32_t i = 0; 1U << i < uint32_t(Type::Last); i++)
 				{
 					if(type == Type(1U << i)) factory[i]();
 				}

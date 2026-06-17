@@ -21,6 +21,7 @@ namespace fea
 				//destructor
 				virtual ~Mechanic(void) override;
 
+			public:
 				//data
 				const materials::Mechanic* material(void) const;
 				const materials::Mechanic* material(const materials::Mechanic*);

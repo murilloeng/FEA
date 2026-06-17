@@ -46,7 +46,7 @@ namespace fea
 					StateMaximum	= 1 << 5,
 					StateNegative	= 1 << 6,
 					StatePositive	= 1 << 7,
-					last
+					Last
 				};
 
 				//data

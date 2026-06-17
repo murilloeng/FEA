@@ -21,15 +21,15 @@ namespace fea
 				//destructor
 				virtual ~Frame(void) override;
 
+			public:
 				//data
 				const sections::Section* section(void) const;
 				const sections::Section* section(const sections::Section*);
 
-			public:
+			protected:
 				//analysis
 				void check(void) override;
 
-			protected:
 				//data
 				const sections::Section* m_section;
 			};

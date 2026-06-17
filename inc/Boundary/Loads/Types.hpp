@@ -16,7 +16,7 @@ namespace fea
 				PlaneForce		= 1 << 2,
 				PlaneMoment		= 1 << 3,
 				VolumeForce		= 1 << 4,
-				last
+				Last
 			};
 		}
 	}

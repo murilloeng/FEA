@@ -18,7 +18,7 @@ namespace fea
 				translation_1	= 1 <<  0,
 				translation_2	= 1 <<  1,
 				translation_3	= 1 <<  2,
-				last
+				Last
 			};
 		}
 	}

@@ -43,7 +43,7 @@ namespace fea
 					ControlState,
 					ArcLengthSpherical,
 					ArcLengthCylindrical,
-					last
+					Last
 				};
 
 				//data

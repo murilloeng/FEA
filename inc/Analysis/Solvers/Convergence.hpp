@@ -41,7 +41,7 @@ namespace fea
 					LoadFixed,
 					LoadRelative,
 					StateIncrement,
-					last
+					Last
 				};
 
 				//compute
