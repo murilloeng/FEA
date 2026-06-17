@@ -392,13 +392,13 @@ namespace fea
 			printf("-------------------------------------------------------------------------------\n");
 			printf("Checking model:\n");
 			//check mesh
-			printf("\tMesh: ");
-			m_analysis->m_model->m_mesh->check(), printf("OK\n");
+			printf("\tMesh:");
+			m_analysis->m_model->m_mesh->check(), printf("\t\tOK\n");
 			//check analysis
-			printf("\tSolver: ");
+			printf("\tAnalysis:\t");
 			m_analysis->check(), printf("OK\n");
 			//check boundary
-			printf("\tBoundary: ");
+			printf("\tBoundary:\t");
 			m_analysis->m_model->m_boundary->check(), printf("OK\n");
 			printf("-------------------------------------------------------------------------------\n");
 		}
