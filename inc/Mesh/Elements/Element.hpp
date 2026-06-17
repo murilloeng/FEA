@@ -53,9 +53,6 @@ namespace fea
 				nodes::Node* node(uint32_t, uint32_t);
 				const std::vector<uint32_t>& nodes(void) const;
 
-				//compute
-				virtual void compute(void) = 0;
-
 				//tangents
 				virtual void inertia(double*) const = 0;
 				virtual void damping(double*) const = 0;
@@ -65,6 +62,10 @@ namespace fea
 				virtual void internal_force(double*) const = 0;
 
 			protected:
+				//analysis
+				virtual void check(void);
+				virtual void compute(void) = 0;
+
 				//friends
 				friend class mesh::Mesh;
 

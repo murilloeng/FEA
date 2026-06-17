@@ -76,6 +76,12 @@ namespace fea
 			{
 				return m_nodes;
 			}
+
+			//analysis
+			void Element::check(void)
+			{
+				return;
+			}
 		}
 	}
 }

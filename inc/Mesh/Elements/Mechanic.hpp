@@ -26,6 +26,9 @@ namespace fea
 				const materials::Mechanic* material(const materials::Mechanic*);
 
 			protected:
+				//analysis
+				void check(void) override;
+
 				//data
 				const materials::Mechanic* m_material;
 			};

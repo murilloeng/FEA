@@ -15,7 +15,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Truss::Truss(void) : m_section{nullptr}
+			Truss::Truss(void)
 			{
 				return;
 			}
@@ -36,16 +36,7 @@ namespace fea
 				return m_strain_measure = strain_measure;
 			}
 
-			const sections::Section* Truss::section(void) const
-			{
-				return m_section;
-			}
-			const sections::Section* Truss::section(const sections::Section* section)
-			{
-				return m_section = section;
-			}
-
-			//compute
+			//analysis
 			void Truss::compute(void)
 			{
 				//kinematics
