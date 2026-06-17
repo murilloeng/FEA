@@ -12,6 +12,14 @@ namespace fea
 {
 	namespace mesh
 	{
+		class Mesh;
+	}
+}
+
+namespace fea
+{
+	namespace mesh
+	{
 		namespace nodes
 		{
 			class Node
@@ -19,7 +27,7 @@ namespace fea
 			public:
 				//constructor
 				Node(void);
-		
+
 				//destructor
 				~Node(void);
 
@@ -36,19 +44,25 @@ namespace fea
 				double position(uint32_t, double);
 				const double* position(bool = false);
 
-
 			private:
 				//DOF
 				void apply_DOF(DOF);
 				void apply_DOF(uint32_t);
 
 				//analysis
+				void setup(void);
+				void record(void);
+				void update(void);
+				void restore(void);
 				void cleanup(void);
-				void allocate(uint32_t, uint32_t);
-		
+
+				//friends
+				friend class mesh::Mesh;
+
 				//data
 				uint32_t m_dof;
 				uint32_t m_index;
+				static Mesh* m_mesh;
 				double m_position_ref[3];
 				double m_position_new[3];
 				std::vector<uint32_t> m_dof_indexes;

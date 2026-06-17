@@ -34,12 +34,12 @@ namespace fea
 				Element(void);
 
 				//destructor
-				~Element(void);
+				virtual ~Element(void);
 
 				//serialization
 				void load(FILE*);
 				void save(FILE*) const;
-				
+
 				//type
 				virtual Type type(void) const = 0;
 
@@ -64,7 +64,10 @@ namespace fea
 				//forces
 				virtual void internal_force(double*) const = 0;
 
-			private:
+			protected:
+				//friends
+				friend class mesh::Mesh;
+
 				//data
 				uint32_t m_index;
 				static Mesh* m_mesh;

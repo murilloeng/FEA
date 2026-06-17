@@ -1,5 +1,7 @@
 //FEA
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Mesh/Elements/Element.hpp"
 
 namespace fea
 {
@@ -8,15 +10,16 @@ namespace fea
 		//constructor
 		Mesh::Mesh(void)
 		{
-			return;
+			nodes::Node::m_mesh = this;
+			elements::Element::m_mesh = this;
 		}
-		
+
 		//destructor
 		Mesh::~Mesh(void)
 		{
 			return;
 		}
-	
+
 		//data
 		nodes::Node* Mesh::node(uint32_t index) const
 		{
@@ -26,7 +29,7 @@ namespace fea
 		{
 			return m_nodes;
 		}
-	
+
 		elements::Element* Mesh::element(uint32_t index) const
 		{
 			return m_elements[index];
@@ -35,5 +38,8 @@ namespace fea
 		{
 			return m_elements;
 		}
+
+		//static data
+		Model* Mesh::m_model = nullptr;
 	}
 }

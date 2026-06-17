@@ -1,3 +1,6 @@
+//std
+#include <cmath>
+
 //Math
 #include "Math/inc/Linear/Vec3.hpp"
 
@@ -12,15 +15,34 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Truss::Truss(void) : m_section{nullptr}, m_material{nullptr}
+			Truss::Truss(void) : m_section{nullptr}
 			{
 				return;
 			}
-			
+
 			//destructor
 			Truss::~Truss(void)
 			{
 				return;
+			}
+
+			//data
+			StrainMeasure Truss::strain_measure(void)
+			{
+				return m_strain_measure;
+			}
+			StrainMeasure Truss::strain_measure(StrainMeasure strain_measure)
+			{
+				return m_strain_measure = strain_measure;
+			}
+
+			const sections::Section* Truss::section(void) const
+			{
+				return m_section;
+			}
+			const sections::Section* Truss::section(const sections::Section* section)
+			{
+				return m_section = section;
 			}
 
 			//compute
@@ -45,7 +67,7 @@ namespace fea
 				//return mapping
 				const double C = E;
 				const double s = E * e;
-				//local force and stiffness
+				//compute
 				m_f = s * ge * A;
 				m_K = (C * ge * ge + s * he) * A / Lr;
 			}
@@ -53,16 +75,28 @@ namespace fea
 			//strains
 			double Truss::strain_measure(double s)
 			{
-				return (s * s - 1) / 2;
+				return
+					m_strain_measure == StrainMeasure::Linear ? s - 1 :
+					m_strain_measure == StrainMeasure::Quadratic ? (s * s - 1) / 2 :
+					m_strain_measure == StrainMeasure::Logarithmic ? log(s) : 0;
 			}
 			double Truss::strain_hessian(double s)
 			{
-				return 1;
+				return
+					m_strain_measure == StrainMeasure::Linear ? 0 :
+					m_strain_measure == StrainMeasure::Quadratic ? 1 :
+					m_strain_measure == StrainMeasure::Logarithmic ? -1 / s / s : 0;
 			}
 			double Truss::strain_gradient(double s)
 			{
-				return s;
+				return
+					m_strain_measure == StrainMeasure::Linear ? 1 :
+					m_strain_measure == StrainMeasure::Quadratic ? s :
+					m_strain_measure == StrainMeasure::Logarithmic ? 1 / s : 0;
 			}
+
+			//static data
+			StrainMeasure Truss::m_strain_measure = StrainMeasure::Logarithmic;
 		}
 	}
 }

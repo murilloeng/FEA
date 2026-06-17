@@ -18,7 +18,7 @@ namespace fea
 			{
 				return;
 			}
-	
+
 			//destructor
 			Truss2D::~Truss2D(void)
 			{
@@ -35,8 +35,8 @@ namespace fea
 			uint32_t Truss2D::dof(uint32_t) const
 			{
 				return 
-					uint32_t(DOF::Translation_1)|
-					uint32_t(DOF::Translation_2);
+					uint32_t(nodes::DOF::Translation_1)|
+					uint32_t(nodes::DOF::Translation_2);
 			}
 
 			//tangents

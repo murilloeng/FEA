@@ -3,11 +3,14 @@
 //std
 #include <cstdint>
 
+//Math
+#include "Math/inc/Solvers/Solver.hpp"
+
 namespace fea
 {
 	namespace analysis
 	{
-		class Solver
+		class Solver : virtual public math::solvers::Solver
 		{
 		public:
 			//constructor
@@ -15,9 +18,6 @@ namespace fea
 
 			//destructor
 			~Solver(void);
-
-			//data
-			virtual uint32_t data(void) const = 0;
 		};
 	}
 }

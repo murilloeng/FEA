@@ -1,18 +1,18 @@
 //FEA
-#include "FEA/inc/Analysis/Solver.hpp"
+#include "FEA/inc/Analysis/Assembler.hpp"
 
 namespace fea
 {
 	namespace analysis
 	{
 		//constructor
-		Solver::Solver(void)
+		Assembler::Assembler(void)
 		{
 			return;
 		}
 
 		//destructor
-		Solver::~Solver(void)
+		Assembler::~Assembler(void)
 		{
 			return;
 		}

@@ -4,10 +4,11 @@
 #include "Sections/inc/Section.hpp"
 
 //Materials
-#include "Materials/inc/Mechanic/Mechanic.hpp"
+#include "Materials/inc/Mechanic/Point.hpp"
 
 //FEA
-#include "FEA/inc/Mesh/Elements/Element.hpp"
+#include "FEA/inc/Mesh/Elements/Mechanic.hpp"
+#include "FEA/inc/Mesh/Elements/StrainMeasure.hpp"
 
 namespace fea
 {
@@ -15,29 +16,36 @@ namespace fea
 	{
 		namespace elements
 		{
-			class Truss : public Element
+			class Truss : public Mechanic
 			{
 			public:
 				//constructor
 				Truss(void);
 
 				//destructor
-				~Truss(void);
+				virtual ~Truss(void);
 
+				//data
+				static StrainMeasure strain_measure(void);
+				static StrainMeasure strain_measure(StrainMeasure);
+
+				const sections::Section* section(void) const;
+				const sections::Section* section(const sections::Section*);
+
+			protected:
 				//compute
 				void compute(void) override;
 
-			protected:
 				//strains
 				static double strain_measure(double);
 				static double strain_hessian(double);
 				static double strain_gradient(double);
 
 				//data
-				double m_f;
-				double m_K;
+				double m_f, m_K;
+				materials::Point m_material_point;
 				const sections::Section* m_section;
-				const materials::Mechanic* m_material;
+				static StrainMeasure m_strain_measure;
 			};
 		}
 	}

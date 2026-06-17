@@ -14,7 +14,7 @@ namespace fea
 			public:
 				//constructor
 				Truss3D(void);
-	
+
 				//destructor
 				~Truss3D(void);
 
