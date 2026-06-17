@@ -5,8 +5,21 @@
 #include <cstdio>
 #include <cstdint>
 
-//FEA
-#include "FEA/inc/Mesh/Elements/Type.hpp"
+namespace fea
+{
+	namespace mesh
+	{
+		class Mesh;
+		namespace nodes
+		{
+			class Node;
+		}
+		namespace elements
+		{
+			enum class Type : uint32_t;
+		}
+	}
+}
 
 namespace fea
 {
@@ -34,9 +47,14 @@ namespace fea
 				virtual uint32_t dof(uint32_t) const = 0;
 
 				//data
-				uint32_t node(uint32_t) const;
-				uint32_t node(uint32_t, uint32_t);
+				uint32_t index(void) const;
+
+				nodes::Node* node(uint32_t) const;
+				nodes::Node* node(uint32_t, uint32_t);
 				const std::vector<uint32_t>& nodes(void) const;
+
+				//compute
+				virtual void compute(void) = 0;
 
 				//tangents
 				virtual void inertia(double*) const = 0;
@@ -48,6 +66,8 @@ namespace fea
 
 			private:
 				//data
+				uint32_t m_index;
+				static Mesh* m_mesh;
 				std::vector<uint32_t> m_nodes;
 			};
 		}

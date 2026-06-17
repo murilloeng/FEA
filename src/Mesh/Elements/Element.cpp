@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 //FEA
+#include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 
 namespace fea
@@ -11,7 +12,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Element::Element(void)
+			Element::Element(void) : m_index{0}
 			{
 				return;
 			}
@@ -58,13 +59,18 @@ namespace fea
 			}
 
 			//data
-			uint32_t Element::node(uint32_t index) const
+			uint32_t Element::index(void) const
 			{
-				return m_nodes[index];
+				return m_index;
 			}
-			uint32_t Element::node(uint32_t index, uint32_t node)
+
+			nodes::Node* Element::node(uint32_t index) const
 			{
-				return m_nodes[index] = node;
+				return m_mesh->node(m_nodes[index]);
+			}
+			nodes::Node* Element::node(uint32_t index, uint32_t node)
+			{
+				return m_mesh->node(m_nodes[index] = node);
 			}
 			const std::vector<uint32_t>& Element::nodes(void) const
 			{

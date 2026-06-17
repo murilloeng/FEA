@@ -1,5 +1,6 @@
 //FEA
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
+#include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Truss3D.hpp"
 
 namespace fea

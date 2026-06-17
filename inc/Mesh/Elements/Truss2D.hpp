@@ -1,7 +1,7 @@
 #pragma once
 
 //FEA
-#include "FEA/inc/Mesh/Elements/Element.hpp"
+#include "FEA/inc/Mesh/Elements/Truss.hpp"
 
 namespace fea
 {
@@ -9,7 +9,7 @@ namespace fea
 	{
 		namespace elements
 		{
-			class Truss2D : public Element
+			class Truss2D : public Truss
 			{
 			public:
 				//constructor
@@ -31,6 +31,10 @@ namespace fea
 
 				//forces
 				void internal_force(double*) const override;
+
+			private:
+				//data
+				double m_f, m_k;
 			};
 		}
 	}

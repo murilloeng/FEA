@@ -17,7 +17,8 @@ namespace fea
 		{
 			//constructor
 			Node::Node(void) : 
-				m_dof{0}, m_position{0, 0, 0},
+				m_dof{0}, m_index{0},
+				m_position_ref{0, 0, 0}, m_position_new{0, 0, 0},
 				m_rotation_old{nullptr}, m_rotation_new{nullptr},
 				m_state_old{nullptr}, m_state_new{nullptr}, m_state_data{nullptr},
 				m_velocity_old{nullptr}, m_velocity_new{nullptr}, m_velocity_data{nullptr},
@@ -35,31 +36,50 @@ namespace fea
 			//save
 			void Node::load(FILE* file)
 			{
-				if(fscanf(file, "%lf %lf %lf %d\n", &m_position[0], &m_position[1], &m_position[2], &m_dof) != 4)
+				if(fscanf(file, "%lf %lf %lf %d\n", &m_position_ref[0], &m_position_ref[1], &m_position_ref[2], &m_dof) != 4)
 				{
 					throw std::runtime_error("Error: Node's loading failed!");
 				}
 			}
 			void Node::save(FILE* file) const
 			{
-				if(fprintf(file, "%+.6e %+.6e %+.6e %d\n", m_position[0], m_position[1], m_position[2], m_dof) < 0)
+				if(fprintf(file, "%+.6e %+.6e %+.6e %d\n", m_position_ref[0], m_position_ref[1], m_position_ref[2], m_dof) < 0)
 				{
 					throw std::runtime_error("Error: Node's saving failed!");
 				}
 			}
 
 			//data
-			const double* Node::position(void) const
+			uint32_t Node::index(void) const
 			{
-				return m_position;
+				return m_index;
+			}
+
+
+			const double* Node::rotation(void) const
+			{
+				return m_rotation_new;
+			}
+
+			const double* Node::position(bool configuration)
+			{
+				if(configuration)
+				{
+					for(uint32_t i = 0; i < 3; i++)
+					{
+						const uint32_t dof = uint32_t(DOF::Translation_1) << i;
+						m_position_new[i] = m_position_ref[i] + (m_dof & dof) ? m_state_new[math::bit_index(m_dof, dof)] : 0;
+					}
+				}
+				return configuration ? m_position_new : m_position_ref;
 			}
 			double Node::position(uint32_t index) const
 			{
-				return m_position[index];
+				return m_position_ref[index];
 			}
 			double Node::position(uint32_t index, double position)
 			{
-				return m_position[index] = position;
+				return m_position_ref[index] = position;
 			}
 
 			//DOF

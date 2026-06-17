@@ -1,7 +1,7 @@
 #pragma once
 
 //FEA
-#include "FEA/inc/Mesh/Elements/Element.hpp"
+#include "FEA/inc/Mesh/Elements/Truss.hpp"
 
 namespace fea
 {
@@ -9,7 +9,7 @@ namespace fea
 	{
 		namespace elements
 		{
-			class Truss3D : public Element
+			class Truss3D : public Truss
 			{
 			public:
 				//constructor

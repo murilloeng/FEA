@@ -28,9 +28,14 @@ namespace fea
 				void save(FILE*) const;
 
 				//data
+				uint32_t index(void) const;
+
+				const double* rotation(void) const;
+
 				double position(uint32_t) const;
 				double position(uint32_t, double);
-				const double* position(void) const;
+				const double* position(bool = false);
+
 
 			private:
 				//DOF
@@ -43,7 +48,9 @@ namespace fea
 		
 				//data
 				uint32_t m_dof;
-				double m_position[3];
+				uint32_t m_index;
+				double m_position_ref[3];
+				double m_position_new[3];
 				std::vector<uint32_t> m_dof_indexes;
 				double *m_rotation_old, *m_rotation_new;
 				double *m_state_old, *m_state_new, *m_state_data;
