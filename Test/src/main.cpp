@@ -52,7 +52,7 @@ int main(void)
 		model.boundary()->create_support(2, fea::mesh::nodes::dof::translation_2);
 		//loads
 		model.boundary()->create_load_combination();
-		model.boundary()->create_load_case(1, fea::mesh::nodes::dof::translation_2, -1e7);
+		model.boundary()->create_load_case(1, fea::mesh::nodes::dof::translation_2, -3e7);
 		//solver
 		model.analysis()->solver(fea::analysis::solvers::Type::StaticNonlinear);
 		dynamic_cast<fea::analysis::solvers::StaticNonlinear*>(model.analysis()->solver())->load_combination(0);
@@ -60,6 +60,8 @@ int main(void)
 		//solve
 		section.compute();
 		model.analysis()->solve();
+		//save
+		model.save_results();
 	}
 	catch(const std::exception& exception)
 	{
