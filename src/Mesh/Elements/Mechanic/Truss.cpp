@@ -7,7 +7,7 @@
 #include "Math/inc/Linear/Vec3.hpp"
 
 //FEA
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Dof.hpp"

@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 //FEA
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Loads/LoadCase.hpp"

@@ -5,10 +5,7 @@
 
 namespace fea
 {
-	namespace models
-	{
-		class Model;
-	}
+	class Model;
 	namespace results
 	{
 		struct Dof;
@@ -50,7 +47,7 @@ namespace fea
 
 			//friends
 			friend class Results;
-			friend class models::Model;
+			friend class fea::Model;
 		};
 	}
 }

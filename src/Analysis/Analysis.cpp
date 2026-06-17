@@ -6,7 +6,7 @@
 #include "Math/inc/Miscellaneous/util.hpp"
 
 //FEA
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Extra/Silencer.hpp"
 
@@ -82,6 +82,10 @@ namespace fea
 		}
 
 		//data
+		Model* Analysis::model(void)
+		{
+			return m_model;
+		}
 		bool Analysis::silent(void) const
 		{
 			return m_silent;
@@ -109,11 +113,6 @@ namespace fea
 				solvers::Solver::create(m_solver, type);
 			}
 			return m_solver;
-		}
-
-		models::Model* Analysis::model(void)
-		{
-			return m_model;
 		}
 
 		//solve
@@ -190,6 +189,6 @@ namespace fea
 		}
 
 		//static data
-		models::Model* Analysis::m_model = nullptr;
+		Model* Analysis::m_model = nullptr;
 	}
 }

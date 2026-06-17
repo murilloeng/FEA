@@ -13,6 +13,7 @@
 
 namespace fea
 {
+	class Model;
 	namespace mesh
 	{
 		namespace nodes
@@ -40,10 +41,6 @@ namespace fea
 			class WatchDof;
 			enum class Type : uint32_t;
 		}
-	}
-	namespace models
-	{
-		class Model;
 	}
 }
 

@@ -12,10 +12,7 @@ namespace math
 
 namespace fea
 {
-	namespace models
-	{
-		class Model;
-	}
+	class Model;
 	namespace mesh
 	{
 		namespace nodes
@@ -73,8 +70,7 @@ namespace fea
 
 		public:
 			//data
-			models::Model* model(void) const;
-
+			Model* model(void) const;
 			nodes::Node* node(uint32_t) const;
 			joints::Joint* joint(uint32_t) const;
 			elements::Element* element(uint32_t) const;
@@ -117,15 +113,15 @@ namespace fea
 			void apply_dof(void);
 
 			//data
-			static models::Model* m_model;
+			static Model* m_model;
 			std::vector<nodes::Node*> m_nodes;
 			std::vector<joints::Joint*> m_joints;
 			std::vector<elements::Element*> m_elements;
 
 			//friends
-			friend class models::Model;
-			friend class boundary::Boundary;
-			friend class analysis::Assembler;
+			friend class fea::Model;
+			friend class fea::boundary::Boundary;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

@@ -2,7 +2,7 @@
 CXX = g++
 INCS = -I ..
 WARS = -Wall -Werror
-LIBS = -l openblas -l quadrule -l fftw3 -l umfpack
+LIBS = -l gmsh -l openblas -l quadrule -l fftw3 -l umfpack
 CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
 #mode
@@ -20,6 +20,8 @@ out_exe = Test/dist/$(mode)/test.out
 
 #libraries
 libMath = ../Math/dist/$(mode)/libmath.so
+libSections = ../Sections/dist/$(mode)/libsections.so
+libMaterials = ../Materials/dist/$(mode)/libmaterials.so
 
 #sources
 src_lib := $(sort $(shell find -path './src/*.cpp'))
@@ -64,7 +66,7 @@ $(out_lib) : $(obj_lib)
 
 $(out_exe) : $(obj_exe)
 	@mkdir -p $(dir $@)
-	@g++ -o $(out_exe) $(obj_exe) $(libfea) $(LIBS)
+	@g++ -o $(out_exe) $(obj_exe) $(out_lib) $(libMaterials) $(libSections) $(libMath) $(LIBS)
 	@echo 'linking - $(mode): $@'
 
 build/$(mode)/%.o : src/%.cpp build/$(mode)/%.d

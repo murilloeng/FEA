@@ -6,10 +6,7 @@
 
 namespace fea
 {
-	namespace models
-	{
-		class Model;
-	}
+	class Model;
 	namespace analysis
 	{
 		class Assembler;
@@ -46,11 +43,10 @@ namespace fea
 			bool silent(bool);
 			bool silent(void) const;
 			bool solved(void) const;
+			static Model* model(void);
 			Assembler* assembler(void) const;
 			solvers::Solver* solver(void) const;
 			solvers::Solver* solver(solvers::Type);
-
-			static models::Model* model(void);
 
 			//solve
 			bool solve(bool = false);
@@ -66,13 +62,13 @@ namespace fea
 			//data
 			bool m_silent;
 			bool m_solved;
+			static Model* m_model;
 			Assembler* m_assembler;
 			solvers::Solver* m_solver;
-			static models::Model* m_model;
 
 			//friends
-			friend class models::Model;
-			friend class analysis::Assembler;
+			friend class fea::Model;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

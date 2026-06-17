@@ -2,7 +2,7 @@
 #include <cstring>
 
 //FEA
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Types.hpp"

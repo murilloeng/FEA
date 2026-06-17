@@ -8,10 +8,7 @@
 
 namespace fea
 {
-	namespace models
-	{
-		class Model;
-	}
+	class Model;
 	namespace mesh
 	{
 		class Mesh;
@@ -81,10 +78,8 @@ namespace fea
 			void save_results(void) const;
 
 		public:
-			//model
-			models::Model* model(void) const;
-
 			//data
+			Model* model(void) const;
 			time::Time* time(uint32_t) const;
 			Initial* initial(uint32_t) const;
 			Support* support(uint32_t) const;
@@ -160,8 +155,7 @@ namespace fea
 
 		private:
 			//data
-			static models::Model* m_model;
-
+			static Model* m_model;
 			std::vector<time::Time*> m_times;
 			std::vector<Initial*> m_initials;
 			std::vector<Support*> m_supports;
@@ -171,10 +165,10 @@ namespace fea
 			std::vector<loads::LoadCombination*> m_load_combinations;
 
 			//friends
-			friend class mesh::Mesh;
-			friend class models::Model;
-			friend class analysis::Analysis;
-			friend class analysis::Assembler;
+			friend class fea::Model;
+			friend class fea::mesh::Mesh;
+			friend class fea::analysis::Analysis;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

@@ -6,10 +6,7 @@
 
 namespace fea
 {
-	namespace models
-	{
-		class Model;
-	}
+	class Model;
 	namespace results
 	{
 		class What;
@@ -46,7 +43,7 @@ namespace fea
 
 			What* what(void) const;
 			Bounds* bounds(void) const;
-			static const models::Model* model(void);
+			static const Model* model(void);
 
 		private:
 			//setup
@@ -64,11 +61,11 @@ namespace fea
 
 			What* m_what;
 			Bounds* m_bounds;
-			static const models::Model* m_model;
+			static const Model* m_model;
 
 			//friends
-			friend class models::Model;
-			friend class analysis::Assembler;
+			friend class fea::Model;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

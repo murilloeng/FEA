@@ -9,7 +9,7 @@
 #include "Math/inc/Miscellaneous/util.hpp"
 
 //FEA
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Dof.hpp"
@@ -276,13 +276,11 @@ namespace fea
 			}
 		}
 
-		//model
-		models::Model* Boundary::model(void) const
+		//data
+		Model* Boundary::model(void) const
 		{
 			return m_model;
 		}
-
-		//data
 		time::Time* Boundary::time(uint32_t index) const
 		{
 			return index < m_times.size() ? m_times[index] : nullptr;
@@ -871,6 +869,6 @@ namespace fea
 		}
 
 		//static data
-		models::Model* Boundary::m_model = nullptr;
+		Model* Boundary::m_model = nullptr;
 	}
 }

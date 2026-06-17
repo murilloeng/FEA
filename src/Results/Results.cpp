@@ -6,7 +6,7 @@
 
 //FEA
 
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Results/What.hpp"
 #include "FEA/inc/Results/Bounds.hpp"
@@ -90,7 +90,7 @@ namespace fea
 		{
 			return m_bounds;
 		}
-		const models::Model* Results::model(void)
+		const Model* Results::model(void)
 		{
 			return m_model;
 		}
@@ -122,6 +122,6 @@ namespace fea
 		}
 
 		//static data
-		const models::Model* Results::m_model = nullptr;
+		const Model* Results::m_model = nullptr;
 	}
 }

@@ -13,7 +13,7 @@
 #include "Math/inc/Linear/Quat.hpp"
 
 //FEA
-#include "FEA/inc/Model/Model.hpp"
+#include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 
@@ -202,11 +202,10 @@ namespace fea
 		}
 
 		//data
-		models::Model* Mesh::model(void) const
+		Model* Mesh::model(void) const
 		{
 			return m_model;
 		}
-
 		nodes::Node* Mesh::node(uint32_t index) const
 		{
 			return index < m_nodes.size() ? m_nodes[index] : nullptr;
@@ -474,6 +473,6 @@ namespace fea
 		}
 
 		//static data
-		models::Model* Mesh::m_model = nullptr;
+		Model* Mesh::m_model = nullptr;
 	}
 }

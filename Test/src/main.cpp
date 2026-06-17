@@ -3,11 +3,14 @@
 #include <cstdlib>
 #include <stdexcept>
 
+//FEA
+#include "FEA/inc/Model.hpp"
+
 int main(void)
 {
 	try
 	{
-		return 0;
+		fea::Model model;
 	}
 	catch(const std::exception& exception)
 	{
