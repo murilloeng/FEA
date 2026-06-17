@@ -1,5 +1,6 @@
 //std
 #include <cstring>
+#include <stdexcept>
 
 //FEA
 #include "FEA/inc/Analysis/Data.hpp"
@@ -18,7 +19,9 @@ namespace fea
 			Node::Node(void) : 
 				m_dof{0}, m_position{0, 0, 0},
 				m_rotation_old{nullptr}, m_rotation_new{nullptr},
-				m_state_data{nullptr}, m_velocity_data{nullptr}, m_acceleration_data{nullptr}
+				m_state_old{nullptr}, m_state_new{nullptr}, m_state_data{nullptr},
+				m_velocity_old{nullptr}, m_velocity_new{nullptr}, m_velocity_data{nullptr},
+				m_acceleration_old{nullptr}, m_acceleration_new{nullptr}, m_acceleration_data{nullptr}
 			{
 				return;
 			}
@@ -28,7 +31,37 @@ namespace fea
 			{
 				return;
 			}
-		
+
+			//save
+			void Node::load(FILE* file)
+			{
+				if(fscanf(file, "%lf %lf %lf %d\n", &m_position[0], &m_position[1], &m_position[2], &m_dof) != 4)
+				{
+					throw std::runtime_error("Error: Node's loading failed!");
+				}
+			}
+			void Node::save(FILE* file) const
+			{
+				if(fprintf(file, "%+.6e %+.6e %+.6e %d\n", m_position[0], m_position[1], m_position[2], m_dof) < 0)
+				{
+					throw std::runtime_error("Error: Node's saving failed!");
+				}
+			}
+
+			//data
+			const double* Node::position(void) const
+			{
+				return m_position;
+			}
+			double Node::position(uint32_t index) const
+			{
+				return m_position[index];
+			}
+			double Node::position(uint32_t index, double position)
+			{
+				return m_position[index] = position;
+			}
+
 			//DOF
 			void Node::apply_DOF(DOF dof)
 			{

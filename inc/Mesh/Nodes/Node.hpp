@@ -2,6 +2,7 @@
 
 //std
 #include <vector>
+#include <cstdio>
 #include <cstdint>
 
 //FEA
@@ -21,12 +22,21 @@ namespace fea
 		
 				//destructor
 				~Node(void);
-		
+
+				//serialization
+				void load(FILE*);
+				void save(FILE*) const;
+
+				//data
+				double position(uint32_t) const;
+				double position(uint32_t, double);
+				const double* position(void) const;
+
+			private:
 				//DOF
 				void apply_DOF(DOF);
 				void apply_DOF(uint32_t);
-		
-			private:
+
 				//analysis
 				void cleanup(void);
 				void allocate(uint32_t, uint32_t);

@@ -18,6 +18,9 @@ endif
 out_lib = dist/$(mode)/libfea.so
 out_exe = Test/dist/$(mode)/test.out
 
+#libraries
+libMath = ../Math/dist/$(mode)/libmath.so
+
 #sources
 src_lib := $(sort $(shell find -path './src/*.cpp'))
 src_exe := $(sort $(shell find -path './Test/src/*.cpp'))
@@ -42,8 +45,17 @@ debug : exe
 lib : $(out_lib)
 	@echo 'library - $(mode): complete!'
 
-exe : lib $(out_exe)
+exe : math sections materials lib $(out_exe)
 	@echo 'executable - $(mode): complete!'
+
+math :
+	+@cd ../Math && $(MAKE) -f Makefile lib m=$m
+
+sections :
+	+@cd ../Sections && $(MAKE) -f Makefile lib m=$m
+
+materials :
+	+@cd ../Materials && $(MAKE) -f Makefile lib m=$m
 
 $(out_lib) : $(obj_lib)
 	@mkdir -p $(dir $@)

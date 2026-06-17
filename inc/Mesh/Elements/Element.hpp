@@ -2,6 +2,7 @@
 
 //std
 #include <vector>
+#include <cstdio>
 #include <cstdint>
 
 //FEA
@@ -21,6 +22,10 @@ namespace fea
 
 				//destructor
 				~Element(void);
+
+				//serialization
+				void load(FILE*);
+				void save(FILE*) const;
 				
 				//type
 				virtual Type type(void) const = 0;
