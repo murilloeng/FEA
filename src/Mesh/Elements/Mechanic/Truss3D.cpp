@@ -39,7 +39,7 @@ namespace fea
 			//types
 			Type Truss3D::type(void) const
 			{
-				return Type::Bar3D;
+				return Type::Truss3D;
 			}
 			uint32_t Truss3D::dof_set(uint32_t) const
 			{

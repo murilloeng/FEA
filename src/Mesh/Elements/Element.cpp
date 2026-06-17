@@ -219,9 +219,9 @@ namespace fea
 					[&element, type, base](void){ element = base ? new Truss3D(*(Truss3D*) base) : new Truss3D; }
 				};
 				//create
-				for(uint32_t i = 0; 1U << i < uint32_t(Type::last); i++)
+				for(uint32_t i = 1; i < uint32_t(Type::Last); i <<= 1)
 				{
-					if(uint32_t(type) == 1U << i)
+					if(uint32_t(type) == i)
 					{
 						factory[i]();
 						break;
