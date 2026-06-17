@@ -9,7 +9,7 @@ namespace fea
 		//constructor
 		Boundary::Boundary(void)
 		{
-			return;
+			Support::m_boundary = this;
 		}
 
 		//destructor

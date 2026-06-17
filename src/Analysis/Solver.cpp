@@ -22,5 +22,8 @@ namespace fea
 		{
 			return m_R;
 		}
+
+		//static data
+		Analysis* Solver::m_analysis = nullptr;
 	}
 }

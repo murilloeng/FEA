@@ -14,6 +14,10 @@ namespace fea
 	{
 		class Mesh;
 	}
+	namespace analysis
+	{
+		class Assembler;
+	}
 }
 
 namespace fea
@@ -46,8 +50,8 @@ namespace fea
 
 			private:
 				//DOF
-				void apply_DOF(DOF);
-				void apply_DOF(uint32_t);
+				void apply_dof(DOF);
+				void apply_dof(uint32_t);
 
 				//analysis
 				void setup(void);
@@ -58,6 +62,7 @@ namespace fea
 
 				//friends
 				friend class mesh::Mesh;
+				friend class analysis::Assembler;
 
 				//data
 				uint32_t m_dof;

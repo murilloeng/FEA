@@ -10,7 +10,8 @@ namespace fea
 		//constructor
 		Analysis::Analysis(void) : m_solver{nullptr}, m_assembler{nullptr}
 		{
-			return;
+			Solver::m_analysis = this;
+			Assembler::m_analysis = this;
 		}
 
 		//destructor

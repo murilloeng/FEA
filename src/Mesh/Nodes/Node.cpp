@@ -82,11 +82,11 @@ namespace fea
 			}
 
 			//DOF
-			void Node::apply_DOF(DOF dof)
+			void Node::apply_dof(DOF dof)
 			{
 				m_dof |= uint32_t(dof);
 			}
-			void Node::apply_DOF(uint32_t dof)
+			void Node::apply_dof(uint32_t dof)
 			{
 				m_dof |= dof;
 			}
