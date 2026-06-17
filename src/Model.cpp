@@ -36,4 +36,42 @@ namespace fea
 	{
 		return m_analysis;
 	}
+
+	//analysis
+	void Model::check(void)
+	{
+		m_mesh->check();
+		m_boundary->check();
+		m_analysis->check();
+	}
+	void Model::setup(void)
+	{
+		m_mesh->setup();
+		m_boundary->setup();
+		m_analysis->setup();
+	}
+	void Model::record(void)
+	{
+		m_mesh->restore();
+		m_boundary->record();
+		m_analysis->record();
+	}
+	void Model::update(void)
+	{
+		m_mesh->update();
+		m_boundary->update();
+		m_analysis->update();
+	}
+	void Model::restore(void)
+	{
+		m_mesh->restore();
+		m_boundary->restore();
+		m_analysis->restore();
+	}
+	void Model::compute(void)
+	{
+		m_mesh->compute();
+		m_boundary->compute();
+		m_analysis->compute();
+	}
 }

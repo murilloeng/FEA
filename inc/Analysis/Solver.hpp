@@ -18,6 +18,13 @@ namespace fea
 
 			//destructor
 			~Solver(void);
+
+			//data
+			const double* reactions(void) const;
+
+		private:
+			//data
+			double* m_R;
 		};
 	}
 }

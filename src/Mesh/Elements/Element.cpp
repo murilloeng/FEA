@@ -82,6 +82,22 @@ namespace fea
 			{
 				return;
 			}
+			void Element::setup(void)
+			{
+				return;
+			}
+			void Element::record(void)
+			{
+				return;
+			}
+			void Element::update(void)
+			{
+				return;
+			}
+			void Element::restore(void)
+			{
+				return;
+			}
 		}
 	}
 }

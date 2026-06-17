@@ -33,6 +33,14 @@ namespace fea
 		analysis::Analysis* analysis(void) const;
 
 	private:
+		//analysis
+		void check(void);
+		void setup(void);
+		void record(void);
+		void update(void);
+		void restore(void);
+		void compute(void);
+
 		//data
 		mesh::Mesh* m_mesh;
 		boundary::Boundary* m_boundary;

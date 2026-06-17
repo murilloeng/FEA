@@ -6,7 +6,7 @@ namespace fea
 	namespace analysis
 	{
 		//constructor
-		Solver::Solver(void)
+		Solver::Solver(void) : m_R{nullptr}
 		{
 			return;
 		}
@@ -14,7 +14,13 @@ namespace fea
 		//destructor
 		Solver::~Solver(void)
 		{
-			return;
+			delete[] m_R;
+		}
+
+		//data
+		const double* Solver::reactions(void) const
+		{
+			return m_R;
 		}
 	}
 }

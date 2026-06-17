@@ -25,8 +25,18 @@ namespace fea
 
 			//data
 			static Model* model(void);
+			Solver* solver(void) const;
+			Assembler* assembler(void) const;
 
 		private:
+			//analysis
+			void check(void);
+			void setup(void);
+			void record(void);
+			void update(void);
+			void restore(void);
+			void compute(void);
+
 			//friends
 			friend class fea::Model;
 

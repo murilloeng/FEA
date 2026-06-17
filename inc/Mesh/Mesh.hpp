@@ -43,6 +43,14 @@ namespace fea
 			const std::vector<elements::Element*>& elements(void) const;
 
 		private:
+			//analysis
+			void check(void);
+			void setup(void);
+			void record(void);
+			void update(void);
+			void restore(void);
+			void compute(void);
+
 			//friends
 			friend class fea::Model;
 

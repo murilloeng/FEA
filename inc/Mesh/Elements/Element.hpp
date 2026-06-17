@@ -64,6 +64,10 @@ namespace fea
 			protected:
 				//analysis
 				virtual void check(void);
+				virtual void setup(void);
+				virtual void record(void);
+				virtual void update(void);
+				virtual void restore(void);
 				virtual void compute(void) = 0;
 
 				//friends

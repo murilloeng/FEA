@@ -44,10 +44,21 @@ namespace fea
 			mesh::nodes::DOF dof(mesh::nodes::DOF);
 
 		private:
+			//analysis
+			void check(void);
+			void setup(void);
+			void record(void);
+			void cleanup(void);
+
+			//friends
+			friend class Boundary;
+
 			//data
 			uint32_t m_node;
 			uint32_t m_index;
+			uint32_t m_dof_index;
 			mesh::nodes::DOF m_dof;
+			double* m_reaction_data;
 			static Boundary* m_boundary;
 		};
 	}

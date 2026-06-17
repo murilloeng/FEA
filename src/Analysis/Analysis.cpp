@@ -25,6 +25,40 @@ namespace fea
 		{
 			return m_model;
 		}
+		Solver* Analysis::solver(void) const
+		{
+			return m_solver;
+		}
+		Assembler* Analysis::assembler(void) const
+		{
+			return m_assembler;
+		}
+
+		//analysis
+		void Analysis::check(void)
+		{
+			return;
+		}
+		void Analysis::setup(void)
+		{
+			return;
+		}
+		void Analysis::record(void)
+		{
+			return;
+		}
+		void Analysis::update(void)
+		{
+			return;
+		}
+		void Analysis::restore(void)
+		{
+			return;
+		}
+		void Analysis::compute(void)
+		{
+			return;
+		}
 
 		//static data
 		Model* Analysis::m_model = nullptr;

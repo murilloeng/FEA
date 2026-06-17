@@ -17,7 +17,8 @@ namespace fea
 		//destructor
 		Mesh::~Mesh(void)
 		{
-			return;
+			for(const nodes::Node* node : m_nodes) delete node;
+			for(const elements::Element* element : m_elements) delete element;
 		}
 
 		//data
@@ -37,6 +38,36 @@ namespace fea
 		const std::vector<elements::Element*>& Mesh::elements(void) const
 		{
 			return m_elements;
+		}
+
+		//analysis
+		void Mesh::check(void)
+		{
+			for(elements::Element* element : m_elements) element->check();
+		}
+		void Mesh::setup(void)
+		{
+			for(nodes::Node* node : m_nodes) node->setup();
+			for(elements::Element* element : m_elements) element->setup();
+		}
+		void Mesh::record(void)
+		{
+			for(nodes::Node* node : m_nodes) node->record();
+			for(elements::Element* element : m_elements) element->record();
+		}
+		void Mesh::update(void)
+		{
+			for(nodes::Node* node : m_nodes) node->update();
+			for(elements::Element* element : m_elements) element->restore();
+		}
+		void Mesh::restore(void)
+		{
+			for(nodes::Node* node : m_nodes) node->restore();
+			for(elements::Element* element : m_elements) element->restore();
+		}
+		void Mesh::compute(void)
+		{
+			for(elements::Element* element : m_elements) element->compute();
 		}
 
 		//static data
