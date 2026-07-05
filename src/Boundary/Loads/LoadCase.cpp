@@ -1,5 +1,6 @@
 //FEA
-#include "FEA/inc/Boundary/Loads/Load.hpp"
+#include "FEA/inc/Boundary/Loads/Node.hpp"
+#include "FEA/inc/Boundary/Loads/Element.hpp"
 #include "FEA/inc/Boundary/Loads/LoadCase.hpp"
 
 namespace fea
@@ -15,7 +16,8 @@ namespace fea
 		//destructor
 		LoadCase::~LoadCase(void)
 		{
-			for(const loads::Load* load : m_loads) delete load;
+			for(const loads::Node* load : m_loads_nodes) delete load;
+			for(const loads::Element* load : m_loads_elements) delete load;
 		}
 
 		//static

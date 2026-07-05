@@ -10,7 +10,8 @@ namespace fea
 		class Boundary;
 		namespace loads
 		{
-			class Load;
+			class Node;
+			class Element;
 		}
 	}
 }
@@ -30,7 +31,8 @@ namespace fea
 
 			//data
 			static Boundary* m_boundary;
-			std::vector<loads::Load*> m_loads;
+			std::vector<loads::Node*> m_loads_nodes;
+			std::vector<loads::Element*> m_loads_elements;
 		};
 	}
 }

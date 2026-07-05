@@ -23,6 +23,9 @@ namespace fea
 			//destructor
 			~Analysis(void);
 
+			//analysis
+			void apply_dof(void);
+
 			//data
 			Solver* m_solver;
 			static Model* m_model;

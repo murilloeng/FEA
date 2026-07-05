@@ -21,6 +21,18 @@ namespace fea
 			for(const elements::Element* element : m_elements) delete element;
 		}
 
+		//analysis
+		void Mesh::apply_dof(void)
+		{
+			for(const elements::Element* element : m_elements)
+			{
+				for(uint32_t i = 0; i < element->m_nodes.size(); i++)
+				{
+					m_nodes[element->m_nodes[i]]->m_dof |= element->dof_set(i);
+				}
+			}
+		}
+
 		//static
 		Model* Mesh::m_model = nullptr;
 	}

@@ -3,6 +3,9 @@
 //Math
 #include "Math/inc/Solvers/Solver.hpp"
 
+//FEA
+#include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
+
 namespace fea
 {
 	namespace analysis
@@ -25,6 +28,7 @@ namespace fea
 			~Solver(void);
 
 			//data
+			WatchDOF m_watch_dof;
 			static Analysis* m_analysis;
 		};
 	}

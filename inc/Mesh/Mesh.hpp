@@ -31,6 +31,9 @@ namespace fea
 	
 			//destructor
 			~Mesh(void);
+
+			//analysis
+			void apply_dof(void);
 	
 			//data
 			static Model* m_model;
