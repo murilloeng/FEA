@@ -8,6 +8,18 @@ namespace fea
 {
 	namespace mesh
 	{
+		class Mesh;
+		namespace nodes
+		{
+			enum class DOF : uint32_t;
+		}
+	}
+}
+
+namespace fea
+{
+	namespace mesh
+	{
 		namespace nodes
 		{
 			class Node
@@ -19,9 +31,22 @@ namespace fea
 				//destructor
 				~Node(void);
 
+				//analysis
+				void setup(void);
+				void compute(void);
+
+				//data
+				double state(DOF) const;
+				double velocity(DOF) const;
+				double acceleration(DOF) const;
+
 				//data
 				uint32_t m_dof;
-				double m_position[3];
+				static Mesh* m_mesh;
+				double m_position_ref[3];
+				double m_position_new[3];
+				double* m_quaternion_old;
+				double* m_quaternion_new;
 				std::vector<uint32_t> m_dof_indexes;
 			};
 		}

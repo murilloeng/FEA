@@ -1,12 +1,14 @@
 //FEA
+#include "FEA/inc/Analysis/Solver.hpp"
 #include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Assembler.hpp"
 
 namespace fea
 {
 	namespace analysis
 	{
 		//constructor
-		Analysis::Analysis(void)
+		Analysis::Analysis(void) : m_solver{nullptr}, m_assembler{new Assembler}
 		{
 			return;
 		}
@@ -14,7 +16,8 @@ namespace fea
 		//destructor
 		Analysis::~Analysis(void)
 		{
-			return;
+			delete m_solver;
+			delete m_assembler;
 		}
 
 		//static

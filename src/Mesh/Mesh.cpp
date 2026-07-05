@@ -10,7 +10,8 @@ namespace fea
 		//constructor
 		Mesh::Mesh(void)
 		{
-			return;
+			nodes::Node::m_mesh = this;
+			elements::Element::m_mesh = this;
 		}
 		
 		//destructor

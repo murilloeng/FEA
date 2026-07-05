@@ -1,5 +1,17 @@
 //FEA
+#include "FEA/inc/Model.hpp"
+
+#include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+
+#include "FEA/inc/Analysis/Solver.hpp"
+#include "FEA/inc/Analysis/Analysis.hpp"
+
+//math
+#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Quat.hpp"
+#include "Math/inc/Miscellaneous/bits.hpp"
 
 namespace fea
 {
@@ -8,7 +20,8 @@ namespace fea
 		namespace nodes
 		{
 			//constructor
-			Node::Node(void) : m_dof{0}, m_position{0, 0, 0}
+			Node::Node(void) : 
+				m_dof{0}, m_position_ref{0, 0, 0}, m_position_new{0, 0, 0}, m_quaternion_old{nullptr}, m_quaternion_new{nullptr}
 			{
 				return;
 			}
@@ -18,6 +31,51 @@ namespace fea
 			{
 				return;
 			}
+
+			//analysis
+			void Node::setup(void)
+			{
+				return;
+			}
+			void Node::compute(void)
+			{
+				//data
+				const double t[] = {
+					state(DOF::Rotation_1), state(DOF::Rotation_2), state(DOF::Rotation_3)
+				};
+				const double u[] = {
+					state(DOF::Translation_1), state(DOF::Translation_2), state(DOF::Translation_3)
+				};
+				//position
+				m_position_new[0] = m_position_ref[0] + u[0];
+				m_position_new[1] = m_position_ref[1] + u[1];
+				m_position_new[2] = m_position_ref[2] + u[2];
+				//rotation
+				if(m_quaternion_new)
+				{
+					math::Quat(m_quaternion_new + 0) = math::Vec3(t).quaternion() * math::Quat(m_quaternion_old);
+				}
+			}
+
+			//data
+			double Node::state(DOF dof) const
+			{
+				const double* x = m_mesh->m_model->m_analysis->m_solver->m_x_new;
+				return m_dof & 1 << uint32_t(dof) ? x[m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))]] : 0;
+			}
+			double Node::velocity(DOF dof) const
+			{
+				const double* v = m_mesh->m_model->m_analysis->m_solver->m_v_new;
+				return m_dof & 1 << uint32_t(dof) ? v[m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))]] : 0;
+			}
+			double Node::acceleration(DOF dof) const
+			{
+				const double* a = m_mesh->m_model->m_analysis->m_solver->m_a_new;
+				return m_dof & 1 << uint32_t(dof) ? a[m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))]] : 0;
+			}
+
+			//static
+			Mesh* Node::m_mesh = nullptr;
 		}
 	}
 }
