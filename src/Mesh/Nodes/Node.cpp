@@ -5,8 +5,8 @@
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
-#include "FEA/inc/Analysis/Solver.hpp"
 #include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 //math
 #include "Math/inc/Linear/Vec3.hpp"

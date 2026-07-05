@@ -3,12 +3,6 @@
 #include <cstdlib>
 #include <stdexcept>
 
-//Sections
-#include "Sections/inc/Rectangle.hpp"
-
-//Materials
-#include "Materials/inc/Mechanic/Steel.hpp"
-
 //FEA
 #include "FEA/inc/Model.hpp"
 

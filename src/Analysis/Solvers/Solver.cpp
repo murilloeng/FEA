@@ -1,5 +1,5 @@
 //FEA
-#include "FEA/inc/Analysis/Solver.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 namespace fea
 {

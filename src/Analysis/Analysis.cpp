@@ -1,7 +1,7 @@
 //FEA
-#include "FEA/inc/Analysis/Solver.hpp"
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 namespace fea
 {
