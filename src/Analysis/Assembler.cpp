@@ -5,6 +5,9 @@
 //SuiteSparse
 #include <suitesparse/umfpack.h>
 
+//Math
+#include "Math/inc/Linear/Sparse.hpp"
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -215,6 +218,113 @@ namespace fea
 			dof_local();
 			m_analysis->m_solver->m_rows_map = m_rows_map;
 			m_analysis->m_solver->m_cols_map = m_cols_map;
+		}
+
+		//assemble
+		void Assembler::assemble_inertia(double* M) const
+		{
+			//setup
+			memset(M, 0, m_cols_map[m_dof_unknow] * sizeof(double));
+			//elements
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				element->inertia(m_Ae);
+				assemble_matrix(M, m_Ae, element->m_dof_indexes);
+			}
+		}
+		void Assembler::assemble_damping(double* C) const
+		{
+			//setup
+			memset(C, 0, m_cols_map[m_dof_unknow] * sizeof(double));
+			//elements
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				element->damping(m_Ae);
+				assemble_matrix(C, m_Ae, element->m_dof_indexes);
+			}
+		}
+		void Assembler::assemble_stiffness(double* K) const
+		{
+			//setup
+			memset(K, 0, m_cols_map[m_dof_unknow] * sizeof(double));
+			//elements
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				element->stiffness(m_Ae);
+				assemble_matrix(K, m_Ae, element->m_dof_indexes);
+			}
+		}
+
+		void Assembler::assemble_external_force(double* fe) const
+		{
+			//setup
+			memset(fe, 0, m_dof_unknow * sizeof(double));
+		}
+		void Assembler::assemble_internal_force(double* fi) const
+		{
+			//setup
+			memset(fi, 0, m_dof_unknow * sizeof(double));
+			//elements
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				element->internal_force(m_fe);
+				assemble_vector(fi, m_fe, element->m_dof_indexes);
+			}
+		}
+
+		void Assembler::assemble_vector(double* f, double* fe, const std::vector<uint32_t>& dof_indexes) const
+		{
+			for(uint32_t i = 0; i < dof_indexes.size(); i++)
+			{
+				if(dof_indexes[i] < m_dof_unknow)
+				{
+					f[dof_indexes[i]] += fe[i];
+				}
+			}
+		}
+
+		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes) const
+		{
+			//data
+			const uint32_t ne = dof_indexes.size();
+			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);
+			//assemble
+			for(uint32_t i = 0; i < dof_indexes.size(); i++)
+			{
+				for(uint32_t j = 0; j < dof_indexes.size(); j++)
+				{
+					if(dof_indexes[i] < m_dof_unknow && dof_indexes[j] < m_dof_unknow)
+					{
+						S(dof_indexes[i], dof_indexes[j]) += Ae[i + ne * j];
+					}
+				}
+			}
+		}
+		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes, uint32_t dof_index) const
+		{
+			//data
+			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);
+			//assemble
+			for(uint32_t i = 0; i < dof_indexes.size(); i++)
+			{
+				if(dof_indexes[i] < m_dof_unknow && dof_index < m_dof_unknow)
+				{
+					S(dof_indexes[i], dof_index) += Ae[i];
+				}
+			}
+		}
+		void Assembler::assemble_matrix(double* A, double* Ae, uint32_t dof_index, const std::vector<uint32_t>& dof_indexes) const
+		{
+			//data
+			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);
+			//assemble
+			for(uint32_t i = 0; i < dof_indexes.size(); i++)
+			{
+				if(dof_index < m_dof_unknow && dof_indexes[i] < m_dof_unknow)
+				{
+					S(dof_index, dof_indexes[i]) += Ae[i];
+				}
+			}
 		}
 
 		//static

@@ -38,6 +38,20 @@ namespace fea
 			//analysis
 			void setup(void);
 
+			//assemble
+			void assemble_inertia(double*) const;
+			void assemble_damping(double*) const;
+			void assemble_stiffness(double*) const;
+
+			void assemble_external_force(double*) const;
+			void assemble_internal_force(double*) const;
+
+			void assemble_vector(double*, double*, const std::vector<uint32_t>&) const;
+
+			void assemble_matrix(double*, double*, const std::vector<uint32_t>&) const;
+			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, uint32_t) const;
+			void assemble_matrix(double*, double*, uint32_t, const std::vector<uint32_t>&) const;
+
 			//data
 			double* m_fe;
 			double* m_Ae;
