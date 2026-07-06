@@ -27,6 +27,11 @@ namespace fea
 		//destructor
 		~Model(void);
 
+		//analysis
+		void check(void);
+		void setup(void);
+		void solve(void);
+
 		//data
 		mesh::Mesh* m_mesh;
 		boundary::Boundary* m_boundary;

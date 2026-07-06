@@ -22,6 +22,10 @@ namespace fea
 		}
 
 		//analysis
+		void Mesh::check(void)
+		{
+			for(elements::Element* element : m_elements) element->check();
+		}
 		void Mesh::setup(void)
 		{
 			for(nodes::Node* node : m_nodes) node->setup();

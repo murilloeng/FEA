@@ -30,13 +30,10 @@ namespace fea
 			void dof_sort(void);
 			void dof_apply(void);
 			void dof_setup(void);
-			void dof_count(void);
-
-			void dof_add(uint32_t, uint32_t);
-			void dof_add(const std::vector<uint32_t>&);
-
-			void dof_count(uint32_t);
-			void dof_count(const std::vector<uint32_t>&);
+			void dof_local(void);
+			
+			void dof_triplet_count(void);
+			void dof_triplet_apply(void);
 
 			//analysis
 			void setup(void);

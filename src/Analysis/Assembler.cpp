@@ -19,6 +19,7 @@
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 namespace fea
 {
@@ -49,28 +50,16 @@ namespace fea
 		void Assembler::dof_map(void)
 		{
 			//mapping
-			dof_count();
-			m_rows_map = new int32_t[m_dof_triplet];
-			m_cols_map = new int32_t[m_dof_unknow + 1];
-			m_rows_triplet = new int32_t[m_dof_triplet];
-			m_cols_triplet = new int32_t[m_dof_triplet];
-			memset(m_cols_map, 0, (m_dof_unknow + 1) * sizeof(int32_t));
-			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			// {
-			// 	add_dof(element->m_dof_index);
-			// }
-			// for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
-			// {
-			// 	add_dof(support->m_dof_index, support->m_dof_index);
-			// }
-			// for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
-			// {
-			// 	add_dof(constraint->dof_list());
-			// }
+			dof_triplet_count();
+			int32_t* rm = m_rows_map = new int32_t[m_dof_triplet];
+			int32_t* cm = m_cols_map = new int32_t[m_dof_unknow + 1];
+			int32_t* rt = m_rows_triplet = new int32_t[m_dof_triplet];
+			int32_t* ct = m_cols_triplet = new int32_t[m_dof_triplet];
 			//sparse format
+			dof_triplet_apply();
 			const uint32_t nu = m_dof_unknow;
-			const uint32_t nz = m_cols_map[m_dof_unknow];
-			umfpack_di_triplet_to_col(nu, nu, nz, m_rows_triplet, m_cols_triplet, nullptr, m_cols_map, m_rows_map, nullptr, nullptr);
+			const uint32_t nz = m_dof_triplet;
+			umfpack_di_triplet_to_col(nu, nu, nz, rt, ct, nullptr, cm, rm, nullptr, nullptr);
 		}
 		void Assembler::dof_sort(void)
 		{
@@ -137,58 +126,95 @@ namespace fea
 			m_analysis->m_model->m_mesh->dof_setup(m_dof_total);
 			m_analysis->m_model->m_boundary->dof_setup(m_dof_total);
 		}
-		void Assembler::dof_count(void)
+		void Assembler::dof_local(void)
 		{
-			m_dof_triplet = 0;
-			for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
-			{
-				dof_count(support->m_dof_index);
-			}
+			//count
+			m_dof_local = 0;
 			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				dof_count(element->m_dof_indexes);
+				m_dof_local = std::max(std::size_t(m_dof_local), element->m_dof_indexes.size());
 			}
 			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
-				std::vector<uint32_t> list = constraint->m_dof_indexes;
-				list.push_back(constraint->m_dof_index);
-				dof_count(list);
+				m_dof_local = std::max(std::size_t(m_dof_local), constraint->m_dof_indexes.size());
 			}
+			//allocate
+			delete[] m_fe;
+			delete[] m_Ae;
+			m_fe = new double[m_dof_local];
+			m_Ae = new double[m_dof_local * m_dof_local];
 		}
 
-		void Assembler::dof_add(uint32_t dof_index_1, uint32_t dof_index_2)
+		void Assembler::dof_triplet_count(void)
 		{
-			const int32_t k = m_cols_map[m_dof_unknow];
-			if(dof_index_1 < m_dof_unknow && dof_index_2 < m_dof_unknow)
+			m_dof_triplet = 0;
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				m_cols_map[m_dof_unknow]++;
-				m_rows_triplet[k] = dof_index_1;
-				m_cols_triplet[k] = dof_index_2;
+				const uint32_t nd = element->m_dof_indexes.size();
+				m_dof_triplet += nd * nd;
 			}
-		}
-		void Assembler::dof_add(const std::vector<uint32_t>& dof_list)
-		{
-
-		}
-
-		void Assembler::dof_count(uint32_t dof_index)
-		{
-			if(dof_index < m_dof_unknow) m_dof_triplet++;
-		}
-		void Assembler::dof_count(const std::vector<uint32_t>& dof_indexes)
-		{
-			uint32_t p = 0;
-			for(uint32_t dof_index : dof_indexes)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
-				if(dof_index < m_dof_unknow) p++;
+				const uint32_t nd = constraint->m_dof_indexes.size();
+				m_dof_triplet += (nd + 1) * (nd + 1);
 			}
-			m_dof_triplet += p * p;
+		}
+		void Assembler::dof_triplet_apply(void)
+		{
+			//elements
+			uint32_t counter = 0;
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				for(uint32_t dof_index_1 : element->m_dof_indexes)
+				{
+					for(uint32_t dof_index_2 : element->m_dof_indexes)
+					{
+						m_rows_triplet[counter] = dof_index_1;
+						m_cols_triplet[counter] = dof_index_2;
+						counter++;
+					}
+				}
+			}
+			//constraints
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			{
+				for(uint32_t dof_index : constraint->m_dof_indexes)
+				{
+					m_rows_triplet[counter] = dof_index;
+					m_cols_triplet[counter] = constraint->m_dof_index;
+					counter++;
+				}
+				for(uint32_t dof_index : constraint->m_dof_indexes)
+				{
+					m_cols_triplet[counter] = dof_index;
+					m_rows_triplet[counter] = constraint->m_dof_index;
+					counter++;
+				}
+				for(uint32_t dof_index_1 : constraint->m_dof_indexes)
+				{
+					for(uint32_t dof_index_2 : constraint->m_dof_indexes)
+					{
+						m_rows_triplet[counter] = dof_index_1;
+						m_cols_triplet[counter] = dof_index_2;
+						counter++;
+					}
+				}
+			}
+			//known dof
+			const int32_t nu = m_dof_unknow;
+			for(uint32_t i = 0; i < counter; i++)
+			{
+				if(m_rows_triplet[i] >= nu || m_cols_triplet[i] >= nu) m_rows_triplet[i] = m_cols_triplet[i] = 0;
+			}
 		}
 
 		//analysis
 		void Assembler::setup(void)
 		{
-			dof_sort();
+			dof_map();
+			dof_local();
+			m_analysis->m_solver->m_rows_map = m_rows_map;
+			m_analysis->m_solver->m_cols_map = m_cols_map;
 		}
 
 		//static

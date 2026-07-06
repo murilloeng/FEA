@@ -24,6 +24,7 @@ namespace fea
 			~Analysis(void);
 
 			//analysis
+			void check(void);
 			void setup(void);
 			void dof_apply(void);
 

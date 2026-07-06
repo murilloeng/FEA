@@ -34,6 +34,7 @@ namespace fea
 			~Mesh(void);
 
 			//analysis
+			void check(void);
 			void setup(void);
 			void dof_apply(void);
 			void dof_setup(uint32_t&);
