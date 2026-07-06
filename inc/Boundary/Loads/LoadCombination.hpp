@@ -25,6 +25,10 @@ namespace fea
 			//destructor
 			~LoadCombination(void);
 
+			//analysis
+			void check(void);
+			void setup(void);
+
 			//structs
 			struct Item
 			{

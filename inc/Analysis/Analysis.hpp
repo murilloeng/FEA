@@ -24,7 +24,8 @@ namespace fea
 			~Analysis(void);
 
 			//analysis
-			void apply_dof(void);
+			void setup(void);
+			void dof_apply(void);
 
 			//data
 			Solver* m_solver;

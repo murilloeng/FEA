@@ -26,13 +26,17 @@ namespace fea
 			~Assembler(void);
 
 			//dof
-			void map_dof(void);
-			void sort_dof(void);
-			void apply_dof(void);
-			void setup_dof(void);
-			void count_dof(void);
-			void count_dof(uint32_t);
-			void count_dof(const std::vector<uint32_t>&);
+			void dof_map(void);
+			void dof_sort(void);
+			void dof_apply(void);
+			void dof_setup(void);
+			void dof_count(void);
+
+			void dof_add(uint32_t, uint32_t);
+			void dof_add(const std::vector<uint32_t>&);
+
+			void dof_count(uint32_t);
+			void dof_count(const std::vector<uint32_t>&);
 
 			//analysis
 			void setup(void);

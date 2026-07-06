@@ -3,7 +3,12 @@
 
 //FEA
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
+
+//Math
+#include "Math/inc/Miscellaneous/bits.hpp"
 
 namespace fea
 {
@@ -36,7 +41,18 @@ namespace fea
 			}
 			void Element::setup(void)
 			{
-				return;
+				m_dof_indexes.clear();
+				for(uint32_t i = 0; i < m_nodes.size(); i++)
+				{
+					const uint32_t dof_set = this->dof_set(i);
+					for(uint32_t dof = 0; dof < uint32_t(nodes::DOF::Last); dof++)
+					{
+						if(dof_set & 1 << dof)
+						{
+							m_dof_indexes.push_back(node(i)->dof_index(nodes::DOF(dof)));
+						}
+					}
+				}
 			}
 
 			//data

@@ -32,6 +32,10 @@ namespace fea
 			//destructor
 			~Support(void);
 
+			//analysis
+			void check(void);
+			void setup(void);
+
 			//data
 			mesh::nodes::Node* node(void) const;
 

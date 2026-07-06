@@ -20,6 +20,16 @@ namespace fea
 			for(const loads::Element* load : m_loads_elements) delete load;
 		}
 
+		//analysis
+		void LoadCase::check(void)
+		{
+			return;
+		}
+		void LoadCase::setup(void)
+		{
+			return;
+		}
+
 		//static
 		Boundary* LoadCase::m_boundary = nullptr;
 	}

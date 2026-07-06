@@ -12,7 +12,7 @@ namespace fea
 			enum class DOF : uint32_t
 			{
 				Rotation_1, Rotation_2, Rotation_3,
-				Translation_1, Translation_2, Translation_3
+				Translation_1, Translation_2, Translation_3, Last
 			};
 		}
 	}

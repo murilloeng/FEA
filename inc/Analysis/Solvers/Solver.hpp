@@ -27,6 +27,10 @@ namespace fea
 			//destructor
 			~Solver(void);
 
+			//analysis
+			void check(void) override;
+			void setup(void) override;
+
 			//data
 			WatchDOF m_watch_dof;
 			static Analysis* m_analysis;

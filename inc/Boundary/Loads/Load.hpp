@@ -13,7 +13,11 @@ namespace fea
 				Load(void);
 
 				//destructor
-				~Load(void);
+				virtual ~Load(void);
+
+				//analysis
+				virtual void check(void);
+				virtual void setup(void);
 
 				//data
 				double m_value;

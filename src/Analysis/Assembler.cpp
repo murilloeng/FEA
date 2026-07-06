@@ -10,6 +10,7 @@
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Mesh/Elements/Element.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
@@ -45,15 +46,15 @@ namespace fea
 		}
 
 		//dof
-		void Assembler::map_dof(void)
+		void Assembler::dof_map(void)
 		{
-			// //map dof
-			// count_dof();
-			// m_rows_map = new int32_t[m_dof_triplet];
-			// m_cols_map = new int32_t[m_dof_unknow + 1];
-			// m_rows_triplet = new int32_t[m_dof_triplet];
-			// m_cols_triplet = new int32_t[m_dof_triplet];
-			// memset(m_cols_map, 0, (m_dof_unknow + 1) * sizeof(int32_t));
+			//mapping
+			dof_count();
+			m_rows_map = new int32_t[m_dof_triplet];
+			m_cols_map = new int32_t[m_dof_unknow + 1];
+			m_rows_triplet = new int32_t[m_dof_triplet];
+			m_cols_triplet = new int32_t[m_dof_triplet];
+			memset(m_cols_map, 0, (m_dof_unknow + 1) * sizeof(int32_t));
 			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			// {
 			// 	add_dof(element->m_dof_index);
@@ -71,9 +72,11 @@ namespace fea
 			const uint32_t nz = m_cols_map[m_dof_unknow];
 			umfpack_di_triplet_to_col(nu, nu, nz, m_rows_triplet, m_cols_triplet, nullptr, m_cols_map, m_rows_map, nullptr, nullptr);
 		}
-		void Assembler::sort_dof(void)
+		void Assembler::dof_sort(void)
 		{
 			//data
+			dof_apply();
+			dof_setup();
 			uint32_t cd = 0, ck = 0;
 			std::vector<uint32_t> dd, dk;
 			const std::vector<boundary::Dependency*> dependencies = m_analysis->m_model->m_boundary->m_dependencies;
@@ -116,48 +119,63 @@ namespace fea
 				constraint->m_dof_index -= m_dof_know + m_dof_dependent;
 			}
 		}
-		void Assembler::apply_dof(void)
+		void Assembler::dof_apply(void)
 		{
 			//clear
 			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
 			{
-				node->m_dof = 0;
+				node->m_dof_set = 0;
 			}
 			//apply
-			m_analysis->apply_dof();
-			m_analysis->m_model->m_mesh->apply_dof();
-			m_analysis->m_model->m_boundary->apply_dof();
+			m_analysis->dof_apply();
+			m_analysis->m_model->m_mesh->dof_apply();
+			m_analysis->m_model->m_boundary->dof_apply();
 		}
-		void Assembler::setup_dof(void)
+		void Assembler::dof_setup(void)
 		{
 			m_dof_total = 0;
-			m_analysis->m_model->m_mesh->setup_dof(m_dof_total);
-			m_analysis->m_model->m_boundary->setup_dof(m_dof_total);
+			m_analysis->m_model->m_mesh->dof_setup(m_dof_total);
+			m_analysis->m_model->m_boundary->dof_setup(m_dof_total);
 		}
-		void Assembler::count_dof(void)
+		void Assembler::dof_count(void)
 		{
-			// for(const mesh::joints::Joint* joint : m_analysis->m_model->m_mesh->m_joints)
-			// {
-			// 	count_dof(joint->m_dof_index);
-			// }
-			// for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
-			// {
-			// 	count_dof(support->m_dof_index);
-			// }
-			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			// {
-			// 	count_dof(element->m_dof_index);
-			// }
-			// for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
-			// {
-			// 	count_dof(constraint->dof_list());
-			// }
+			m_dof_triplet = 0;
+			for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
+			{
+				dof_count(support->m_dof_index);
+			}
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				dof_count(element->m_dof_indexes);
+			}
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			{
+				std::vector<uint32_t> list = constraint->m_dof_indexes;
+				list.push_back(constraint->m_dof_index);
+				dof_count(list);
+			}
 		}
-		void Assembler::count_dof(uint32_t dof_index)
+
+		void Assembler::dof_add(uint32_t dof_index_1, uint32_t dof_index_2)
+		{
+			const int32_t k = m_cols_map[m_dof_unknow];
+			if(dof_index_1 < m_dof_unknow && dof_index_2 < m_dof_unknow)
+			{
+				m_cols_map[m_dof_unknow]++;
+				m_rows_triplet[k] = dof_index_1;
+				m_cols_triplet[k] = dof_index_2;
+			}
+		}
+		void Assembler::dof_add(const std::vector<uint32_t>& dof_list)
+		{
+
+		}
+
+		void Assembler::dof_count(uint32_t dof_index)
 		{
 			if(dof_index < m_dof_unknow) m_dof_triplet++;
 		}
-		void Assembler::count_dof(const std::vector<uint32_t>& dof_indexes)
+		void Assembler::dof_count(const std::vector<uint32_t>& dof_indexes)
 		{
 			uint32_t p = 0;
 			for(uint32_t dof_index : dof_indexes)
@@ -170,9 +188,7 @@ namespace fea
 		//analysis
 		void Assembler::setup(void)
 		{
-			apply_dof();
-			setup_dof();
-			sort_dof();
+			dof_sort();
 		}
 
 		//static

@@ -18,6 +18,16 @@ namespace fea
 			{
 				return;
 			}
+
+			//analysis
+			void Load::check(void)
+			{
+				return;
+			}
+			void Load::setup(void)
+			{
+				return;
+			}
 		}
 	}
 }

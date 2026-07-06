@@ -12,6 +12,10 @@ namespace fea
 			enum class DOF : uint32_t;
 		}
 	}
+	namespace analysis
+	{
+		class Analysis;
+	}
 }
 
 namespace fea
@@ -27,9 +31,13 @@ namespace fea
 			//destructor
 			~WatchDOF(void);
 
+			//analysis
+			void check(void);
+
 			//data
 			uint32_t m_node;
 			mesh::nodes::DOF m_dof;
+			static Analysis* m_analysis;
 		};
 	}
 }

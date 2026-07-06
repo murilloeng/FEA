@@ -22,19 +22,24 @@ namespace fea
 		}
 
 		//analysis
-		void Mesh::apply_dof(void)
+		void Mesh::setup(void)
+		{
+			for(nodes::Node* node : m_nodes) node->setup();
+			for(elements::Element* element : m_elements) element->setup();
+		}
+		void Mesh::dof_apply(void)
 		{
 			for(const elements::Element* element : m_elements)
 			{
 				for(uint32_t i = 0; i < element->m_nodes.size(); i++)
 				{
-					m_nodes[element->m_nodes[i]]->m_dof |= element->dof_set(i);
+					m_nodes[element->m_nodes[i]]->m_dof_set |= element->dof_set(i);
 				}
 			}
 		}
-		void Mesh::setup_dof(uint32_t& dof_counter)
+		void Mesh::dof_setup(uint32_t& dof_counter)
 		{
-			for(nodes::Node* node : m_nodes) node->setup_dof(dof_counter);
+			for(nodes::Node* node : m_nodes) node->dof_setup(dof_counter);
 		}
 
 		//static

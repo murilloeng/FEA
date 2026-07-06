@@ -29,6 +29,10 @@ namespace fea
 			//destructor
 			~LoadCase(void);
 
+			//analysis
+			void check(void);
+			void setup(void);
+
 			//data
 			static Boundary* m_boundary;
 			std::vector<loads::Node*> m_loads_nodes;

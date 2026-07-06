@@ -34,12 +34,15 @@ namespace fea
 			~Constraint(void);
 
 			//analysis
-			void setup_dof(uint32_t&);
+			void check(void);
+			void setup(void);
+			void dof_setup(uint32_t&);
 
 			//data
 			uint32_t m_dof_index;
 			static Boundary* m_boundary;
 			std::vector<uint32_t> m_nodes;
+			std::vector<uint32_t> m_dof_indexes;
 			std::vector<mesh::nodes::DOF> m_dof;
 			std::function<void(double*, const double*)> m_hessian;
 			std::function<void(double*, const double*)> m_function;

@@ -31,8 +31,10 @@ namespace fea
 			~Boundary(void);
 
 			//analysis
-			void apply_dof(void);
-			void setup_dof(uint32_t&);
+			void check(void);
+			void setup(void);
+			void dof_apply(void);
+			void dof_setup(uint32_t&);
 
 			//data
 			static Model* m_model;

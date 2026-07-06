@@ -45,24 +45,42 @@ namespace fea
 		}
 
 		//analysis
-		void Boundary::apply_dof(void)
+		void Boundary::check(void)
+		{
+			for(Initial* initial : m_initials) initial->check();
+			for(Support* support : m_supports) support->check();
+			for(LoadCase* load_case : m_load_cases) load_case->check();
+			for(Constraint* constraint : m_constraints) constraint->check();
+			for(Dependency* dependency : m_dependencies) dependency->check();
+			for(LoadCombination* load_combination : m_load_combinations) load_combination->check();
+		}
+		void Boundary::setup(void)
+		{
+			for(Initial* initial : m_initials) initial->setup();
+			for(Support* support : m_supports) support->setup();
+			for(LoadCase* load_case : m_load_cases) load_case->setup();
+			for(Constraint* constraint : m_constraints) constraint->setup();
+			for(Dependency* dependency : m_dependencies) dependency->setup();
+			for(LoadCombination* load_combination : m_load_combinations) load_combination->setup();
+		}
+		void Boundary::dof_apply(void)
 		{
 			//initials
 			for(const Initial* initial : m_initials)
 			{
-				m_model->m_mesh->m_nodes[initial->m_node]->m_dof |= 1 << uint32_t(initial->m_dof);
+				m_model->m_mesh->m_nodes[initial->m_node]->m_dof_set |= 1 << uint32_t(initial->m_dof);
 			}
 			//supports
 			for(const Support* support : m_supports)
 			{
-				m_model->m_mesh->m_nodes[support->m_node]->m_dof |= 1 << uint32_t(support->m_dof);
+				m_model->m_mesh->m_nodes[support->m_node]->m_dof_set |= 1 << uint32_t(support->m_dof);
 			}
 			//load cases
 			for(const LoadCase* load_case : m_load_cases)
 			{
 				for(const loads::Node* load : load_case->m_loads_nodes)
 				{
-					m_model->m_mesh->m_nodes[load->m_node]->m_dof |= 1 << uint32_t(load->m_dof);
+					m_model->m_mesh->m_nodes[load->m_node]->m_dof_set |= 1 << uint32_t(load->m_dof);
 				}
 			}
 			//constraints
@@ -70,19 +88,19 @@ namespace fea
 			{
 				for(uint32_t i = 0; i < constraint->m_nodes.size(); i++)
 				{
-					m_model->m_mesh->m_nodes[constraint->m_nodes[i]]->m_dof |= 1 << uint32_t(constraint->m_dof[i]);
+					m_model->m_mesh->m_nodes[constraint->m_nodes[i]]->m_dof_set |= 1 << uint32_t(constraint->m_dof[i]);
 				}
 			}
 			//dependencies
 			for(const Dependency* dependency : m_dependencies)
 			{
-				m_model->m_mesh->m_nodes[dependency->m_nodes[0]]->m_dof |= 1 << uint32_t(dependency->m_dof[0]);
-				m_model->m_mesh->m_nodes[dependency->m_nodes[1]]->m_dof |= 1 << uint32_t(dependency->m_dof[1]);
+				m_model->m_mesh->m_nodes[dependency->m_nodes[0]]->m_dof_set |= 1 << uint32_t(dependency->m_dof[0]);
+				m_model->m_mesh->m_nodes[dependency->m_nodes[1]]->m_dof_set |= 1 << uint32_t(dependency->m_dof[1]);
 			}
 		}
-		void Boundary::setup_dof(uint32_t& dof_counter)
+		void Boundary::dof_setup(uint32_t& dof_counter)
 		{
-			for(Constraint* constraint : m_constraints) constraint->setup_dof(dof_counter);
+			for(Constraint* constraint : m_constraints) constraint->dof_setup(dof_counter);
 		}
 
 		//static

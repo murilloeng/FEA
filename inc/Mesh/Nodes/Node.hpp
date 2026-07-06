@@ -34,7 +34,7 @@ namespace fea
 				//analysis
 				void setup(void);
 				void compute(void);
-				void setup_dof(uint32_t&);
+				void dof_setup(uint32_t&);
 
 				//data
 				uint32_t dof_index(DOF) const;
@@ -43,9 +43,8 @@ namespace fea
 				double velocity(DOF) const;
 				double acceleration(DOF) const;
 
-			public:
 				//data
-				uint32_t m_dof;
+				uint32_t m_dof_set;
 				static Mesh* m_mesh;
 				double m_position_ref[3];
 				double m_position_new[3];

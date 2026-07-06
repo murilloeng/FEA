@@ -24,7 +24,7 @@ namespace fea
 		{
 			//constructor
 			Node::Node(void) : 
-				m_dof{0}, m_position_ref{0, 0, 0}, m_position_new{0, 0, 0}, m_quaternion_old{nullptr}, m_quaternion_new{nullptr}
+				m_dof_set{0}, m_position_ref{0, 0, 0}, m_position_new{0, 0, 0}, m_quaternion_old{nullptr}, m_quaternion_new{nullptr}
 			{
 				return;
 			}
@@ -59,10 +59,10 @@ namespace fea
 					math::Quat(m_quaternion_new + 0) = math::Vec3(t).quaternion() * math::Quat(m_quaternion_old);
 				}
 			}
-			void Node::setup_dof(uint32_t& dof_counter)
+			void Node::dof_setup(uint32_t& dof_counter)
 			{
 				//data
-				const uint8_t ndof = math::bit_count(m_dof);
+				const uint8_t ndof = math::bit_count(m_dof_set);
 				//dofs
 				m_dof_indexes.resize(ndof);
 				for(uint32_t i = 0; i < ndof; i++)
@@ -75,27 +75,27 @@ namespace fea
 			//data
 			uint32_t Node::dof_index(DOF dof) const
 			{
-				if(~m_dof & 1 << uint32_t(dof))
+				if(~m_dof_set & 1 << uint32_t(dof))
 				{
 					throw std::runtime_error("Error: Node's dof index called with unset dof!");
 				}
-				return m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))];
+				return m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))];
 			}
 
 			double Node::state(DOF dof) const
 			{
 				const double* x = m_mesh->m_model->m_analysis->m_solver->m_x_new;
-				return m_dof & 1 << uint32_t(dof) ? x[m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))]] : 0;
+				return m_dof_set & 1 << uint32_t(dof) ? x[m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))]] : 0;
 			}
 			double Node::velocity(DOF dof) const
 			{
 				const double* v = m_mesh->m_model->m_analysis->m_solver->m_v_new;
-				return m_dof & 1 << uint32_t(dof) ? v[m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))]] : 0;
+				return m_dof_set & 1 << uint32_t(dof) ? v[m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))]] : 0;
 			}
 			double Node::acceleration(DOF dof) const
 			{
 				const double* a = m_mesh->m_model->m_analysis->m_solver->m_a_new;
-				return m_dof & 1 << uint32_t(dof) ? a[m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))]] : 0;
+				return m_dof_set & 1 << uint32_t(dof) ? a[m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))]] : 0;
 			}
 
 			//static

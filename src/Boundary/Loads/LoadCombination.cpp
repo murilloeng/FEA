@@ -17,6 +17,16 @@ namespace fea
 			return;
 		}
 
+		//analysis
+		void LoadCombination::check(void)
+		{
+			return;
+		}
+		void LoadCombination::setup(void)
+		{
+			return;
+		}
+
 		//static
 		Boundary* LoadCombination::m_boundary = nullptr;
 	}
