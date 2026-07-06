@@ -1,6 +1,7 @@
 #pragma once
 
 //std
+#include <vector>
 #include <cstdint>
 
 namespace fea
@@ -26,21 +27,15 @@ namespace fea
 
 			//dof
 			void map_dof(void);
-
-			void count_dof(void);
-			void count_dof(uint32_t);
-			// void count_dof(const ulist&);
-
-			// void add_dof(const ulist&);
-			void add_dof(uint32_t, uint32_t);
-
 			void sort_dof(void);
-			void save_dof(void);
 			void apply_dof(void);
 			void setup_dof(void);
-			// void sort_dof_lists(ulist&, ulist&) const;
-			// void sort_dof_nodes(const ulist&, const ulist&) const;
-			void sort_dof_constraints(void) const;
+			void count_dof(void);
+			void count_dof(uint32_t);
+			void count_dof(const std::vector<uint32_t>&);
+
+			//analysis
+			void setup(void);
 
 			//data
 			double* m_fe;

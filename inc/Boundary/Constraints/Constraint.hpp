@@ -33,7 +33,11 @@ namespace fea
 			//destructor
 			~Constraint(void);
 
+			//analysis
+			void setup_dof(uint32_t&);
+
 			//data
+			uint32_t m_dof_index;
 			static Boundary* m_boundary;
 			std::vector<uint32_t> m_nodes;
 			std::vector<mesh::nodes::DOF> m_dof;

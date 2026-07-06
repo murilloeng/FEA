@@ -3,7 +3,10 @@
 
 //FEA
 #include "FEA/inc/Model.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
+
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 #include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
@@ -36,6 +39,13 @@ namespace fea
 		void Dependency::setup(void)
 		{
 			return;
+		}
+		uint32_t Dependency::dof_index(bool flag) const
+		{
+			return 
+				m_nodes[0] < m_nodes[1] || (m_nodes[0] == m_nodes[1] && m_dof[0] < m_dof[1]) ? 
+				m_boundary->m_model->m_mesh->m_nodes[m_nodes[flag]]->dof_index(m_dof[flag]) : 
+				m_boundary->m_model->m_mesh->m_nodes[m_nodes[!flag]]->dof_index(m_dof[!flag]);
 		}
 
 		//check

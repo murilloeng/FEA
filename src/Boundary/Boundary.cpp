@@ -80,6 +80,10 @@ namespace fea
 				m_model->m_mesh->m_nodes[dependency->m_nodes[1]]->m_dof |= 1 << uint32_t(dependency->m_dof[1]);
 			}
 		}
+		void Boundary::setup_dof(uint32_t& dof_counter)
+		{
+			for(Constraint* constraint : m_constraints) constraint->setup_dof(dof_counter);
+		}
 
 		//static
 		Model* Boundary::m_model = nullptr;

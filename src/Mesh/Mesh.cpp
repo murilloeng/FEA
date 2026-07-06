@@ -32,6 +32,10 @@ namespace fea
 				}
 			}
 		}
+		void Mesh::setup_dof(uint32_t& dof_counter)
+		{
+			for(nodes::Node* node : m_nodes) node->setup_dof(dof_counter);
+		}
 
 		//static
 		Model* Mesh::m_model = nullptr;

@@ -2,6 +2,7 @@
 
 //std
 #include <vector>
+#include <cstdint>
 
 namespace fea
 {
@@ -34,6 +35,7 @@ namespace fea
 
 			//analysis
 			void apply_dof(void);
+			void setup_dof(uint32_t&);
 	
 			//data
 			static Model* m_model;

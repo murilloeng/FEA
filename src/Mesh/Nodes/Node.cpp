@@ -1,3 +1,6 @@
+//std
+#include <stdexcept>
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -56,8 +59,29 @@ namespace fea
 					math::Quat(m_quaternion_new + 0) = math::Vec3(t).quaternion() * math::Quat(m_quaternion_old);
 				}
 			}
+			void Node::setup_dof(uint32_t& dof_counter)
+			{
+				//data
+				const uint8_t ndof = math::bit_count(m_dof);
+				//dofs
+				m_dof_indexes.resize(ndof);
+				for(uint32_t i = 0; i < ndof; i++)
+				{
+					m_dof_indexes[i] = dof_counter + i;
+				}
+				dof_counter += ndof;
+			}
 
 			//data
+			uint32_t Node::dof_index(DOF dof) const
+			{
+				if(~m_dof & 1 << uint32_t(dof))
+				{
+					throw std::runtime_error("Error: Node's dof index called with unset dof!");
+				}
+				return m_dof_indexes[math::bit_index(m_dof, 1 << uint32_t(dof))];
+			}
+
 			double Node::state(DOF dof) const
 			{
 				const double* x = m_mesh->m_model->m_analysis->m_solver->m_x_new;

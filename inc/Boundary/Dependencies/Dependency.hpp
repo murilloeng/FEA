@@ -34,8 +34,8 @@ namespace fea
 			//analysis
 			void check(void);
 			void setup(void);
+			uint32_t dof_index(bool) const;
 
-		private:
 			//check
 			void check_inner(void) const;
 			void check_outer(void) const;
@@ -46,7 +46,6 @@ namespace fea
 			//operators
 			bool operator==(const Dependency&) const;
 
-		public:
 			//data
 			uint32_t m_nodes[2];
 			mesh::nodes::DOF m_dof[2];

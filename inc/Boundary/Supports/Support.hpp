@@ -9,6 +9,7 @@ namespace fea
 	{
 		namespace nodes
 		{
+			class Node;
 			enum class DOF : uint32_t;
 		}
 	}
@@ -30,6 +31,9 @@ namespace fea
 
 			//destructor
 			~Support(void);
+
+			//data
+			mesh::nodes::Node* node(void) const;
 
 			//data
 			uint32_t m_node;
