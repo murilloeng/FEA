@@ -55,7 +55,7 @@ int main(void)
 		model.m_analysis->m_solver->m_load_combination = 0;
 		//solve
 		model.solve();
-		printf("displacement: %+.2e\n", model.m_analysis->m_solver->m_x_new[0]);
+		printf("displacement: %+.2e\n", model.m_mesh->m_nodes[1]->state(fea::mesh::nodes::DOF::Translation_1));
 	}
 	catch(const std::exception& exception)
 	{
