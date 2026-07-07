@@ -45,18 +45,6 @@ namespace fea
 				m_analysis->m_assembler->assemble_reference_force(m_fe, true, p);
 			};
 		}
-		void StaticNonlinear::compute(void)
-		{
-			NewtonRaphson::compute();
-		}
-		void StaticNonlinear::predictor(void)
-		{
-			NewtonRaphson::predictor();
-		}
-		void StaticNonlinear::corrector(void)
-		{
-			NewtonRaphson::compute();
-		}
 
 		//solve
 		void StaticNonlinear::solve(void)

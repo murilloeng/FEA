@@ -38,24 +38,12 @@ namespace fea
 			math::solvers::Solver::setup();
 			math::solvers::Solver::m_watch_dof = m_analysis->m_model->m_mesh->m_nodes[m_watch_dof.m_node]->dof_index(m_watch_dof.m_dof);
 		}
-		void Solver::compute(void)
-		{
-			return;
-		}
 		void Solver::allocate(void)
 		{
 			//data
 			math::solvers::Solver::allocate(m_analysis->m_assembler->m_dof_unknow);
 			//setup
 			memset(m_x_old, 0, m_size * sizeof(double));
-		}
-		void Solver::predictor(void)
-		{
-			return;
-		}
-		void Solver::corrector(void)
-		{
-			return;
 		}
 
 		//static

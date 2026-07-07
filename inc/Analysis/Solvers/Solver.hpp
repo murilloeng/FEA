@@ -33,10 +33,7 @@ namespace fea
 			//analysis
 			void check(void) override;
 			void setup(void) override;
-			void compute(void) override;
 			void allocate(void) override;
-			void predictor(void) override;
-			void corrector(void) override;
 
 			//data
 			WatchDOF m_watch_dof;
