@@ -35,8 +35,8 @@ namespace fea
 		}
 		void Analysis::setup(void)
 		{
-			m_solver->setup();
 			m_assembler->setup();
+			m_solver->setup();
 		}
 		void Analysis::dof_apply(void)
 		{

@@ -1,4 +1,6 @@
 //FEA
+#include "FEA/inc/Model.hpp"
+
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
@@ -39,8 +41,9 @@ namespace fea
 		void StaticLinear::solve(void)
 		{
 			//assemble
+			m_analysis->m_model->compute();
 			m_analysis->m_assembler->assemble_stiffness(m_K);
-			m_analysis->m_assembler->assemble_external_force(m_fe);
+			m_analysis->m_assembler->assemble_reference_force(m_fe);
 			//solve
 			math::solvers::Solver::solve(m_K, m_fe, m_x_new);
 		}

@@ -17,7 +17,7 @@ namespace fea
 			{
 			public:
 				//constructor
-				Node(void);
+				Node(uint32_t, mesh::nodes::DOF);
 
 				//destructor
 				~Node(void);

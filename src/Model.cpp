@@ -50,4 +50,8 @@ namespace fea
 		setup();
 		m_analysis->m_solver->solve();
 	}
+	void Model::compute(void)
+	{
+		m_mesh->compute();
+	}
 }

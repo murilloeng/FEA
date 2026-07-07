@@ -1,7 +1,13 @@
+//std
+#include <functional>
+
 //FEA
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
+#include "FEA/inc/Mesh/Elements/Mechanic/Truss2D.hpp"
+#include "FEA/inc/Mesh/Elements/Mechanic/Truss3D.hpp"
 
 namespace fea
 {
@@ -31,6 +37,11 @@ namespace fea
 			for(nodes::Node* node : m_nodes) node->setup();
 			for(elements::Element* element : m_elements) element->setup();
 		}
+		void Mesh::compute(void)
+		{
+			for(nodes::Node* node : m_nodes) node->compute();
+			for(elements::Element* element : m_elements) element->compute();
+		}
 		void Mesh::dof_apply(void)
 		{
 			for(const elements::Element* element : m_elements)
@@ -44,6 +55,31 @@ namespace fea
 		void Mesh::dof_setup(uint32_t& dof_counter)
 		{
 			for(nodes::Node* node : m_nodes) node->dof_setup(dof_counter);
+		}
+
+		//create
+		void Mesh::create_node(const double* position_ref)
+		{
+			m_nodes.push_back(new nodes::Node(position_ref));
+		}
+		void Mesh::create_node(double x1, double x2, double x3)
+		{
+			m_nodes.push_back(new nodes::Node(x1, x2, x3));
+		}
+
+		void Mesh::create_element(elements::Type type, std::vector<uint32_t> nodes)
+		{
+			//data
+			elements::Element* element;
+			std::function<void(elements::Element*&)> fabric[] = {
+				[](elements::Element*& element){ element = new elements::Truss2D; },
+				[](elements::Element*& element){ element = new elements::Truss3D; }
+			};
+			//create
+			fabric[uint32_t(type)](element);
+			//append
+			element->m_nodes = nodes;
+			m_elements.push_back(element);
 		}
 
 		//static

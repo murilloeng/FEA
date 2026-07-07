@@ -270,7 +270,7 @@ namespace fea
 			for(const boundary::LoadCombination::Item& item : load_combination->m_items)
 			{
 				if(!item.m_fixed) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case_index];
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case];
 				for(const boundary::loads::Node* load : load_case->m_loads_nodes)
 				{
 					fd[load->m_dof_index] += s * load->m_value;
@@ -304,7 +304,7 @@ namespace fea
 			for(const boundary::LoadCombination::Item& item : load_combination->m_items)
 			{
 				if(item.m_fixed) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case_index];
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case];
 				for(const boundary::loads::Node* load : load_case->m_loads_nodes)
 				{
 					fr[load->m_dof_index] += s * load->m_value;

@@ -9,6 +9,7 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 //math
@@ -23,8 +24,13 @@ namespace fea
 		namespace nodes
 		{
 			//constructor
-			Node::Node(void) : 
-				m_dof_set{0}, m_position_ref{0, 0, 0}, m_position_new{0, 0, 0}, m_quaternion_old{nullptr}, m_quaternion_new{nullptr}
+			Node::Node(const double* x) : 
+				m_dof_set{0}, m_position_ref{x[0], x[1], x[2]}, m_position_new{0, 0, 0}, m_quaternion_old{nullptr}, m_quaternion_new{nullptr}
+			{
+				return;
+			}
+			Node::Node(double x1, double x2, double x3) : 
+				m_dof_set{0}, m_position_ref{x1, x2, x3}, m_position_new{0, 0, 0}, m_quaternion_old{nullptr}, m_quaternion_new{nullptr}
 			{
 				return;
 			}
@@ -84,18 +90,30 @@ namespace fea
 
 			double Node::state(DOF dof) const
 			{
+				//data
 				const double* x = m_mesh->m_model->m_analysis->m_solver->m_x_new;
-				return m_dof_set & 1 << uint32_t(dof) ? x[m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))]] : 0;
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint32_t nu = m_mesh->m_model->m_analysis->m_assembler->m_dof_unknow;
+				//return
+				return m_dof_set & 1 << uint32_t(dof) && m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 0;
 			}
 			double Node::velocity(DOF dof) const
 			{
+				//data
 				const double* v = m_mesh->m_model->m_analysis->m_solver->m_v_new;
-				return m_dof_set & 1 << uint32_t(dof) ? v[m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))]] : 0;
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint32_t nu = m_mesh->m_model->m_analysis->m_assembler->m_dof_unknow;
+				//return
+				return m_dof_set & 1 << uint32_t(dof) && m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 0;
 			}
 			double Node::acceleration(DOF dof) const
 			{
+				//data
 				const double* a = m_mesh->m_model->m_analysis->m_solver->m_a_new;
-				return m_dof_set & 1 << uint32_t(dof) ? a[m_dof_indexes[math::bit_index(m_dof_set, 1 << uint32_t(dof))]] : 0;
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint32_t nu = m_mesh->m_model->m_analysis->m_assembler->m_dof_unknow;
+				//return
+				return m_dof_set & 1 << uint32_t(dof) && m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 0;
 			}
 
 			//static

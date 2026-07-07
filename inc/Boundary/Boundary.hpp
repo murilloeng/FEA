@@ -2,10 +2,18 @@
 
 //std
 #include <vector>
+#include <cstdint>
 
 namespace fea
 {
 	class Model;
+	namespace mesh
+	{
+		namespace nodes
+		{
+			enum class DOF : uint32_t;
+		}
+	}
 	namespace boundary
 	{
 		class Initial;
@@ -35,6 +43,15 @@ namespace fea
 			void setup(void);
 			void dof_apply(void);
 			void dof_setup(uint32_t&);
+
+			//create
+			void create_support(uint32_t, mesh::nodes::DOF);
+			
+			void create_load_combination(void);
+			void create_load_combination(uint32_t, bool, double);
+
+			void create_load_case(void);
+			void create_load_case(uint32_t, mesh::nodes::DOF, double);
 
 			//data
 			static Model* m_model;

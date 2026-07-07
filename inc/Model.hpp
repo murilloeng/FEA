@@ -31,6 +31,7 @@ namespace fea
 		void check(void);
 		void setup(void);
 		void solve(void);
+		void compute(void);
 
 		//data
 		mesh::Mesh* m_mesh;

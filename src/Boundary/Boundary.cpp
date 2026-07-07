@@ -104,6 +104,42 @@ namespace fea
 			for(Constraint* constraint : m_constraints) constraint->dof_setup(dof_counter);
 		}
 
+		//create
+		void Boundary::create_support(uint32_t node, mesh::nodes::DOF dof)
+		{
+			m_supports.push_back(new Support(node, dof));
+		}
+
+		void Boundary::create_load_combination(void)
+		{
+			m_load_combinations.push_back(new LoadCombination);
+		}
+		void Boundary::create_load_combination(uint32_t load_case, bool fixed, double value)
+		{
+			//data
+			LoadCombination* load_combination = new LoadCombination;
+			//setup
+			load_combination->m_items.push_back(LoadCombination::Item{value, fixed, load_case});
+			//append
+			m_load_combinations.push_back(load_combination);
+		}
+
+		void Boundary::create_load_case(void)
+		{
+			m_load_cases.push_back(new LoadCase);
+		}
+		void Boundary::create_load_case(uint32_t node, mesh::nodes::DOF dof, double value)
+		{
+			//data
+			LoadCase* load_case = new LoadCase;
+			loads::Node* load = new loads::Node(node, dof);
+			//setup
+			load->m_value = value;
+			load_case->m_loads_nodes.push_back(load);
+			//append
+			m_load_cases.push_back(load_case);
+		}
+
 		//static
 		Model* Boundary::m_model = nullptr;
 	}

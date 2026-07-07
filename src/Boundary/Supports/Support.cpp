@@ -16,7 +16,7 @@ namespace fea
 	namespace boundary
 	{
 		//constructor
-		Support::Support(void) : m_node{0}, m_dof_index{0}, m_dof{mesh::nodes::DOF::Translation_1}
+		Support::Support(uint32_t node, mesh::nodes::DOF dof) : m_node{node}, m_dof_index{0}, m_dof{dof}
 		{
 			return;
 		}

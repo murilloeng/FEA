@@ -17,7 +17,7 @@ namespace fea
 		namespace loads
 		{
 			//constructor
-			Node::Node(void) : m_node{0}, m_dof{mesh::nodes::DOF::Translation_1}
+			Node::Node(uint32_t node, mesh::nodes::DOF dof) : m_node{node}, m_dof{dof}
 			{
 				return;
 			}

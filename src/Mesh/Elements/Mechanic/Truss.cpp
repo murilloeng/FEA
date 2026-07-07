@@ -27,6 +27,7 @@ namespace fea
 			void Truss::setup(void)
 			{
 				//data
+				Mechanic::setup();
 				const math::Vec3 z1 = node(0)->m_position_ref;
 				const math::Vec3 z2 = node(1)->m_position_ref;
 				//length
@@ -51,6 +52,9 @@ namespace fea
 				m_f = s * A * m_eg;
 				m_K = (C * m_eg * m_eg + s * m_eh) * A / m_Lr;
 			}
+
+			//static
+			StrainMeasure Truss::m_strain_measure = StrainMeasure::Linear;
 		}
 	}
 }

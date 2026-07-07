@@ -27,7 +27,7 @@ namespace fea
 		{
 		public:
 			//constructor
-			Support(void);
+			Support(uint32_t, mesh::nodes::DOF);
 
 			//destructor
 			~Support(void);

@@ -26,7 +26,8 @@ namespace fea
 			{
 			public:
 				//constructor
-				Node(void);
+				Node(const double*);
+				Node(double, double, double);
 
 				//destructor
 				~Node(void);
