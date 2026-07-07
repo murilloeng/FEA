@@ -8,6 +8,9 @@
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
+#include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Supports/Support.hpp"
+
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
@@ -95,7 +98,9 @@ namespace fea
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->m_model->m_analysis->m_assembler->m_dof_unknow;
 				//return
-				return m_dof_set & 1 << uint32_t(dof) && m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 0;
+				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
+					m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 
+					m_mesh->m_model->m_boundary->m_supports[m_dof_indexes[id] - nu]->state();
 			}
 			double Node::velocity(DOF dof) const
 			{
@@ -104,7 +109,9 @@ namespace fea
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->m_model->m_analysis->m_assembler->m_dof_unknow;
 				//return
-				return m_dof_set & 1 << uint32_t(dof) && m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 0;
+				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
+					m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 
+					m_mesh->m_model->m_boundary->m_supports[m_dof_indexes[id] - nu]->velocity();
 			}
 			double Node::acceleration(DOF dof) const
 			{
@@ -113,7 +120,9 @@ namespace fea
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->m_model->m_analysis->m_assembler->m_dof_unknow;
 				//return
-				return m_dof_set & 1 << uint32_t(dof) && m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 0;
+				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
+					m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 
+					m_mesh->m_model->m_boundary->m_supports[m_dof_indexes[id] - nu]->acceleration();
 			}
 
 			//static

@@ -1,5 +1,8 @@
 #pragma once
 
+//std
+#include <functional>
+
 namespace fea
 {
 	namespace boundary
@@ -30,6 +33,7 @@ namespace fea
 				//data
 				double m_value;
 				static Boundary* m_boundary;
+				std::function<double(double)> m_function;
 			};
 		}
 	}

@@ -2,6 +2,7 @@
 
 //std
 #include <cstdint>
+#include <functional>
 
 namespace fea
 {
@@ -37,6 +38,9 @@ namespace fea
 			void setup(void);
 
 			//data
+			double state(void);
+			double velocity(void);
+			double acceleration(void);
 			mesh::nodes::Node* node(void) const;
 
 			//data
@@ -44,6 +48,9 @@ namespace fea
 			uint32_t m_dof_index;
 			mesh::nodes::DOF m_dof;
 			static Boundary* m_boundary;
+			std::function<double(double)> m_state;
+			std::function<double(double)> m_velocity;
+			std::function<double(double)> m_acceleration;
 		};
 	}
 }

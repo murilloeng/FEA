@@ -11,6 +11,9 @@
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
+#include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
+
 namespace fea
 {
 	namespace boundary
@@ -41,6 +44,18 @@ namespace fea
 		}
 
 		//data
+		double Support::state(void)
+		{
+			return m_state ? m_state(m_boundary->m_model->m_analysis->m_solver->m_t_new) : 0;
+		}
+		double Support::velocity(void)
+		{
+			return m_velocity ? m_velocity(m_boundary->m_model->m_analysis->m_solver->m_t_new) : 0;
+		}
+		double Support::acceleration(void)
+		{
+			return m_acceleration ? m_acceleration(m_boundary->m_model->m_analysis->m_solver->m_t_new) : 0;
+		}
 		mesh::nodes::Node* Support::node(void) const
 		{
 			return m_boundary->m_model->m_mesh->m_nodes[m_node];
