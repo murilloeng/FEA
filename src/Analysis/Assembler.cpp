@@ -16,7 +16,10 @@
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Loads/Node.hpp"
+#include "FEA/inc/Boundary/Loads/LoadCase.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
+#include "FEA/inc/Boundary/Loads/LoadCombination.hpp"
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
 #include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
 
@@ -255,12 +258,30 @@ namespace fea
 			}
 		}
 
-		void Assembler::assemble_external_force(double* fe) const
+		void Assembler::assemble_dead_force(double* fd, bool cleanup, double s) const
 		{
 			//setup
-			memset(fe, 0, m_dof_unknow * sizeof(double));
+			if(cleanup) memset(fd, 0, m_dof_unknow * sizeof(double));
+			if(m_analysis->m_solver->m_load_combination == UINT32_MAX) return;
+			//data
+			const uint32_t index = m_analysis->m_solver->m_load_combination;
+			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
+			//load cases
+			for(const boundary::LoadCombination::Item& item : load_combination->m_items)
+			{
+				if(!item.m_fixed) continue;
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case_index];
+				for(const boundary::loads::Node* load : load_case->m_loads_nodes)
+				{
+					fd[load->m_dof_index] += s * load->m_value;
+				}
+			}
 		}
-		void Assembler::assemble_internal_force(double* fi) const
+		void Assembler::assemble_external_force(double* fe, bool cleanup, double s) const
+		{
+			return;
+		}
+		void Assembler::assemble_internal_force(double* fi, bool cleanup, double s) const
 		{
 			//setup
 			memset(fi, 0, m_dof_unknow * sizeof(double));
@@ -268,22 +289,41 @@ namespace fea
 			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
 				element->internal_force(m_fe);
-				assemble_vector(fi, m_fe, element->m_dof_indexes);
+				assemble_vector(fi, m_fe, element->m_dof_indexes, s);
+			}
+		}
+		void Assembler::assemble_reference_force(double* fr, bool cleanup, double s) const
+		{
+			//setup
+			if(cleanup) memset(fr, 0, m_dof_unknow * sizeof(double));
+			if(m_analysis->m_solver->m_load_combination == UINT32_MAX) return;
+			//data
+			const uint32_t index = m_analysis->m_solver->m_load_combination;
+			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
+			//load cases
+			for(const boundary::LoadCombination::Item& item : load_combination->m_items)
+			{
+				if(item.m_fixed) continue;
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case_index];
+				for(const boundary::loads::Node* load : load_case->m_loads_nodes)
+				{
+					fr[load->m_dof_index] += s * load->m_value;
+				}
 			}
 		}
 
-		void Assembler::assemble_vector(double* f, double* fe, const std::vector<uint32_t>& dof_indexes) const
+		void Assembler::assemble_vector(double* f, double* fe, const std::vector<uint32_t>& dof_indexes, double s) const
 		{
 			for(uint32_t i = 0; i < dof_indexes.size(); i++)
 			{
 				if(dof_indexes[i] < m_dof_unknow)
 				{
-					f[dof_indexes[i]] += fe[i];
+					f[dof_indexes[i]] += s * fe[i];
 				}
 			}
 		}
 
-		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes) const
+		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes, double s) const
 		{
 			//data
 			const uint32_t ne = dof_indexes.size();
@@ -295,12 +335,12 @@ namespace fea
 				{
 					if(dof_indexes[i] < m_dof_unknow && dof_indexes[j] < m_dof_unknow)
 					{
-						S(dof_indexes[i], dof_indexes[j]) += Ae[i + ne * j];
+						S(dof_indexes[i], dof_indexes[j]) += s * Ae[i + ne * j];
 					}
 				}
 			}
 		}
-		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes, uint32_t dof_index) const
+		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes, uint32_t dof_index, double s) const
 		{
 			//data
 			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);
@@ -309,11 +349,11 @@ namespace fea
 			{
 				if(dof_indexes[i] < m_dof_unknow && dof_index < m_dof_unknow)
 				{
-					S(dof_indexes[i], dof_index) += Ae[i];
+					S(dof_indexes[i], dof_index) += s * Ae[i];
 				}
 			}
 		}
-		void Assembler::assemble_matrix(double* A, double* Ae, uint32_t dof_index, const std::vector<uint32_t>& dof_indexes) const
+		void Assembler::assemble_matrix(double* A, double* Ae, uint32_t dof_index, const std::vector<uint32_t>& dof_indexes, double s) const
 		{
 			//data
 			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);
@@ -322,7 +362,7 @@ namespace fea
 			{
 				if(dof_index < m_dof_unknow && dof_indexes[i] < m_dof_unknow)
 				{
-					S(dof_index, dof_indexes[i]) += Ae[i];
+					S(dof_index, dof_indexes[i]) += s * Ae[i];
 				}
 			}
 		}

@@ -34,7 +34,7 @@ namespace fea
 			{
 				double m_value = 1;
 				bool m_fixed = false;
-				uint32_t m_case_index = 0;
+				uint32_t m_load_case_index = 0;
 			};
 
 			//data

@@ -4,6 +4,14 @@ namespace fea
 {
 	namespace boundary
 	{
+		class Boundary;
+	}
+}
+
+namespace fea
+{
+	namespace boundary
+	{
 		namespace loads
 		{
 			class Load
@@ -21,6 +29,7 @@ namespace fea
 
 				//data
 				double m_value;
+				static Boundary* m_boundary;
 			};
 		}
 	}

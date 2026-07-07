@@ -28,6 +28,9 @@ namespace fea
 			{
 				return;
 			}
+
+			//static
+			Boundary* Load::m_boundary = nullptr;
 		}
 	}
 }

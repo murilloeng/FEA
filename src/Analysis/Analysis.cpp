@@ -6,15 +6,15 @@
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler.hpp"
-#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 #include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
+#include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
 
 namespace fea
 {
 	namespace analysis
 	{
 		//constructor
-		Analysis::Analysis(void) : m_solver{nullptr}, m_assembler{new Assembler}
+		Analysis::Analysis(void) : m_solver{new StaticLinear}, m_assembler{new Assembler}
 		{
 			Solver::m_analysis = this;
 			WatchDOF::m_analysis = this;

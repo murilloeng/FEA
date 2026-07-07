@@ -1,5 +1,8 @@
 #pragma once
 
+//std
+#include <cstdint>
+
 //Math
 #include "Math/inc/Solvers/Solver.hpp"
 
@@ -30,9 +33,13 @@ namespace fea
 			//analysis
 			void check(void) override;
 			void setup(void) override;
+			void compute(void) override;
+			void predictor(void) override;
+			void corrector(void) override;
 
 			//data
 			WatchDOF m_watch_dof;
+			uint32_t m_load_combination;
 			static Analysis* m_analysis;
 		};
 	}

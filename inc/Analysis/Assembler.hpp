@@ -43,14 +43,16 @@ namespace fea
 			void assemble_damping(double*) const;
 			void assemble_stiffness(double*) const;
 
-			void assemble_external_force(double*) const;
-			void assemble_internal_force(double*) const;
+			void assemble_dead_force(double*, bool = true, double = 1) const;
+			void assemble_external_force(double*, bool = true, double = 1) const;
+			void assemble_internal_force(double*, bool = true, double = 1) const;
+			void assemble_reference_force(double*, bool = true, double = 1) const;
 
-			void assemble_vector(double*, double*, const std::vector<uint32_t>&) const;
+			void assemble_vector(double*, double*, const std::vector<uint32_t>&, double = 1) const;
 
-			void assemble_matrix(double*, double*, const std::vector<uint32_t>&) const;
-			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, uint32_t) const;
-			void assemble_matrix(double*, double*, uint32_t, const std::vector<uint32_t>&) const;
+			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, double = 1) const;
+			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, uint32_t, double = 1) const;
+			void assemble_matrix(double*, double*, uint32_t, const std::vector<uint32_t>&, double = 1) const;
 
 			//data
 			double* m_fe;

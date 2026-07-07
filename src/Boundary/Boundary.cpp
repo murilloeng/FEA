@@ -30,6 +30,7 @@ namespace fea
 			LoadCase::m_boundary = this;
 			Constraint::m_boundary = this;
 			Dependency::m_boundary = this;
+			loads::Load::m_boundary = this;
 			LoadCombination::m_boundary = this;
 		}
 		

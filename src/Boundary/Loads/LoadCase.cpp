@@ -23,11 +23,13 @@ namespace fea
 		//analysis
 		void LoadCase::check(void)
 		{
-			return;
+			for(loads::Node* load : m_loads_nodes) load->check();
+			for(loads::Element* load : m_loads_elements) load->check();
 		}
 		void LoadCase::setup(void)
 		{
-			return;
+			for(loads::Node* load : m_loads_nodes) load->setup();
+			for(loads::Element* load : m_loads_elements) load->setup();
 		}
 
 		//static

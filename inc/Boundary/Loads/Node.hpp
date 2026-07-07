@@ -22,8 +22,13 @@ namespace fea
 				//destructor
 				~Node(void);
 
+				//analysis
+				void check(void);
+				void setup(void);
+
 				//data
 				uint32_t m_node;
+				uint32_t m_dof_index;
 				mesh::nodes::DOF m_dof;
 			};
 		}
