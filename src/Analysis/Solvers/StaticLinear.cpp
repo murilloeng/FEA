@@ -28,9 +28,7 @@ namespace fea
 		}
 		uint32_t StaticLinear::force_set(void) const
 		{
-			return 
-				1 << uint32_t(math::solvers::Solver::Force::fe)|
-				1 << uint32_t(math::solvers::Solver::Force::fi);
+			return 1 << uint32_t(math::solvers::Solver::Force::fe);
 		}
 		uint32_t StaticLinear::tangent_set(void) const
 		{
