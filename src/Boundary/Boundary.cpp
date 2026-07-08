@@ -137,7 +137,7 @@ namespace fea
 			{
 				for(const loads::Node* load : load_case->m_loads_nodes)
 				{
-					m_model->m_mesh->node(load->m_node)->m_dof_set |= 1 << uint32_t(load->m_dof);
+					m_model->m_mesh->node(load->node())->m_dof_set |= 1 << uint32_t(load->dof());
 				}
 			}
 			//constraints
@@ -188,10 +188,7 @@ namespace fea
 		{
 			//data
 			LoadCase* load_case = new LoadCase;
-			loads::Node* load = new loads::Node(node, dof);
-			//setup
-			load->m_value = value;
-			load_case->m_loads_nodes.push_back(load);
+			load_case->create_load_node(node, dof, value);
 			//append
 			m_load_cases.push_back(load_case);
 		}

@@ -30,19 +30,6 @@ namespace fea
 			return;
 		}
 
-		//analysis
-		void Support::check(void)
-		{
-			if(m_node >= m_boundary->model()->m_mesh->nodes().size())
-			{
-				throw std::runtime_error("Error: Suuport's node is out of range!");
-			}
-		}
-		void Support::setup(void)
-		{
-			m_dof_index = m_boundary->model()->m_mesh->node(m_node)->dof_index(m_dof);
-		}
-
 		//data
 		double Support::state(void)
 		{
@@ -56,9 +43,41 @@ namespace fea
 		{
 			return m_acceleration ? m_acceleration(m_boundary->model()->m_analysis->solver()->m_t_new) : 0;
 		}
+
+		uint32_t Support::index_node(void) const
+		{
+			return m_node;
+		}
+
 		mesh::nodes::Node* Support::node(void) const
 		{
 			return m_boundary->model()->m_mesh->node(m_node);
+		}
+		mesh::nodes::Node* Support::node(uint32_t node)
+		{
+			return m_boundary->model()->m_mesh->node(m_node = node);
+		}
+
+		mesh::nodes::DOF Support::dof(void) const
+		{
+			return m_dof;
+		}
+		mesh::nodes::DOF Support::dof(mesh::nodes::DOF dof)
+		{
+			return m_dof = dof;
+		}
+
+		//analysis
+		void Support::check(void)
+		{
+			if(m_node >= m_boundary->model()->m_mesh->nodes().size())
+			{
+				throw std::runtime_error("Error: Suuport's node is out of range!");
+			}
+		}
+		void Support::setup(void)
+		{
+			m_dof_index = m_boundary->model()->m_mesh->node(m_node)->dof_index(m_dof);
 		}
 
 		//static

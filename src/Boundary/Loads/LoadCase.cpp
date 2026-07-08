@@ -44,6 +44,12 @@ namespace fea
 			return m_loads_elements;
 		}
 
+		//create
+		void LoadCase::create_load_node(uint32_t node, mesh::nodes::DOF dof, double value)
+		{
+			m_loads_nodes.push_back(new loads::Node{node, dof, value});
+		}
+
 		//analysis
 		void LoadCase::check(void)
 		{

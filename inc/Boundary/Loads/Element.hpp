@@ -11,19 +11,36 @@ namespace fea
 {
 	namespace boundary
 	{
+		class LoadCase;
+	}
+}
+
+namespace fea
+{
+	namespace boundary
+	{
 		namespace loads
 		{
 			class Element : public Load
 			{
-			public:
+			protected:
 				//constructor
 				Element(void);
 
 				//destructor
-				~Element(void);
+				virtual ~Element(void);
 
+			public:
+				//data
+				uint32_t element(uint32_t) const;
+				const std::vector<uint32_t>& elements(void) const;
+
+			protected:
 				//data
 				std::vector<uint32_t> m_elements;
+
+				//friends
+				friend class fea::boundary::LoadCase;
 			};
 		}
 	}

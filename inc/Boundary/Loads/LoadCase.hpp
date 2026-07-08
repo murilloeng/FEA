@@ -39,6 +39,9 @@ namespace fea
 			const std::vector<loads::Node*>& loads_nodes(void) const;
 			const std::vector<loads::Element*>& loads_elements(void) const;
 
+			//create
+			void create_load_node(uint32_t, mesh::nodes::DOF, double);
+
 		private:
 			//analysis
 			void check(void);

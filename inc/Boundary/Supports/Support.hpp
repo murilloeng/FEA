@@ -26,22 +26,31 @@ namespace fea
 	{
 		class Support
 		{
-		public:
+		private:
 			//constructor
 			Support(uint32_t, mesh::nodes::DOF);
 
 			//destructor
 			~Support(void);
 
-			//analysis
-			void check(void);
-			void setup(void);
-
+		public:
 			//data
 			double state(void);
 			double velocity(void);
 			double acceleration(void);
+
+			uint32_t index_node(void) const;
+
+			mesh::nodes::Node* node(uint32_t);
 			mesh::nodes::Node* node(void) const;
+
+			mesh::nodes::DOF dof(void) const;
+			mesh::nodes::DOF dof(mesh::nodes::DOF);
+
+		private:
+			//analysis
+			void check(void);
+			void setup(void);
 
 			//data
 			uint32_t m_node;
@@ -51,6 +60,9 @@ namespace fea
 			std::function<double(double)> m_state;
 			std::function<double(double)> m_velocity;
 			std::function<double(double)> m_acceleration;
+
+			//friends
+			friend class fea::boundary::Boundary;
 		};
 	}
 }

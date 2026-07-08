@@ -84,7 +84,7 @@ namespace fea
 			{
 				for(const Initial* initial : m_boundary->initials())
 				{
-					test = test && (m_nodes[i] != initial->node() || m_dof[i] != initial->dof());
+					test = test && (m_nodes[i] != initial->index_node() || m_dof[i] != initial->dof());
 				}
 			}
 			if(!test)
@@ -99,7 +99,7 @@ namespace fea
 			{
 				for(const Support* support : m_boundary->supports())
 				{
-					test = test && (m_nodes[i] != support->m_node || m_dof[i] != support->m_dof);
+					test = test && (m_nodes[i] != support->index_node() || m_dof[i] != support->dof());
 				}
 			}
 			if(!test)

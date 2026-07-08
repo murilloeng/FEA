@@ -9,6 +9,7 @@ namespace fea
 	{
 		namespace nodes
 		{
+			class Node;
 			enum class DOF : uint32_t;
 		}
 	}
@@ -33,14 +34,16 @@ namespace fea
 
 		public:
 			//data
-			uint32_t node(uint32_t);
-			uint32_t node(void) const;
-
 			double state(double);
 			double state(void) const;
 
 			double velocity(double);
 			double velocity(void) const;
+
+			uint32_t index_node(void) const;
+
+			mesh::nodes::Node* node(uint32_t);
+			mesh::nodes::Node* node(void) const;
 
 			mesh::nodes::DOF dof(void) const;
 			mesh::nodes::DOF dof(mesh::nodes::DOF);

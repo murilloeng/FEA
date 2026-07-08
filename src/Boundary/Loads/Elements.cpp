@@ -18,6 +18,16 @@ namespace fea
 			{
 				return;
 			}
+
+			//data
+			uint32_t Element::element(uint32_t index) const
+			{
+				return m_elements[index];
+			}
+			const std::vector<uint32_t>& Element::elements(void) const
+			{
+				return m_elements;
+			}
 		}
 	}
 }
