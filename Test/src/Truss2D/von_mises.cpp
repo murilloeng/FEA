@@ -64,8 +64,8 @@ void test::truss2D::von_mises(void)
 	model.m_analysis->m_solver->m_watch_dof.m_node = 1;
 	model.m_analysis->m_solver->m_watch_dof.m_dof = fea::mesh::nodes::DOF::Translation_2;
 	dynamic_cast<fea::analysis::StaticNonlinear*>(model.m_analysis->m_solver)->m_step_max = 400;
-	//save
-	model.m_analysis->m_solver->save("minha rola.txt");
 	//solve
 	model.solve();
+	//save
+	model.m_analysis->m_solver->save("minha rola.txt");
 }
