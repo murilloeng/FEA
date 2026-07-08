@@ -60,8 +60,8 @@ namespace fea
 				std::vector<uint32_t> m_dof_indexes;
 
 				//friends
-				friend class mesh::Mesh;
-				friend class analysis::Assembler;
+				friend class fea::mesh::Mesh;
+				friend class fea::analysis::Assembler;
 			};
 		}
 	}

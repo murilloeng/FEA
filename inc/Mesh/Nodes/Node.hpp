@@ -73,10 +73,10 @@ namespace fea
 				std::vector<uint32_t> m_dof_indexes;
 
 				//friends
-				friend class mesh::Mesh;
-				friend class boundary::Boundary;
-				friend class analysis::Analysis;
-				friend class analysis::Assembler;
+				friend class fea::mesh::Mesh;
+				friend class fea::boundary::Boundary;
+				friend class fea::analysis::Analysis;
+				friend class fea::analysis::Assembler;
 			};
 		}
 	}
