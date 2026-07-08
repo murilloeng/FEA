@@ -42,10 +42,11 @@ void test::truss2D::von_mises(void)
 	//elements
 	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
 	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {1, 2});
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->m_section = &section;
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[1])->m_section = &section;
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->m_material = &material;
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[1])->m_material = &material;
+	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->section(&section);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[1])->section(&section);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->material(&material);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[1])->material(&material);
+	fea::mesh::elements::Truss::strain_measure(fea::mesh::elements::StrainMeasure::Quadratic);
 	//supports
 	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_1);
 	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_2);
@@ -67,5 +68,5 @@ void test::truss2D::von_mises(void)
 	//solve
 	model.solve();
 	//save
-	model.m_analysis->m_solver->save("minha rola.txt");
+	model.m_analysis->m_solver->save("von mises.txt");
 }

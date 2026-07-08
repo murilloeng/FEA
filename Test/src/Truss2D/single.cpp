@@ -36,8 +36,8 @@ void test::truss2D::single(void)
 	section.compute();
 	//elements
 	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->m_section = &section;
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->m_material = &material;
+	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->section(&section);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->material(&material);
 	//supports
 	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_1);
 	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_2);

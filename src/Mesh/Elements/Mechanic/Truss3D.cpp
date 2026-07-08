@@ -45,8 +45,8 @@ namespace fea
 			void Truss3D::stiffness(double* K) const
 			{
 				//data
-				const math::Vec3 x1 = node(0)->m_position_new;
-				const math::Vec3 x2 = node(1)->m_position_new;
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
 				//stiffness
 				const math::Vec3 t1 = (x2 - x1) / m_Ln;
 				K[0 + 6 * 0] = K[3 + 6 * 3] = +(m_K - m_f / m_Ln) * t1[0] * t1[0] + m_f / m_Ln;
@@ -68,8 +68,8 @@ namespace fea
 			void Truss3D::internal_force(double* f) const
 			{
 				//data
-				const math::Vec3 x1 = node(0)->m_position_new;
-				const math::Vec3 x2 = node(1)->m_position_new;
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
 				//internal force
 				f[0] = -m_f * (x2[0] - x1[0]) / m_Ln;
 				f[1] = -m_f * (x2[1] - x1[1]) / m_Ln;

@@ -28,6 +28,12 @@ namespace fea
 				return;
 			}
 
+			//data
+			nodes::Node* Element::node(uint32_t index) const
+			{
+				return m_mesh->m_nodes[m_nodes[index]];
+			}
+
 			//analysis
 			void Element::check(void)
 			{
@@ -53,12 +59,6 @@ namespace fea
 						}
 					}
 				}
-			}
-
-			//data
-			nodes::Node* Element::node(uint32_t index) const
-			{
-				return m_mesh->m_nodes[m_nodes[index]];
 			}
 
 			//static

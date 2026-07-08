@@ -22,6 +22,16 @@ namespace fea
 				return;
 			}
 
+			//data
+			const sections::Section* Frame::section(void) const
+			{
+				return m_section;
+			}
+			const sections::Section* Frame::section(sections::Section* section)
+			{
+				return m_section = section;
+			}
+
 			//analysis
 			void Frame::check(void)
 			{

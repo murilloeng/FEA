@@ -23,13 +23,23 @@ namespace fea
 				return;
 			}
 
+			//data
+			StrainMeasure Truss::strain_measure(void)
+			{
+				return m_strain_measure;
+			}
+			StrainMeasure Truss::strain_measure(StrainMeasure strain_measure)
+			{
+				return m_strain_measure = strain_measure;
+			}
+
 			//analysis
 			void Truss::setup(void)
 			{
 				//data
 				Mechanic::setup();
-				const math::Vec3 z1 = node(0)->m_position_ref;
-				const math::Vec3 z2 = node(1)->m_position_ref;
+				const math::Vec3 z1 = node(0)->position_ref();
+				const math::Vec3 z2 = node(1)->position_ref();
 				//length
 				m_Lr = (z2 - z1).norm();
 			}
@@ -37,14 +47,14 @@ namespace fea
 			{
 				//data
 				const double A = m_section->area();
-				const math::Vec3 x1 = node(0)->m_position_new;
-				const math::Vec3 x2 = node(1)->m_position_new;
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
 				const double E = m_material->elastic_modulus();
 				//strain
 				m_Ln = (x2 - x1).norm();
-				m_em = strain_measure(m_strain_measure, m_Ln / m_Lr);
-				m_eh = strain_hessian(m_strain_measure, m_Ln / m_Lr);
-				m_eg = strain_gradient(m_strain_measure, m_Ln / m_Lr);
+				m_em = elements::strain_measure(m_strain_measure, m_Ln / m_Lr);
+				m_eh = elements::strain_hessian(m_strain_measure, m_Ln / m_Lr);
+				m_eg = elements::strain_gradient(m_strain_measure, m_Ln / m_Lr);
 				//material
 				const double C = E;
 				const double s = E * m_em + m_sr;

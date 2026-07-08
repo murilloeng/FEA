@@ -22,6 +22,16 @@ namespace fea
 				return;
 			}
 
+			//data
+			const materials::Mechanic* Mechanic::material(void) const
+			{
+				return m_material;
+			}
+			const materials::Mechanic* Mechanic::material(const materials::Mechanic* material)
+			{
+				return m_material = material;
+			}
+
 			//analysis
 			void Mechanic::check(void)
 			{

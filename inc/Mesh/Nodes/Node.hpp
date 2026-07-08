@@ -14,6 +14,15 @@ namespace fea
 			enum class DOF : uint32_t;
 		}
 	}
+	namespace boundary
+	{
+		class Boundary;
+	}
+	namespace analysis
+	{
+		class Analysis;
+		class Assembler;
+	}
 }
 
 namespace fea
@@ -32,17 +41,26 @@ namespace fea
 				//destructor
 				~Node(void);
 
+				//data
+				uint32_t dof_index(DOF) const;
+				
+				double state(DOF) const;
+				double velocity(DOF) const;
+				double acceleration(DOF) const;
+
+				const double* quaternion_old(void) const;
+				const double* quaternion_new(void) const;
+
+				const double* position_ref(double*);
+				const double* position_ref(void) const;
+				const double* position_new(void) const;
+				const double* position_ref(double, double, double);
+
+			private:
 				//analysis
 				void setup(void);
 				void compute(void);
 				void dof_setup(uint32_t&);
-
-				//data
-				uint32_t dof_index(DOF) const;
-
-				double state(DOF) const;
-				double velocity(DOF) const;
-				double acceleration(DOF) const;
 
 				//data
 				uint32_t m_dof_set;
@@ -52,6 +70,12 @@ namespace fea
 				double* m_quaternion_old;
 				double* m_quaternion_new;
 				std::vector<uint32_t> m_dof_indexes;
+
+				//friends
+				friend class mesh::Mesh;
+				friend class boundary::Boundary;
+				friend class analysis::Analysis;
+				friend class analysis::Assembler;
 			};
 		}
 	}

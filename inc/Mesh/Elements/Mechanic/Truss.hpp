@@ -19,6 +19,11 @@ namespace fea
 				//destructor
 				~Truss(void);
 
+				//data
+				static StrainMeasure strain_measure(void);
+				static StrainMeasure strain_measure(StrainMeasure);
+
+			protected:
 				//analysis
 				void setup(void) override;
 				void compute(void) override;

@@ -21,6 +21,11 @@ namespace fea
 				//destructor
 				~Mechanic(void);
 
+				//data
+				const materials::Mechanic* material(void) const;
+				const materials::Mechanic* material(const materials::Mechanic*);
+
+			protected:
 				//analysis
 				void check(void) override;
 

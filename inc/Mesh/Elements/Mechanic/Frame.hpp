@@ -21,11 +21,16 @@ namespace fea
 				//destructor
 				~Frame(void);
 
+				//data
+				const sections::Section* section(void) const;
+				const sections::Section* section(sections::Section*);
+
+			protected:
 				//analysis
 				void check(void) override;
 
 				//data
-				sections::Section* m_section;
+				const sections::Section* m_section;
 			};
 		}
 	}
