@@ -20,7 +20,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		Solver::~Solver(void)
 		{
@@ -36,12 +36,12 @@ namespace fea
 		{
 			allocate();
 			math::solvers::Solver::setup();
-			math::solvers::Solver::m_watch_dof = m_analysis->m_model->m_mesh->m_nodes[m_watch_dof.m_node]->dof_index(m_watch_dof.m_dof);
+			math::solvers::Solver::m_watch_dof = m_analysis->model()->m_mesh->node(m_watch_dof.m_node)->dof_index(m_watch_dof.m_dof);
 		}
 		void Solver::allocate(void)
 		{
 			//data
-			math::solvers::Solver::allocate(m_analysis->m_assembler->m_dof_unknow);
+			math::solvers::Solver::allocate(m_analysis->m_assembler->dof_unknow());
 			//setup
 			memset(m_x_old, 0, m_size * sizeof(double));
 		}

@@ -17,7 +17,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		StaticNonlinear::~StaticNonlinear(void)
 		{
@@ -38,12 +38,12 @@ namespace fea
 			//system
 			m_system_2 = [this](double* r, double* fe, double* K, double p, const double* x)
 			{
-				m_analysis->m_model->compute();
-				m_analysis->m_assembler->assemble_stiffness(K);
-				m_analysis->m_assembler->assemble_dead_force(m_r, true);
-				m_analysis->m_assembler->assemble_internal_force(m_r, false, -1);
-				m_analysis->m_assembler->assemble_reference_force(m_r, false, p);
-				m_analysis->m_assembler->assemble_reference_force(m_fe, true, 1);
+				m_analysis->model()->compute();
+				m_analysis->assembler()->assemble_stiffness(K);
+				m_analysis->assembler()->assemble_dead_force(m_r, true);
+				m_analysis->assembler()->assemble_internal_force(m_r, false, -1);
+				m_analysis->assembler()->assemble_reference_force(m_r, false, p);
+				m_analysis->assembler()->assemble_reference_force(m_fe, true, 1);
 			};
 		}
 		void StaticNonlinear::print(void)

@@ -52,6 +52,20 @@ namespace fea
 			delete[] m_cols_triplet;
 		}
 
+		//data
+		uint32_t Assembler::dof_know(void) const
+		{
+			return m_dof_know;
+		}
+		uint32_t Assembler::dof_total(void) const
+		{
+			return m_dof_total;
+		}
+		uint32_t Assembler::dof_unknow(void) const
+		{
+			return m_dof_unknow;
+		}
+
 		//dof
 		void Assembler::dof_map(void)
 		{

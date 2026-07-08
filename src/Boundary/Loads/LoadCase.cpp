@@ -12,7 +12,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		LoadCase::~LoadCase(void)
 		{

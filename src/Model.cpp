@@ -19,7 +19,7 @@ namespace fea
 		boundary::Boundary::m_model = this;
 		analysis::Analysis::m_model = this;
 	}
-	
+
 	//destructor
 	Model::~Model(void)
 	{

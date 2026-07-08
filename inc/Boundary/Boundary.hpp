@@ -23,6 +23,10 @@ namespace fea
 		class Dependency;
 		class LoadCombination;
 	}
+	namespace analysis
+	{
+		class Assembler;
+	}
 }
 
 namespace fea
@@ -31,27 +35,46 @@ namespace fea
 	{
 		class Boundary
 		{
-		public:
+		private:
 			//constructor
 			Boundary(void);
 
 			//destructor
 			~Boundary(void);
 
-			//analysis
-			void check(void);
-			void setup(void);
-			void dof_apply(void);
-			void dof_setup(uint32_t&);
+		public:
+			//data
+			static Model* model(void);
+
+			Initial* initial(uint32_t) const;
+			Support* support(uint32_t) const;
+			LoadCase* load_case(uint32_t) const;
+			Constraint* constraint(uint32_t) const;
+			Dependency* dependency(uint32_t) const;
+			LoadCombination* load_combination(uint32_t) const;
+
+			const std::vector<Initial*>& initials(void) const;
+			const std::vector<Support*>& supports(void) const;
+			const std::vector<LoadCase*>& load_cases(void) const;
+			const std::vector<Constraint*>& constraints(void) const;
+			const std::vector<Dependency*>& dependencies(void) const;
+			const std::vector<LoadCombination*>& load_combinations(void) const;
 
 			//create
 			void create_support(uint32_t, mesh::nodes::DOF);
-			
+
 			void create_load_combination(void);
 			void create_load_combination(uint32_t, bool, double);
 
 			void create_load_case(void);
 			void create_load_case(uint32_t, mesh::nodes::DOF, double);
+
+		private:
+			//analysis
+			void check(void);
+			void setup(void);
+			void dof_apply(void);
+			void dof_setup(uint32_t&);
 
 			//data
 			static Model* m_model;
@@ -61,6 +84,10 @@ namespace fea
 			std::vector<Constraint*> m_constraints;
 			std::vector<Dependency*> m_dependencies;
 			std::vector<LoadCombination*> m_load_combinations;
+
+			//friends
+			friend class fea::Model;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

@@ -19,7 +19,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		Constraint::~Constraint(void)
 		{
@@ -31,7 +31,7 @@ namespace fea
 		{
 			for(uint32_t node : m_nodes)
 			{
-				if(node >= m_boundary->m_model->m_mesh->m_nodes.size())
+				if(node >= m_boundary->model()->m_mesh->nodes().size())
 				{
 					throw std::runtime_error("Error: Constraint's node is out of range!");
 				}
@@ -46,9 +46,9 @@ namespace fea
 			m_dof_indexes.clear();
 			for(uint32_t i = 0; i < m_nodes.size(); i++)
 			{
-				m_dof_indexes.push_back(m_boundary->m_model->m_mesh->m_nodes[m_nodes[i]]->dof_index(m_dof[i]));
+				m_dof_indexes.push_back(m_boundary->model()->m_mesh->node(m_nodes[i])->dof_index(m_dof[i]));
 			}
-			
+		
 		}
 		void Constraint::dof_setup(uint32_t& dof_counter)
 		{

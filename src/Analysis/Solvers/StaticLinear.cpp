@@ -14,7 +14,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		StaticLinear::~StaticLinear(void)
 		{
@@ -39,9 +39,9 @@ namespace fea
 		void StaticLinear::solve(void)
 		{
 			//assemble
-			m_analysis->m_model->compute();
-			m_analysis->m_assembler->assemble_stiffness(m_K);
-			m_analysis->m_assembler->assemble_reference_force(m_fe);
+			m_analysis->model()->compute();
+			m_analysis->assembler()->assemble_stiffness(m_K);
+			m_analysis->assembler()->assemble_reference_force(m_fe);
 			//solve
 			math::solvers::Solver::solve(m_K, m_fe, m_x_new);
 		}

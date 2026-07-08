@@ -33,7 +33,7 @@ namespace fea
 		{
 			class Node
 			{
-			public:
+			private:
 				//constructor
 				Node(const double*);
 				Node(double, double, double);
@@ -41,9 +41,10 @@ namespace fea
 				//destructor
 				~Node(void);
 
+			public:
 				//data
 				uint32_t dof_index(DOF) const;
-				
+			
 				double state(DOF) const;
 				double velocity(DOF) const;
 				double acceleration(DOF) const;

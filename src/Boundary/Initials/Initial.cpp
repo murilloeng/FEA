@@ -20,7 +20,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		Initial::~Initial(void)
 		{
@@ -30,14 +30,14 @@ namespace fea
 		//analysis
 		void Initial::check(void)
 		{
-			if(m_node >= m_boundary->m_model->m_mesh->m_nodes.size())
+			if(m_node >= m_boundary->model()->m_mesh->nodes().size())
 			{
 				throw std::runtime_error("Error: Initial's node is out of range!");
 			}
 		}
 		void Initial::setup(void)
 		{
-			m_dof_index = m_boundary->m_model->m_mesh->m_nodes[m_node]->dof_index(m_dof);
+			m_dof_index = m_boundary->model()->m_mesh->node(m_node)->dof_index(m_dof);
 		}
 
 		//static

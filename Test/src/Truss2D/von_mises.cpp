@@ -42,10 +42,10 @@ void test::truss2D::von_mises(void)
 	//elements
 	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
 	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {1, 2});
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->section(&section);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[1])->section(&section);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[0])->material(&material);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->m_elements[1])->material(&material);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->element(0))->section(&section);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->element(1))->section(&section);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->element(0))->material(&material);
+	((fea::mesh::elements::Truss2D*) model.m_mesh->element(1))->material(&material);
 	fea::mesh::elements::Truss::strain_measure(fea::mesh::elements::StrainMeasure::Quadratic);
 	//supports
 	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_1);
@@ -61,12 +61,12 @@ void test::truss2D::von_mises(void)
 	//solver
 	model.m_analysis->create_solver(fea::analysis::Type::StaticNonlinear);
 	//setup
-	model.m_analysis->m_solver->m_load_combination = 0;
-	model.m_analysis->m_solver->m_watch_dof.m_node = 1;
-	model.m_analysis->m_solver->m_watch_dof.m_dof = fea::mesh::nodes::DOF::Translation_2;
-	dynamic_cast<fea::analysis::StaticNonlinear*>(model.m_analysis->m_solver)->m_step_max = 400;
+	model.m_analysis->solver()->m_load_combination = 0;
+	model.m_analysis->solver()->m_watch_dof.m_node = 1;
+	model.m_analysis->solver()->m_watch_dof.m_dof = fea::mesh::nodes::DOF::Translation_2;
+	dynamic_cast<fea::analysis::StaticNonlinear*>(model.m_analysis->solver())->m_step_max = 400;
 	//solve
 	model.solve();
 	//save
-	model.m_analysis->m_solver->save("von mises.txt");
+	model.m_analysis->solver()->save("von mises.txt");
 }

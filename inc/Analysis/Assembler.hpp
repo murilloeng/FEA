@@ -6,6 +6,7 @@
 
 namespace fea
 {
+	class Model;
 	namespace analysis
 	{
 		class Analysis;
@@ -18,25 +19,18 @@ namespace fea
 	{
 		class Assembler
 		{
-		public:
+		private:
 			//constructor
 			Assembler(void);
 
 			//destructor
 			~Assembler(void);
 
-			//dof
-			void dof_map(void);
-			void dof_sort(void);
-			void dof_apply(void);
-			void dof_setup(void);
-			void dof_local(void);
-			
-			void dof_triplet_count(void);
-			void dof_triplet_apply(void);
-
-			//analysis
-			void setup(void);
+		public:
+			//data
+			uint32_t dof_know(void) const;
+			uint32_t dof_total(void) const;
+			uint32_t dof_unknow(void) const;
 
 			//assemble
 			void assemble_inertia(double*) const;
@@ -53,6 +47,20 @@ namespace fea
 			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, double = 1) const;
 			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, uint32_t, double = 1) const;
 			void assemble_matrix(double*, double*, uint32_t, const std::vector<uint32_t>&, double = 1) const;
+
+		private:
+			//dof
+			void dof_map(void);
+			void dof_sort(void);
+			void dof_apply(void);
+			void dof_setup(void);
+			void dof_local(void);
+
+			void dof_triplet_count(void);
+			void dof_triplet_apply(void);
+
+			//analysis
+			void setup(void);
 
 			//data
 			double* m_fe;
@@ -71,6 +79,10 @@ namespace fea
 			uint32_t m_dof_dependent;
 
 			static Analysis* m_analysis;
+
+			//friends
+			friend class fea::Model;
+			friend class fea::analysis::Analysis;
 		};
 	}
 }

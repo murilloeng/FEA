@@ -21,7 +21,7 @@ namespace fea
 			{
 				return;
 			}
-			
+		
 			//destructor
 			Element::~Element(void)
 			{
@@ -31,7 +31,7 @@ namespace fea
 			//data
 			nodes::Node* Element::node(uint32_t index) const
 			{
-				return m_mesh->m_nodes[m_nodes[index]];
+				return m_mesh->node(m_nodes[index]);
 			}
 
 			//analysis
@@ -39,7 +39,7 @@ namespace fea
 			{
 				for(uint32_t node : m_nodes)
 				{
-					if(node >= m_mesh->m_nodes.size())
+					if(node >= m_mesh->nodes().size())
 					{
 						throw std::runtime_error("Error: Element's node index is out of range!");
 					}

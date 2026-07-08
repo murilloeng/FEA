@@ -33,7 +33,7 @@ namespace fea
 			loads::Load::m_boundary = this;
 			LoadCombination::m_boundary = this;
 		}
-		
+	
 		//destructor
 		Boundary::~Boundary(void)
 		{
@@ -43,6 +43,62 @@ namespace fea
 			for(const Constraint* constraint : m_constraints) delete constraint;
 			for(const Dependency* dependency : m_dependencies) delete dependency;
 			for(const LoadCombination* load_combination : m_load_combinations) delete load_combination;
+		}
+
+		//data
+		Model* Boundary::model(void)
+		{
+			return m_model;
+		}
+
+		Initial* Boundary::initial(uint32_t index) const
+		{
+			return m_initials[index];
+		}
+		Support* Boundary::support(uint32_t index) const
+		{
+			return m_supports[index];
+		}
+		LoadCase* Boundary::load_case(uint32_t index) const
+		{
+			return m_load_cases[index];
+		}
+		Constraint* Boundary::constraint(uint32_t index) const
+		{
+			return m_constraints[index];
+		}
+		Dependency* Boundary::dependency(uint32_t index) const
+		{
+			return m_dependencies[index];
+		}
+		LoadCombination* Boundary::load_combination(uint32_t index) const
+		{
+			return m_load_combinations[index];
+		}
+
+		const std::vector<Initial*>& Boundary::initials(void) const
+		{
+			return m_initials;
+		}
+		const std::vector<Support*>& Boundary::supports(void) const
+		{
+			return m_supports;
+		}
+		const std::vector<LoadCase*>& Boundary::load_cases(void) const
+		{
+			return m_load_cases;
+		}
+		const std::vector<Constraint*>& Boundary::constraints(void) const
+		{
+			return m_constraints;
+		}
+		const std::vector<Dependency*>& Boundary::dependencies(void) const
+		{
+			return m_dependencies;
+		}
+		const std::vector<LoadCombination*>& Boundary::load_combinations(void) const
+		{
+			return m_load_combinations;
 		}
 
 		//analysis
@@ -69,19 +125,19 @@ namespace fea
 			//initials
 			for(const Initial* initial : m_initials)
 			{
-				m_model->m_mesh->m_nodes[initial->m_node]->m_dof_set |= 1 << uint32_t(initial->m_dof);
+				m_model->m_mesh->node(initial->m_node)->m_dof_set |= 1 << uint32_t(initial->m_dof);
 			}
 			//supports
 			for(const Support* support : m_supports)
 			{
-				m_model->m_mesh->m_nodes[support->m_node]->m_dof_set |= 1 << uint32_t(support->m_dof);
+				m_model->m_mesh->node(support->m_node)->m_dof_set |= 1 << uint32_t(support->m_dof);
 			}
 			//load cases
 			for(const LoadCase* load_case : m_load_cases)
 			{
 				for(const loads::Node* load : load_case->m_loads_nodes)
 				{
-					m_model->m_mesh->m_nodes[load->m_node]->m_dof_set |= 1 << uint32_t(load->m_dof);
+					m_model->m_mesh->node(load->m_node)->m_dof_set |= 1 << uint32_t(load->m_dof);
 				}
 			}
 			//constraints
@@ -89,14 +145,14 @@ namespace fea
 			{
 				for(uint32_t i = 0; i < constraint->m_nodes.size(); i++)
 				{
-					m_model->m_mesh->m_nodes[constraint->m_nodes[i]]->m_dof_set |= 1 << uint32_t(constraint->m_dof[i]);
+					m_model->m_mesh->node(constraint->m_nodes[i])->m_dof_set |= 1 << uint32_t(constraint->m_dof[i]);
 				}
 			}
 			//dependencies
 			for(const Dependency* dependency : m_dependencies)
 			{
-				m_model->m_mesh->m_nodes[dependency->m_nodes[0]]->m_dof_set |= 1 << uint32_t(dependency->m_dof[0]);
-				m_model->m_mesh->m_nodes[dependency->m_nodes[1]]->m_dof_set |= 1 << uint32_t(dependency->m_dof[1]);
+				m_model->m_mesh->node(dependency->m_nodes[0])->m_dof_set |= 1 << uint32_t(dependency->m_dof[0]);
+				m_model->m_mesh->node(dependency->m_nodes[1])->m_dof_set |= 1 << uint32_t(dependency->m_dof[1]);
 			}
 		}
 		void Boundary::dof_setup(uint32_t& dof_counter)

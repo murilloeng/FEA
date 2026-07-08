@@ -28,13 +28,14 @@ namespace fea
 		{
 			class Element
 			{
-			public:
+			protected:
 				//constructor
 				Element(void);
 
 				//destructor
 				virtual ~Element(void);
 
+			public:
 				//data
 				nodes::Node* node(uint32_t) const;
 				virtual uint32_t dof_set(uint32_t) const = 0;

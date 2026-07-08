@@ -17,7 +17,7 @@ namespace fea
 			{
 				return;
 			}
-			
+		
 			//destructor
 			Truss2D::~Truss2D(void)
 			{

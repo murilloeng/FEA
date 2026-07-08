@@ -8,6 +8,7 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Initials/Initial.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 #include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
 
@@ -20,7 +21,7 @@ namespace fea
 		{
 			return;
 		}
-		
+	
 		//destructor
 		Dependency::~Dependency(void)
 		{
@@ -44,8 +45,8 @@ namespace fea
 		{
 			return 
 				m_nodes[0] < m_nodes[1] || (m_nodes[0] == m_nodes[1] && m_dof[0] < m_dof[1]) ? 
-				m_boundary->m_model->m_mesh->m_nodes[m_nodes[flag]]->dof_index(m_dof[flag]) : 
-				m_boundary->m_model->m_mesh->m_nodes[m_nodes[!flag]]->dof_index(m_dof[!flag]);
+				m_boundary->model()->m_mesh->node(m_nodes[flag])->dof_index(m_dof[flag]) : 
+				m_boundary->model()->m_mesh->node(m_nodes[!flag])->dof_index(m_dof[!flag]);
 		}
 
 		//check
@@ -58,7 +59,7 @@ namespace fea
 		}
 		void Dependency::check_outer(void) const
 		{
-			for(const Dependency* dependency : m_boundary->m_dependencies)
+			for(const Dependency* dependency : m_boundary->dependencies())
 			{
 				if(dependency != this && *dependency == *this)
 				{
@@ -69,7 +70,7 @@ namespace fea
 		void Dependency::check_nodes(void) const
 		{
 			//data
-			const uint32_t nn = m_boundary->m_model->m_mesh->m_nodes.size();
+			const uint32_t nn = m_boundary->model()->m_mesh->nodes().size();
 			//check
 			if(m_nodes[0] >= nn || m_nodes[1] >= nn)
 			{
@@ -81,9 +82,9 @@ namespace fea
 			bool test = true;
 			for(uint32_t i = 0; i < 2; i++)
 			{
-				for(const Support* support : m_boundary->m_supports)
+				for(const Initial* initial : m_boundary->initials())
 				{
-					test = test && (m_nodes[i] != support->m_node || m_dof[i] != support->m_dof);
+					test = test && (m_nodes[i] != initial->m_node || m_dof[i] != initial->m_dof);
 				}
 			}
 			if(!test)
@@ -96,7 +97,7 @@ namespace fea
 			bool test = true;
 			for(uint32_t i = 0; i < 2; i++)
 			{
-				for(const Support* support : m_boundary->m_supports)
+				for(const Support* support : m_boundary->supports())
 				{
 					test = test && (m_nodes[i] != support->m_node || m_dof[i] != support->m_dof);
 				}

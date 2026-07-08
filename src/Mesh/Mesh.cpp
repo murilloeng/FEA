@@ -19,12 +19,61 @@ namespace fea
 			nodes::Node::m_mesh = this;
 			elements::Element::m_mesh = this;
 		}
-		
+	
 		//destructor
 		Mesh::~Mesh(void)
 		{
 			for(const nodes::Node* node : m_nodes) delete node;
 			for(const elements::Element* element : m_elements) delete element;
+		}
+
+		//data
+		Model* Mesh::model(void)
+		{
+			return m_model;
+		}
+
+		nodes::Node* Mesh::node(uint32_t index) const
+		{
+			return m_nodes[index];
+		}
+		elements::Element* Mesh::element(uint32_t index) const
+		{
+			return m_elements[index];
+		}
+
+		const std::vector<nodes::Node*>& Mesh::nodes(void) const
+		{
+			return m_nodes;
+		}
+		const std::vector<elements::Element*>& Mesh::elements(void) const
+		{
+			return m_elements;
+		}
+
+		//create
+		void Mesh::create_node(const double* position_ref)
+		{
+			m_nodes.push_back(new nodes::Node(position_ref));
+		}
+		void Mesh::create_node(double x1, double x2, double x3)
+		{
+			m_nodes.push_back(new nodes::Node(x1, x2, x3));
+		}
+
+		void Mesh::create_element(elements::Type type, std::vector<uint32_t> nodes)
+		{
+			//data
+			elements::Element* element;
+			std::function<void(elements::Element*&)> fabric[] = {
+				[](elements::Element*& element){ element = new elements::Truss2D; },
+				[](elements::Element*& element){ element = new elements::Truss3D; }
+			};
+			//create
+			fabric[uint32_t(type)](element);
+			//append
+			element->m_nodes = nodes;
+			m_elements.push_back(element);
 		}
 
 		//analysis
@@ -55,31 +104,6 @@ namespace fea
 		void Mesh::dof_setup(uint32_t& dof_counter)
 		{
 			for(nodes::Node* node : m_nodes) node->dof_setup(dof_counter);
-		}
-
-		//create
-		void Mesh::create_node(const double* position_ref)
-		{
-			m_nodes.push_back(new nodes::Node(position_ref));
-		}
-		void Mesh::create_node(double x1, double x2, double x3)
-		{
-			m_nodes.push_back(new nodes::Node(x1, x2, x3));
-		}
-
-		void Mesh::create_element(elements::Type type, std::vector<uint32_t> nodes)
-		{
-			//data
-			elements::Element* element;
-			std::function<void(elements::Element*&)> fabric[] = {
-				[](elements::Element*& element){ element = new elements::Truss2D; },
-				[](elements::Element*& element){ element = new elements::Truss3D; }
-			};
-			//create
-			fabric[uint32_t(type)](element);
-			//append
-			element->m_nodes = nodes;
-			m_elements.push_back(element);
 		}
 
 		//static
