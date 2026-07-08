@@ -55,14 +55,14 @@ namespace fea
 			//analysis
 			void Node::check(void)
 			{
-				if(m_node >= m_boundary->model()->m_mesh->nodes().size())
+				if(m_node >= m_boundary->model()->mesh()->nodes().size())
 				{
 					throw std::runtime_error("Error: Node load has out of range node!");
 				}
 			}
 			void Node::setup(void)
 			{
-				m_dof_index = m_boundary->model()->m_mesh->node(m_node)->dof_index(m_dof);
+				m_dof_index = m_boundary->model()->mesh()->node(m_node)->dof_index(m_dof);
 			}
 		}
 	}

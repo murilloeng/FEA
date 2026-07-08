@@ -45,8 +45,8 @@ namespace fea
 		{
 			return 
 				m_nodes[0] < m_nodes[1] || (m_nodes[0] == m_nodes[1] && m_dof[0] < m_dof[1]) ? 
-				m_boundary->model()->m_mesh->node(m_nodes[flag])->dof_index(m_dof[flag]) : 
-				m_boundary->model()->m_mesh->node(m_nodes[!flag])->dof_index(m_dof[!flag]);
+				m_boundary->model()->mesh()->node(m_nodes[flag])->dof_index(m_dof[flag]) : 
+				m_boundary->model()->mesh()->node(m_nodes[!flag])->dof_index(m_dof[!flag]);
 		}
 
 		//check
@@ -70,7 +70,7 @@ namespace fea
 		void Dependency::check_nodes(void) const
 		{
 			//data
-			const uint32_t nn = m_boundary->model()->m_mesh->nodes().size();
+			const uint32_t nn = m_boundary->model()->mesh()->nodes().size();
 			//check
 			if(m_nodes[0] >= nn || m_nodes[1] >= nn)
 			{

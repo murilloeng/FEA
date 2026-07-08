@@ -88,13 +88,13 @@ namespace fea
 			dof_setup();
 			uint32_t cd = 0, ck = 0;
 			std::vector<uint32_t> dd, dk;
-			const std::vector<boundary::Dependency*> dependencies = m_analysis->m_model->m_boundary->m_dependencies;
+			const std::vector<boundary::Dependency*> dependencies = m_analysis->m_model->boundary()->m_dependencies;
 			//lists
-			for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
+			for(const boundary::Support* support : m_analysis->m_model->boundary()->m_supports)
 			{
 				dk.push_back(support->node()->dof_index(support->dof()));
 			}
-			for(const boundary::Dependency* dependency : m_analysis->m_model->m_boundary->m_dependencies)
+			for(const boundary::Dependency* dependency : m_analysis->m_model->boundary()->m_dependencies)
 			{
 				dd.push_back(dependency->dof_index(true));
 			}
@@ -102,7 +102,7 @@ namespace fea
 			m_dof_know = (uint32_t) dk.size();
 			m_dof_dependent = (uint32_t) dd.size();
 			m_dof_unknow = m_dof_total - m_dof_know - m_dof_dependent;
-			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
+			for(mesh::nodes::Node* node : m_analysis->m_model->mesh()->m_nodes)
 			{
 				for(uint32_t& dof_index : node->m_dof_indexes)
 				{
@@ -123,7 +123,7 @@ namespace fea
 				}
 			}
 			//constraintes
-			for(boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			for(boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
 			{
 				constraint->m_dof_index -= m_dof_know + m_dof_dependent;
 			}
@@ -131,30 +131,30 @@ namespace fea
 		void Assembler::dof_apply(void)
 		{
 			//clear
-			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
+			for(mesh::nodes::Node* node : m_analysis->m_model->mesh()->m_nodes)
 			{
 				node->m_dof_set = 0;
 			}
 			//apply
 			m_analysis->dof_apply();
-			m_analysis->m_model->m_mesh->dof_apply();
-			m_analysis->m_model->m_boundary->dof_apply();
+			m_analysis->m_model->mesh()->dof_apply();
+			m_analysis->m_model->boundary()->dof_apply();
 		}
 		void Assembler::dof_setup(void)
 		{
 			m_dof_total = 0;
-			m_analysis->m_model->m_mesh->dof_setup(m_dof_total);
-			m_analysis->m_model->m_boundary->dof_setup(m_dof_total);
+			m_analysis->m_model->mesh()->dof_setup(m_dof_total);
+			m_analysis->m_model->boundary()->dof_setup(m_dof_total);
 		}
 		void Assembler::dof_local(void)
 		{
 			//count
 			m_dof_local = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				m_dof_local = std::max(std::size_t(m_dof_local), element->m_dof_indexes.size());
 			}
-			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
 			{
 				m_dof_local = std::max(std::size_t(m_dof_local), constraint->m_dof_indexes.size());
 			}
@@ -168,12 +168,12 @@ namespace fea
 		void Assembler::dof_triplet_count(void)
 		{
 			m_dof_triplet = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				const uint32_t nd = element->m_dof_indexes.size();
 				m_dof_triplet += nd * nd;
 			}
-			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
 			{
 				const uint32_t nd = constraint->m_dof_indexes.size();
 				m_dof_triplet += (nd + 1) * (nd + 1);
@@ -183,7 +183,7 @@ namespace fea
 		{
 			//elements
 			uint32_t counter = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				for(uint32_t dof_index_1 : element->m_dof_indexes)
 				{
@@ -196,7 +196,7 @@ namespace fea
 				}
 			}
 			//constraints
-			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
 			{
 				for(uint32_t dof_index : constraint->m_dof_indexes)
 				{
@@ -243,7 +243,7 @@ namespace fea
 			//setup
 			memset(M, 0, m_cols_map[m_dof_unknow] * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				element->inertia(m_Ae);
 				assemble_matrix(M, m_Ae, element->m_dof_indexes);
@@ -254,7 +254,7 @@ namespace fea
 			//setup
 			memset(C, 0, m_cols_map[m_dof_unknow] * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				element->damping(m_Ae);
 				assemble_matrix(C, m_Ae, element->m_dof_indexes);
@@ -265,7 +265,7 @@ namespace fea
 			//setup
 			memset(K, 0, m_cols_map[m_dof_unknow] * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				element->stiffness(m_Ae);
 				assemble_matrix(K, m_Ae, element->m_dof_indexes);
@@ -279,12 +279,12 @@ namespace fea
 			if(m_analysis->m_solver->load_combination() == UINT32_MAX) return;
 			//data
 			const uint32_t index = m_analysis->m_solver->load_combination();
-			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
+			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
 			//load cases
 			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
 				if(!item->fixed()) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
+				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
 					fd[load->dof_index()] += s * item->value() * load->value();
@@ -298,9 +298,9 @@ namespace fea
 		void Assembler::assemble_internal_force(double* fi, bool cleanup, double s) const
 		{
 			//setup
-			memset(fi, 0, m_dof_unknow * sizeof(double));
+			if(cleanup) memset(fi, 0, m_dof_unknow * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
 			{
 				element->internal_force(m_fe);
 				assemble_vector(fi, m_fe, element->m_dof_indexes, s);
@@ -313,12 +313,12 @@ namespace fea
 			if(m_analysis->m_solver->load_combination() == UINT32_MAX) return;
 			//data
 			const uint32_t index = m_analysis->m_solver->load_combination();
-			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
+			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
 			//load cases
 			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
 				if(item->fixed()) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
+				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
 					fr[load->dof_index()] += s * item->value() * load->value();

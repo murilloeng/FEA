@@ -125,19 +125,19 @@ namespace fea
 			//initials
 			for(const Initial* initial : m_initials)
 			{
-				m_model->m_mesh->node(initial->m_node)->m_dof_set |= 1 << uint32_t(initial->m_dof);
+				m_model->mesh()->node(initial->m_node)->m_dof_set |= 1 << uint32_t(initial->m_dof);
 			}
 			//supports
 			for(const Support* support : m_supports)
 			{
-				m_model->m_mesh->node(support->m_node)->m_dof_set |= 1 << uint32_t(support->m_dof);
+				m_model->mesh()->node(support->m_node)->m_dof_set |= 1 << uint32_t(support->m_dof);
 			}
 			//load cases
 			for(const LoadCase* load_case : m_load_cases)
 			{
 				for(const loads::Node* load : load_case->m_loads_nodes)
 				{
-					m_model->m_mesh->node(load->node())->m_dof_set |= 1 << uint32_t(load->dof());
+					m_model->mesh()->node(load->node())->m_dof_set |= 1 << uint32_t(load->dof());
 				}
 			}
 			//constraints
@@ -145,14 +145,14 @@ namespace fea
 			{
 				for(uint32_t i = 0; i < constraint->m_nodes.size(); i++)
 				{
-					m_model->m_mesh->node(constraint->m_nodes[i])->m_dof_set |= 1 << uint32_t(constraint->m_dof[i]);
+					m_model->mesh()->node(constraint->m_nodes[i])->m_dof_set |= 1 << uint32_t(constraint->m_dof[i]);
 				}
 			}
 			//dependencies
 			for(const Dependency* dependency : m_dependencies)
 			{
-				m_model->m_mesh->node(dependency->m_nodes[0])->m_dof_set |= 1 << uint32_t(dependency->m_dof[0]);
-				m_model->m_mesh->node(dependency->m_nodes[1])->m_dof_set |= 1 << uint32_t(dependency->m_dof[1]);
+				m_model->mesh()->node(dependency->m_nodes[0])->m_dof_set |= 1 << uint32_t(dependency->m_dof[0]);
+				m_model->mesh()->node(dependency->m_nodes[1])->m_dof_set |= 1 << uint32_t(dependency->m_dof[1]);
 			}
 		}
 		void Boundary::dof_setup(uint32_t& dof_counter)

@@ -58,35 +58,35 @@ namespace fea
 			double Node::state(DOF dof) const
 			{
 				//data
-				const double* x = m_mesh->model()->m_analysis->solver()->m_x_new;
+				const double* x = m_mesh->model()->analysis()->solver()->m_x_new;
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
-				const uint32_t nu = m_mesh->model()->m_analysis->assembler()->dof_unknow();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 
-					m_mesh->model()->m_boundary->support(m_dof_indexes[id] - nu)->state();
+					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->state();
 			}
 			double Node::velocity(DOF dof) const
 			{
 				//data
-				const double* v = m_mesh->model()->m_analysis->solver()->m_v_new;
+				const double* v = m_mesh->model()->analysis()->solver()->m_v_new;
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
-				const uint32_t nu = m_mesh->model()->m_analysis->assembler()->dof_unknow();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 
-					m_mesh->model()->m_boundary->support(m_dof_indexes[id] - nu)->velocity();
+					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->velocity();
 			}
 			double Node::acceleration(DOF dof) const
 			{
 				//data
-				const double* a = m_mesh->model()->m_analysis->solver()->m_a_new;
+				const double* a = m_mesh->model()->analysis()->solver()->m_a_new;
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
-				const uint32_t nu = m_mesh->model()->m_analysis->assembler()->dof_unknow();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 
-					m_mesh->model()->m_boundary->support(m_dof_indexes[id] - nu)->acceleration();
+					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->acceleration();
 			}
 
 			const double* Node::quaternion_old(void) const

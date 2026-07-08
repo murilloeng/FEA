@@ -62,24 +62,24 @@ namespace fea
 
 		mesh::nodes::Node* Initial::node(void) const
 		{
-			return m_boundary->model()->m_mesh->node(m_node);
+			return m_boundary->model()->mesh()->node(m_node);
 		}
 		mesh::nodes::Node* Initial::node(uint32_t node)
 		{
-			return m_boundary->model()->m_mesh->node(m_node = node);
+			return m_boundary->model()->mesh()->node(m_node = node);
 		}
 
 		//analysis
 		void Initial::check(void)
 		{
-			if(m_node >= m_boundary->model()->m_mesh->nodes().size())
+			if(m_node >= m_boundary->model()->mesh()->nodes().size())
 			{
 				throw std::runtime_error("Error: Initial's node is out of range!");
 			}
 		}
 		void Initial::setup(void)
 		{
-			m_dof_index = m_boundary->model()->m_mesh->node(m_node)->dof_index(m_dof);
+			m_dof_index = m_boundary->model()->mesh()->node(m_node)->dof_index(m_dof);
 		}
 
 		//static

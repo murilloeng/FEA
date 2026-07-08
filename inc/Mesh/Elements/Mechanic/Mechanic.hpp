@@ -14,13 +14,14 @@ namespace fea
 		{
 			class Mechanic : public Element
 			{
-			public:
+			protected:
 				//constructor
 				Mechanic(void);
 
 				//destructor
 				~Mechanic(void);
 
+			public:
 				//data
 				const materials::Mechanic* material(void) const;
 				const materials::Mechanic* material(const materials::Mechanic*);

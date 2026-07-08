@@ -49,21 +49,21 @@ namespace fea
 		//state
 		double WatchDOF::state(void) const
 		{
-			return m_analysis->model()->m_mesh->node(m_node)->state(m_dof);
+			return m_analysis->model()->mesh()->node(m_node)->state(m_dof);
 		}
 		double WatchDOF::velocity(void) const
 		{
-			return m_analysis->model()->m_mesh->node(m_node)->velocity(m_dof);
+			return m_analysis->model()->mesh()->node(m_node)->velocity(m_dof);
 		}
 		double WatchDOF::acceleration(void) const
 		{
-			return m_analysis->model()->m_mesh->node(m_node)->acceleration(m_dof);
+			return m_analysis->model()->mesh()->node(m_node)->acceleration(m_dof);
 		}
 
 		//analysis
 		void WatchDOF::check(void)
 		{
-			if(m_node >= m_analysis->model()->m_mesh->nodes().size())
+			if(m_node >= m_analysis->model()->mesh()->nodes().size())
 			{
 				throw std::runtime_error("Error: Watch DOF has out of range node!");
 			}

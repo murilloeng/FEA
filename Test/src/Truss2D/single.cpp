@@ -30,26 +30,26 @@ void test::truss2D::single(void)
 	materials::Steel material;
 	const double L = 1.00e+00;
 	//nodes
-	model.m_mesh->create_node(0, 0, 0);
-	model.m_mesh->create_node(L, 0, 0);
+	model.mesh()->create_node(0, 0, 0);
+	model.mesh()->create_node(L, 0, 0);
 	//sections
 	section.compute();
 	//elements
-	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
-	((fea::mesh::elements::Truss2D*) model.m_mesh->element(0))->section(&section);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->element(0))->material(&material);
+	model.mesh()->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
+	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->section(&section);
+	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->material(&material);
 	//supports
-	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_1);
-	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_2);
-	model.m_boundary->create_support(1, fea::mesh::nodes::DOF::Translation_2);
+	model.boundary()->create_support(0, fea::mesh::nodes::DOF::Translation_1);
+	model.boundary()->create_support(0, fea::mesh::nodes::DOF::Translation_2);
+	model.boundary()->create_support(1, fea::mesh::nodes::DOF::Translation_2);
 	//loads
 	const double A = section.area();
 	const double E = material.elastic_modulus();
-	model.m_boundary->create_load_combination(0, false, 1);
-	model.m_boundary->create_load_case(1, fea::mesh::nodes::DOF::Translation_1, 0.01 * E * A / L);
+	model.boundary()->create_load_combination(0, false, 1);
+	model.boundary()->create_load_case(1, fea::mesh::nodes::DOF::Translation_1, 0.01 * E * A / L);
 	//solver
-	model.m_analysis->solver()->load_combination(0);
+	model.analysis()->solver()->load_combination(0);
 	//solve
 	model.solve();
-	printf("displacement: %+.2e\n", model.m_mesh->node(1)->state(fea::mesh::nodes::DOF::Translation_1));
+	printf("displacement: %+.2e\n", model.mesh()->node(1)->state(fea::mesh::nodes::DOF::Translation_1));
 }

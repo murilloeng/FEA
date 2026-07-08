@@ -14,13 +14,14 @@ namespace fea
 		{
 			class Frame : public Mechanic
 			{
-			public:
+			protected:
 				//constructor
 				Frame(void);
 
 				//destructor
 				~Frame(void);
 
+			public:
 				//data
 				const sections::Section* section(void) const;
 				const sections::Section* section(sections::Section*);

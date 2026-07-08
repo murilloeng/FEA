@@ -7,11 +7,19 @@ namespace fea
 {
 	namespace mesh
 	{
+		class Mesh;
+	}
+}
+
+namespace fea
+{
+	namespace mesh
+	{
 		namespace elements
 		{
 			class Truss3D : public Truss
 			{
-			public:
+			protected:
 				//constructor
 				Truss3D(void);
 
@@ -28,6 +36,9 @@ namespace fea
 
 				//forces
 				void internal_force(double*) const override;
+
+				//friends
+				friend class fea::mesh::Mesh;
 			};
 		}
 	}

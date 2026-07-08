@@ -12,13 +12,14 @@ namespace fea
 		{
 			class Truss : public Frame
 			{
-			public:
+			protected:
 				//constructor
 				Truss(void);
 
 				//destructor
 				~Truss(void);
 
+			public:
 				//data
 				static StrainMeasure strain_measure(void);
 				static StrainMeasure strain_measure(StrainMeasure);

@@ -28,6 +28,32 @@ namespace fea
 		delete m_analysis;
 	}
 
+	//data
+	mesh::Mesh* Model::mesh(void) const
+	{
+		return m_mesh;
+	}
+	boundary::Boundary* Model::boundary(void) const
+	{
+		return m_boundary;
+	}
+	analysis::Analysis* Model::analysis(void) const
+	{
+		return m_analysis;
+	}
+
+	//solve
+	void Model::solve(void)
+	{
+		check();
+		setup();
+		m_analysis->m_solver->solve();
+	}
+	void Model::compute(void)
+	{
+		m_mesh->compute();
+	}
+
 	//analysis
 	void Model::check(void)
 	{
@@ -43,15 +69,5 @@ namespace fea
 		m_mesh->setup();
 		m_boundary->setup();
 		m_analysis->setup();
-	}
-	void Model::solve(void)
-	{
-		check();
-		setup();
-		m_analysis->m_solver->solve();
-	}
-	void Model::compute(void)
-	{
-		m_mesh->compute();
 	}
 }

@@ -33,15 +33,15 @@ namespace fea
 		//data
 		double Support::state(void)
 		{
-			return m_state ? m_state(m_boundary->model()->m_analysis->solver()->m_t_new) : 0;
+			return m_state ? m_state(m_boundary->model()->analysis()->solver()->m_t_new) : 0;
 		}
 		double Support::velocity(void)
 		{
-			return m_velocity ? m_velocity(m_boundary->model()->m_analysis->solver()->m_t_new) : 0;
+			return m_velocity ? m_velocity(m_boundary->model()->analysis()->solver()->m_t_new) : 0;
 		}
 		double Support::acceleration(void)
 		{
-			return m_acceleration ? m_acceleration(m_boundary->model()->m_analysis->solver()->m_t_new) : 0;
+			return m_acceleration ? m_acceleration(m_boundary->model()->analysis()->solver()->m_t_new) : 0;
 		}
 
 		uint32_t Support::index_node(void) const
@@ -51,11 +51,11 @@ namespace fea
 
 		mesh::nodes::Node* Support::node(void) const
 		{
-			return m_boundary->model()->m_mesh->node(m_node);
+			return m_boundary->model()->mesh()->node(m_node);
 		}
 		mesh::nodes::Node* Support::node(uint32_t node)
 		{
-			return m_boundary->model()->m_mesh->node(m_node = node);
+			return m_boundary->model()->mesh()->node(m_node = node);
 		}
 
 		mesh::nodes::DOF Support::dof(void) const
@@ -70,14 +70,14 @@ namespace fea
 		//analysis
 		void Support::check(void)
 		{
-			if(m_node >= m_boundary->model()->m_mesh->nodes().size())
+			if(m_node >= m_boundary->model()->mesh()->nodes().size())
 			{
 				throw std::runtime_error("Error: Suuport's node is out of range!");
 			}
 		}
 		void Support::setup(void)
 		{
-			m_dof_index = m_boundary->model()->m_mesh->node(m_node)->dof_index(m_dof);
+			m_dof_index = m_boundary->model()->mesh()->node(m_node)->dof_index(m_dof);
 		}
 
 		//static

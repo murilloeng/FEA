@@ -66,7 +66,7 @@ namespace fea
 		}
 		void Analysis::dof_apply(void)
 		{
-			m_model->m_mesh->node(m_solver->m_watch_dof.m_node)->m_dof_set |= 1 << uint32_t(m_solver->m_watch_dof.m_dof);
+			m_model->mesh()->node(m_solver->m_watch_dof.m_node)->m_dof_set |= 1 << uint32_t(m_solver->m_watch_dof.m_dof);
 		}
 
 		//static

@@ -36,37 +36,37 @@ void test::truss2D::von_mises(void)
 	const double R = 1.00e+00;
 	const double L = sqrt(H * H + R * R);
 	//nodes
-	model.m_mesh->create_node(-R, 0, 0);
-	model.m_mesh->create_node(+0, H, 0);
-	model.m_mesh->create_node(+R, 0, 0);
+	model.mesh()->create_node(-R, 0, 0);
+	model.mesh()->create_node(+0, H, 0);
+	model.mesh()->create_node(+R, 0, 0);
 	//elements
-	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
-	model.m_mesh->create_element(fea::mesh::elements::Type::Truss2D, {1, 2});
-	((fea::mesh::elements::Truss2D*) model.m_mesh->element(0))->section(&section);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->element(1))->section(&section);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->element(0))->material(&material);
-	((fea::mesh::elements::Truss2D*) model.m_mesh->element(1))->material(&material);
+	model.mesh()->create_element(fea::mesh::elements::Type::Truss2D, {0, 1});
+	model.mesh()->create_element(fea::mesh::elements::Type::Truss2D, {1, 2});
+	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->section(&section);
+	((fea::mesh::elements::Truss2D*) model.mesh()->element(1))->section(&section);
+	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->material(&material);
+	((fea::mesh::elements::Truss2D*) model.mesh()->element(1))->material(&material);
 	fea::mesh::elements::Truss::strain_measure(fea::mesh::elements::StrainMeasure::Quadratic);
 	//supports
-	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_1);
-	model.m_boundary->create_support(0, fea::mesh::nodes::DOF::Translation_2);
-	model.m_boundary->create_support(2, fea::mesh::nodes::DOF::Translation_1);
-	model.m_boundary->create_support(2, fea::mesh::nodes::DOF::Translation_2);
+	model.boundary()->create_support(0, fea::mesh::nodes::DOF::Translation_1);
+	model.boundary()->create_support(0, fea::mesh::nodes::DOF::Translation_2);
+	model.boundary()->create_support(2, fea::mesh::nodes::DOF::Translation_1);
+	model.boundary()->create_support(2, fea::mesh::nodes::DOF::Translation_2);
 	//loads
 	section.compute();
 	const double A = section.area();
 	const double E = material.elastic_modulus();
-	model.m_boundary->create_load_combination(0, false, 1);
-	model.m_boundary->create_load_case(1, fea::mesh::nodes::DOF::Translation_2, -E * A * pow(H / L, 3));
+	model.boundary()->create_load_combination(0, false, 1);
+	model.boundary()->create_load_case(1, fea::mesh::nodes::DOF::Translation_2, -E * A * pow(H / L, 3));
 	//solver
-	model.m_analysis->create_solver(fea::analysis::Type::StaticNonlinear);
+	model.analysis()->create_solver(fea::analysis::Type::StaticNonlinear);
 	//setup
-	model.m_analysis->solver()->load_combination(0);
-	model.m_analysis->solver()->watch_dof().node(1);
-	model.m_analysis->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_2);
-	dynamic_cast<fea::analysis::StaticNonlinear*>(model.m_analysis->solver())->m_step_max = 400;
+	model.analysis()->solver()->load_combination(0);
+	model.analysis()->solver()->watch_dof().node(1);
+	model.analysis()->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_2);
+	dynamic_cast<fea::analysis::StaticNonlinear*>(model.analysis()->solver())->m_step_max = 400;
 	//solve
 	model.solve();
 	//save
-	model.m_analysis->solver()->save("von mises.txt");
+	model.analysis()->solver()->save("von mises.txt");
 }
