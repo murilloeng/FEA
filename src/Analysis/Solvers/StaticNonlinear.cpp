@@ -38,12 +38,18 @@ namespace fea
 			//system
 			m_system_2 = [this](double* r, double* fe, double* K, double p, const double* x)
 			{
+				m_analysis->m_model->compute();
 				m_analysis->m_assembler->assemble_stiffness(K);
 				m_analysis->m_assembler->assemble_dead_force(m_r, true);
 				m_analysis->m_assembler->assemble_internal_force(m_r, false, -1);
 				m_analysis->m_assembler->assemble_reference_force(m_r, false, p);
-				m_analysis->m_assembler->assemble_reference_force(m_fe, true, p);
+				m_analysis->m_assembler->assemble_reference_force(m_fe, true, 1);
 			};
+		}
+		void StaticNonlinear::print(void)
+		{
+			if(m_silent) return;
+			printf("Step: %4d Attempts: %d Iterations: %d Load: %+.6e State: %+.6e\n", m_step, m_attempt, m_iteration, m_p_new, m_watch_dof.state());
 		}
 
 		//solve

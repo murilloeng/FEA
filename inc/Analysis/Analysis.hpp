@@ -1,5 +1,8 @@
 #pragma once
 
+//std
+#include <cstdint>
+
 namespace fea
 {
 	class Model;
@@ -7,6 +10,7 @@ namespace fea
 	{
 		class Solver;
 		class Assembler;
+		enum class Type : uint32_t;
 	}
 }
 
@@ -27,6 +31,9 @@ namespace fea
 			void check(void);
 			void setup(void);
 			void dof_apply(void);
+
+			//data
+			void create_solver(Type);
 
 			//data
 			Solver* m_solver;

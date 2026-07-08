@@ -35,6 +35,11 @@ namespace fea
 			void check(void);
 
 			//data
+			double state(void) const;
+			double velocity(void) const;
+			double acceleration(void) const;
+
+			//data
 			uint32_t m_node;
 			mesh::nodes::DOF m_dof;
 			static Analysis* m_analysis;

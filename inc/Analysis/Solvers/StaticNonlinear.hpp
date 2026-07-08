@@ -22,6 +22,7 @@ namespace fea
 			//analysis
 			void check(void) override;
 			void setup(void) override;
+			void print(void) override;
 
 			//solve
 			void solve(void) override;

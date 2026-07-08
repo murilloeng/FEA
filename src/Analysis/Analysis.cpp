@@ -8,6 +8,7 @@
 #include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
+#include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 namespace fea
 {
@@ -41,6 +42,17 @@ namespace fea
 		void Analysis::dof_apply(void)
 		{
 			m_model->m_mesh->m_nodes[m_solver->m_watch_dof.m_node]->m_dof_set |= 1 << uint32_t(m_solver->m_watch_dof.m_dof);
+		}
+
+		//data
+		void Analysis::create_solver(Type type)
+		{
+			std::function<void(Solver*&)> fabric[] = {
+				[](Solver*& solver){ solver = new StaticLinear; },
+				[](Solver*& solver){ solver = new StaticNonlinear; }
+			};
+			delete m_solver;
+			fabric[uint32_t(type)](m_solver);
 		}
 
 		//static
