@@ -20,6 +20,30 @@ namespace fea
 			for(const loads::Element* load : m_loads_elements) delete load;
 		}
 
+		//data
+		Boundary* LoadCase::boundary(void)
+		{
+			return m_boundary;
+		}
+
+		loads::Node* LoadCase::load_node(uint32_t index) const
+		{
+			return m_loads_nodes[index];
+		}
+		loads::Element* LoadCase::load_element(uint32_t index) const
+		{
+			return m_loads_elements[index];
+		}
+
+		const std::vector<loads::Node*>& LoadCase::loads_nodes(void) const
+		{
+			return m_loads_nodes;
+		}
+		const std::vector<loads::Element*>& LoadCase::loads_elements(void) const
+		{
+			return m_loads_elements;
+		}
+
 		//analysis
 		void LoadCase::check(void)
 		{

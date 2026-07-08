@@ -48,7 +48,7 @@ void test::truss2D::single(void)
 	model.m_boundary->create_load_combination(0, false, 1);
 	model.m_boundary->create_load_case(1, fea::mesh::nodes::DOF::Translation_1, 0.01 * E * A / L);
 	//solver
-	model.m_analysis->solver()->m_load_combination = 0;
+	model.m_analysis->solver()->load_combination(0);
 	//solve
 	model.solve();
 	printf("displacement: %+.2e\n", model.m_mesh->node(1)->state(fea::mesh::nodes::DOF::Translation_1));

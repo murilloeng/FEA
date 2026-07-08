@@ -18,6 +18,10 @@ namespace fea
 	{
 		class Boundary;
 	}
+	namespace analysis
+	{
+		class Assembler;
+	}
 }
 
 namespace fea
@@ -26,7 +30,7 @@ namespace fea
 	{
 		class Constraint
 		{
-		public:
+		private:
 			//constructor
 			Constraint(void);
 
@@ -47,6 +51,10 @@ namespace fea
 			std::function<void(double*, const double*)> m_hessian;
 			std::function<void(double*, const double*)> m_function;
 			std::function<void(double&, const double*)> m_gradient;
+
+			//friends
+			friend class fea::boundary::Boundary;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

@@ -276,18 +276,18 @@ namespace fea
 		{
 			//setup
 			if(cleanup) memset(fd, 0, m_dof_unknow * sizeof(double));
-			if(m_analysis->m_solver->m_load_combination == UINT32_MAX) return;
+			if(m_analysis->m_solver->load_combination() == UINT32_MAX) return;
 			//data
-			const uint32_t index = m_analysis->m_solver->m_load_combination;
+			const uint32_t index = m_analysis->m_solver->load_combination();
 			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
 			//load cases
-			for(const boundary::LoadCombination::Item& item : load_combination->m_items)
+			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
-				if(!item.m_fixed) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case];
-				for(const boundary::loads::Node* load : load_case->m_loads_nodes)
+				if(!item->fixed()) continue;
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
+				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fd[load->m_dof_index] += s * load->m_value;
+					fd[load->m_dof_index] += s * item->value() * load->value();
 				}
 			}
 		}
@@ -310,18 +310,18 @@ namespace fea
 		{
 			//setup
 			if(cleanup) memset(fr, 0, m_dof_unknow * sizeof(double));
-			if(m_analysis->m_solver->m_load_combination == UINT32_MAX) return;
+			if(m_analysis->m_solver->load_combination() == UINT32_MAX) return;
 			//data
-			const uint32_t index = m_analysis->m_solver->m_load_combination;
+			const uint32_t index = m_analysis->m_solver->load_combination();
 			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
 			//load cases
-			for(const boundary::LoadCombination::Item& item : load_combination->m_items)
+			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
-				if(item.m_fixed) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item.m_load_case];
-				for(const boundary::loads::Node* load : load_case->m_loads_nodes)
+				if(item->fixed()) continue;
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
+				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fr[load->m_dof_index] += s * load->m_value;
+					fr[load->m_dof_index] += s * item->value() * load->value();
 				}
 			}
 		}

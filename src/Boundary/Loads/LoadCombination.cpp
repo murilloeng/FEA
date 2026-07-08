@@ -14,7 +14,28 @@ namespace fea
 		//destructor
 		LoadCombination::~LoadCombination(void)
 		{
-			return;
+			for(const LoadItem* load_item : m_load_items) delete load_item;
+		}
+
+		//create
+		void LoadCombination::create_load_item(uint32_t load_case, double value, bool fixed)
+		{
+			m_load_items.push_back(new LoadItem{load_case, value, fixed});
+		}
+
+		//data
+		Boundary* LoadCombination::boundary(void)
+		{
+			return m_boundary;
+		}
+
+		const LoadItem* LoadCombination::load_item(uint32_t index) const
+		{
+			return m_load_items[index];
+		}
+		const std::vector<LoadItem*>& LoadCombination::load_items(void) const
+		{
+			return m_load_items;
 		}
 
 		//analysis

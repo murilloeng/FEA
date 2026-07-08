@@ -4,6 +4,9 @@
 #include <vector>
 #include <cstdint>
 
+//FEA
+#include "FEA/inc/Boundary/Loads/LoadItem.hpp"
+
 namespace fea
 {
 	namespace boundary
@@ -18,28 +21,34 @@ namespace fea
 	{
 		class LoadCombination
 		{
-		public:
+		private:
 			//constructor
 			LoadCombination(void);
 
 			//destructor
 			~LoadCombination(void);
 
+		public:
+			//create
+			void create_load_item(uint32_t, double, bool);
+
+			//data
+			static Boundary* boundary(void);
+
+			const LoadItem* load_item(uint32_t) const;
+			const std::vector<LoadItem*>& load_items(void) const;
+
+		private:
 			//analysis
 			void check(void);
 			void setup(void);
 
-			//structs
-			struct Item
-			{
-				double m_value = 1;
-				bool m_fixed = false;
-				uint32_t m_load_case = 0;
-			};
-
 			//data
-			std::vector<Item> m_items;
 			static Boundary* m_boundary;
+			std::vector<LoadItem*> m_load_items;
+
+			//friends
+			friend class fea::boundary::Boundary;
 		};
 	}
 }

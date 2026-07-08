@@ -16,6 +16,10 @@ namespace fea
 	{
 		class Boundary;
 	}
+	namespace analysis
+	{
+		class Assembler;
+	}
 }
 
 namespace fea
@@ -24,7 +28,7 @@ namespace fea
 	{
 		class Dependency
 		{
-		public:
+		private:
 			//constructor
 			Dependency(void);
 
@@ -50,6 +54,10 @@ namespace fea
 			uint32_t m_nodes[2];
 			mesh::nodes::DOF m_dof[2];
 			static Boundary* m_boundary;
+
+			//friends
+			friend class fea::boundary::Boundary;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

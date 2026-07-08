@@ -175,7 +175,7 @@ namespace fea
 			//data
 			LoadCombination* load_combination = new LoadCombination;
 			//setup
-			load_combination->m_items.push_back(LoadCombination::Item{value, fixed, load_case});
+			load_combination->create_load_item(load_case, value, fixed);
 			//append
 			m_load_combinations.push_back(load_combination);
 		}

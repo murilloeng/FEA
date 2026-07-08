@@ -27,16 +27,26 @@ namespace fea
 			return;
 		}
 
-		//analysis
-		void WatchDOF::check(void)
+		//data
+		uint32_t WatchDOF::node(void) const
 		{
-			if(m_node >= m_analysis->model()->m_mesh->nodes().size())
-			{
-				throw std::runtime_error("Error: Watch DOF has out of range node!");
-			}
+			return m_node;
+		}
+		uint32_t WatchDOF::node(uint32_t node)
+		{
+			return m_node = node;
 		}
 
-		//data
+		mesh::nodes::DOF WatchDOF::dof(void) const
+		{
+			return m_dof;
+		}
+		mesh::nodes::DOF WatchDOF::dof(mesh::nodes::DOF dof)
+		{
+			return m_dof = dof;
+		}
+
+		//state
 		double WatchDOF::state(void) const
 		{
 			return m_analysis->model()->m_mesh->node(m_node)->state(m_dof);
@@ -48,6 +58,15 @@ namespace fea
 		double WatchDOF::acceleration(void) const
 		{
 			return m_analysis->model()->m_mesh->node(m_node)->acceleration(m_dof);
+		}
+
+		//analysis
+		void WatchDOF::check(void)
+		{
+			if(m_node >= m_analysis->model()->m_mesh->nodes().size())
+			{
+				throw std::runtime_error("Error: Watch DOF has out of range node!");
+			}
 		}
 
 		//static

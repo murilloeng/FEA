@@ -84,7 +84,7 @@ namespace fea
 			{
 				for(const Initial* initial : m_boundary->initials())
 				{
-					test = test && (m_nodes[i] != initial->m_node || m_dof[i] != initial->m_dof);
+					test = test && (m_nodes[i] != initial->node() || m_dof[i] != initial->dof());
 				}
 			}
 			if(!test)

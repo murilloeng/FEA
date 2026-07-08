@@ -61,9 +61,9 @@ void test::truss2D::von_mises(void)
 	//solver
 	model.m_analysis->create_solver(fea::analysis::Type::StaticNonlinear);
 	//setup
-	model.m_analysis->solver()->m_load_combination = 0;
-	model.m_analysis->solver()->m_watch_dof.m_node = 1;
-	model.m_analysis->solver()->m_watch_dof.m_dof = fea::mesh::nodes::DOF::Translation_2;
+	model.m_analysis->solver()->load_combination(0);
+	model.m_analysis->solver()->watch_dof().node(1);
+	model.m_analysis->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_2);
 	dynamic_cast<fea::analysis::StaticNonlinear*>(model.m_analysis->solver())->m_step_max = 400;
 	//solve
 	model.solve();

@@ -9,13 +9,14 @@ namespace fea
 	{
 		class StaticLinear : public Solver
 		{
-		public:
+		private:
 			//constructor
 			StaticLinear(void);
 
 			//destructor
 			~StaticLinear(void);
 
+		public:
 			//data
 			uint32_t state_set(void) const override;
 			uint32_t force_set(void) const override;
@@ -23,6 +24,9 @@ namespace fea
 
 			//solve
 			void solve(void) override;
+
+			//friends
+			friend class fea::analysis::Analysis;
 		};
 	}
 }

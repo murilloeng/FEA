@@ -27,6 +27,43 @@ namespace fea
 			return;
 		}
 
+		//data
+		uint32_t Initial::node(void) const
+		{
+			return m_node;
+		}
+		uint32_t Initial::node(uint32_t node)
+		{
+			return m_node = node;
+		}
+
+		double Initial::state(void) const
+		{
+			return m_state;
+		}
+		double Initial::state(double state)
+		{
+			return m_state = state;
+		}
+
+		double Initial::velocity(void) const
+		{
+			return m_velocity;
+		}
+		double Initial::velocity(double velocity)
+		{
+			return m_velocity = velocity;
+		}
+
+		mesh::nodes::DOF Initial::dof(void) const
+		{
+			return m_dof;
+		}
+		mesh::nodes::DOF Initial::dof(mesh::nodes::DOF dof)
+		{
+			return m_dof = dof;
+		}
+
 		//analysis
 		void Initial::check(void)
 		{

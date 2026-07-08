@@ -12,13 +12,14 @@ namespace fea
 	{
 		class StaticNonlinear : virtual public Solver, virtual public math::solvers::NewtonRaphson
 		{
-		public:
+		private:
 			//constructor
 			StaticNonlinear(void);
 
 			//destructor
 			~StaticNonlinear(void);
 
+		public:
 			//analysis
 			void check(void) override;
 			void setup(void) override;
@@ -26,6 +27,9 @@ namespace fea
 
 			//solve
 			void solve(void) override;
+
+			//friends
+			friend class fea::analysis::Analysis;
 		};
 	}
 }

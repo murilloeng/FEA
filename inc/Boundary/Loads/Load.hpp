@@ -8,6 +8,7 @@ namespace fea
 	namespace boundary
 	{
 		class Boundary;
+		class LoadCase;
 	}
 }
 
@@ -19,13 +20,22 @@ namespace fea
 		{
 			class Load
 			{
-			public:
+			protected:
 				//constructor
 				Load(void);
 
 				//destructor
 				virtual ~Load(void);
 
+			public:
+				//data
+				double value(double);
+				double value(void) const;
+
+				std::function<double(double)> function(void) const;
+				std::function<double(double)> function(std::function<double(double)>);
+
+			protected:
 				//analysis
 				virtual void check(void);
 				virtual void setup(void);
@@ -34,6 +44,10 @@ namespace fea
 				double m_value;
 				static Boundary* m_boundary;
 				std::function<double(double)> m_function;
+
+				//friends
+				friend class fea::boundary::Boundary;
+				friend class fea::boundary::LoadCase;
 			};
 		}
 	}

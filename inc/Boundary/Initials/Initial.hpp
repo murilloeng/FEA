@@ -24,13 +24,28 @@ namespace fea
 	{
 		class Initial
 		{
-		public:
+		private:
 			//constructor
 			Initial(void);
 
 			//destructor
 			~Initial(void);
 
+		public:
+			//data
+			uint32_t node(uint32_t);
+			uint32_t node(void) const;
+
+			double state(double);
+			double state(void) const;
+
+			double velocity(double);
+			double velocity(void) const;
+
+			mesh::nodes::DOF dof(void) const;
+			mesh::nodes::DOF dof(mesh::nodes::DOF);
+
+		private:
 			//analysis
 			void check(void);
 			void setup(void);
@@ -44,6 +59,9 @@ namespace fea
 			mesh::nodes::DOF m_dof;
 
 			static Boundary* m_boundary;
+
+			//friends
+			friend class fea::boundary::Boundary;
 		};
 	}
 }

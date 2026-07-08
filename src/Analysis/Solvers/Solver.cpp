@@ -27,6 +27,21 @@ namespace fea
 			return;
 		}
 
+		//data
+		WatchDOF& Solver::watch_dof(void)
+		{
+			return m_watch_dof;
+		}
+
+		uint32_t Solver::load_combination(void) const
+		{
+			return m_load_combination;
+		}
+		uint32_t Solver::load_combination(uint32_t load_combination)
+		{
+			return m_load_combination = load_combination;
+		}
+
 		//analysis
 		void Solver::check(void)
 		{

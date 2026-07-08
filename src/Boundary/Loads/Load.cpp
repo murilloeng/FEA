@@ -19,6 +19,25 @@ namespace fea
 				return;
 			}
 
+			//data
+			double Load::value(void) const
+			{
+				return m_value;
+			}
+			double Load::value(double value)
+			{
+				return m_value = value;
+			}
+
+			std::function<double(double)> Load::function(void) const
+			{
+				return m_function;
+			}
+			std::function<double(double)> Load::function(std::function<double(double)> function)
+			{
+				return m_function = function;
+			}
+
 			//analysis
 			void Load::check(void)
 			{
