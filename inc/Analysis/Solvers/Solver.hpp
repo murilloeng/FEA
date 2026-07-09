@@ -14,6 +14,7 @@ namespace fea
 	namespace analysis
 	{
 		class Analysis;
+		class Assembler;
 	}
 }
 
@@ -48,8 +49,14 @@ namespace fea
 			uint32_t m_load_combination;
 			static Analysis* m_analysis;
 
+			using math::solvers::Solver::size;
+			using math::solvers::Solver::rows_map;
+			using math::solvers::Solver::cols_map;
+			using math::solvers::Solver::watch_dof;
+
 			//friends
 			friend class fea::analysis::Analysis;
+			friend class fea::analysis::Assembler;
 		};
 	}
 }

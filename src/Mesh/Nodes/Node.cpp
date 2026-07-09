@@ -58,9 +58,9 @@ namespace fea
 			double Node::state(DOF dof) const
 			{
 				//data
-				const double* x = m_mesh->model()->analysis()->solver()->m_x_new;
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const double* x = m_mesh->model()->analysis()->solver()->state_new();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 
@@ -69,9 +69,9 @@ namespace fea
 			double Node::velocity(DOF dof) const
 			{
 				//data
-				const double* v = m_mesh->model()->analysis()->solver()->m_v_new;
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const double* v = m_mesh->model()->analysis()->solver()->velocity_new();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 
@@ -80,9 +80,9 @@ namespace fea
 			double Node::acceleration(DOF dof) const
 			{
 				//data
-				const double* a = m_mesh->model()->analysis()->solver()->m_a_new;
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const double* a = m_mesh->model()->analysis()->solver()->acceleration_new();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 

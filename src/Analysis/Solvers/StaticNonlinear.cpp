@@ -36,7 +36,7 @@ namespace fea
 			math::solvers::Implicit::setup();
 			math::solvers::Incremental::setup();
 			//system
-			m_system_2 = [this](double* r, double* fe, double* K, double p, const double* x)
+			m_system = [this](double* r, double* fe, double* K, double p, const double* x)
 			{
 				m_analysis->model()->compute();
 				m_analysis->assembler()->assemble_stiffness(K);

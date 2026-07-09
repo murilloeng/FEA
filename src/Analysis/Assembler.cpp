@@ -233,8 +233,8 @@ namespace fea
 		{
 			dof_map();
 			dof_local();
-			m_analysis->m_solver->m_rows_map = m_rows_map;
-			m_analysis->m_solver->m_cols_map = m_cols_map;
+			m_analysis->m_solver->rows_map(m_rows_map);
+			m_analysis->m_solver->cols_map(m_cols_map);
 		}
 
 		//assemble

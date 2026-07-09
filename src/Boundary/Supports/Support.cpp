@@ -33,15 +33,15 @@ namespace fea
 		//data
 		double Support::state(void)
 		{
-			return m_state ? m_state(m_boundary->model()->analysis()->solver()->m_t_new) : 0;
+			return m_state ? m_state(m_boundary->model()->analysis()->solver()->time_new()) : 0;
 		}
 		double Support::velocity(void)
 		{
-			return m_velocity ? m_velocity(m_boundary->model()->analysis()->solver()->m_t_new) : 0;
+			return m_velocity ? m_velocity(m_boundary->model()->analysis()->solver()->time_new()) : 0;
 		}
 		double Support::acceleration(void)
 		{
-			return m_acceleration ? m_acceleration(m_boundary->model()->analysis()->solver()->m_t_new) : 0;
+			return m_acceleration ? m_acceleration(m_boundary->model()->analysis()->solver()->time_new()) : 0;
 		}
 
 		uint32_t Support::index_node(void) const
