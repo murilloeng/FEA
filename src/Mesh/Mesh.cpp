@@ -54,17 +54,28 @@ namespace fea
 		//create
 		void Mesh::create_node(const double* position_ref)
 		{
-			m_nodes.push_back(new nodes::Node(position_ref));
+			//data
+			const uint32_t nn = m_nodes.size();
+			nodes::Node* node = new nodes::Node(position_ref);
+			//append
+			node->m_index = nn;
+			m_nodes.push_back(node);
 		}
 		void Mesh::create_node(double x1, double x2, double x3)
 		{
-			m_nodes.push_back(new nodes::Node(x1, x2, x3));
+			//data
+			const uint32_t nn = m_nodes.size();
+			nodes::Node* node = new nodes::Node(x1, x2, x3);
+			//append
+			node->m_index = nn;
+			m_nodes.push_back(node);
 		}
 
 		void Mesh::create_element(elements::Type type, std::vector<uint32_t> nodes)
 		{
 			//data
 			elements::Element* element;
+			const uint32_t ne = m_elements.size();
 			std::function<void(elements::Element*&)> fabric[] = {
 				[](elements::Element*& element){ element = new elements::Truss2D; },
 				[](elements::Element*& element){ element = new elements::Truss3D; }
@@ -72,6 +83,7 @@ namespace fea
 			//create
 			fabric[uint32_t(type)](element);
 			//append
+			element->m_index = ne;
 			element->m_nodes = nodes;
 			m_elements.push_back(element);
 		}

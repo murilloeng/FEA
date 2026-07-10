@@ -29,6 +29,15 @@ namespace fea
 			}
 
 			//data
+			uint32_t Element::index(void) const
+			{
+				return m_index;
+			}
+			uint32_t Element::index_node(uint32_t index) const
+			{
+				return m_nodes[index];
+			}
+
 			nodes::Node* Element::node(uint32_t index) const
 			{
 				return m_mesh->node(m_nodes[index]);

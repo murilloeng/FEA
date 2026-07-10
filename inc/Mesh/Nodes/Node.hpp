@@ -43,6 +43,7 @@ namespace fea
 
 			public:
 				//data
+				uint32_t index(void) const;
 				uint32_t dof_index(DOF) const;
 			
 				double state(DOF) const;
@@ -64,6 +65,7 @@ namespace fea
 				void dof_setup(uint32_t&);
 
 				//data
+				uint32_t m_index;
 				uint32_t m_dof_set;
 				static Mesh* m_mesh;
 				double m_position_ref[3];

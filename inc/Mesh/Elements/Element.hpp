@@ -37,6 +37,9 @@ namespace fea
 
 			public:
 				//data
+				uint32_t index(void) const;
+				uint32_t index_node(uint32_t) const;
+
 				nodes::Node* node(uint32_t) const;
 				virtual uint32_t dof_set(uint32_t) const = 0;
 
@@ -55,6 +58,7 @@ namespace fea
 				virtual void compute(void) = 0;
 
 				//data
+				uint32_t m_index;
 				static Mesh* m_mesh;
 				std::vector<uint32_t> m_nodes;
 				std::vector<uint32_t> m_dof_indexes;

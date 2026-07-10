@@ -46,6 +46,10 @@ namespace fea
 			}
 
 			//data
+			uint32_t Node::index(void) const
+			{
+				return m_index;
+			}
 			uint32_t Node::dof_index(DOF dof) const
 			{
 				if(~m_dof_set & 1 << uint32_t(dof))
