@@ -50,6 +50,10 @@ namespace fea
 				double velocity(DOF) const;
 				double acceleration(DOF) const;
 
+				double state(DOF, uint32_t) const;
+				double velocity(DOF, uint32_t) const;
+				double acceleration(DOF, uint32_t) const;
+
 				const double* quaternion_old(void) const;
 				const double* quaternion_new(void) const;
 
