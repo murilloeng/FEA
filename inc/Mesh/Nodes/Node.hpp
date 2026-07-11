@@ -53,6 +53,7 @@ namespace fea
 				const double* quaternion_old(void) const;
 				const double* quaternion_new(void) const;
 
+				const double* position(uint32_t);
 				const double* position_ref(double*);
 				const double* position_ref(void) const;
 				const double* position_new(void) const;
