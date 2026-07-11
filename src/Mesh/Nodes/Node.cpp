@@ -64,34 +64,37 @@ namespace fea
 			{
 				//data
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
-				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const double t = m_mesh->model()->analysis()->solver()->time_new();
 				const double* x = m_mesh->model()->analysis()->solver()->state_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 
-					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->state();
+					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->state(t);
 			}
 			double Node::velocity(DOF dof) const
 			{
 				//data
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
-				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const double t = m_mesh->model()->analysis()->solver()->time_new();
 				const double* v = m_mesh->model()->analysis()->solver()->velocity_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 
-					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->velocity();
+					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->velocity(t);
 			}
 			double Node::acceleration(DOF dof) const
 			{
 				//data
 				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const double t = m_mesh->model()->analysis()->solver()->time_new();
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				const double* a = m_mesh->model()->analysis()->solver()->acceleration_new();
 				//return
 				return ~m_dof_set & 1 << uint32_t(dof) ? 0 :
 					m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 
-					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->acceleration();
+					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->acceleration(t);
 			}
 
 			const double* Node::quaternion_old(void) const
@@ -116,12 +119,13 @@ namespace fea
 				//data
 				const uint32_t ib = 1 << uint32_t(DOF::Translation_1);
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
-				const double* x = dynamic_cast<math::solvers::Incremental*>(m_mesh->model()->analysis()->solver())->state_data();
+				const double* xd = dynamic_cast<math::solvers::Incremental*>(m_mesh->model()->analysis()->solver())->state_data();
 				//position
 				for(uint32_t i = 0; i < 3; i++)
 				{
+					m_position_new[i] = m_position_ref[i];
 					const uint32_t id = math::bit_index(m_dof_set, ib << i);
-					m_position_new[i] = m_position_ref[i] + (m_dof_set & ib << i) ? x[step * nu + m_dof_indexes[id]] : 0;
+					if((m_dof_set & ib << i) && m_dof_indexes[id] < nu) m_position_new[i] += xd[m_dof_indexes[id] + step * nu];
 				}
 				//return
 				return m_position_new;

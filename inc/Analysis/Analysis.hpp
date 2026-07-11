@@ -10,6 +10,8 @@ namespace fea
 	{
 		class Solver;
 		class Assembler;
+		class StaticLinear;
+		class StaticNonlinear;
 		enum class Type : uint32_t;
 	}
 }
@@ -29,12 +31,16 @@ namespace fea
 			
 		public:
 			//data
-			void create_solver(Type);
+			Type type(Type);
+			Type type(void) const;
 
 			static Model* model(void);
 
 			Solver* solver(void) const;
 			Assembler* assembler(void) const;
+
+			StaticLinear* solver_static_linear(void) const;
+			StaticNonlinear* solver_static_nonlinear(void) const;
 
 		private:
 			//analysis
@@ -43,9 +49,11 @@ namespace fea
 			void dof_apply(void);
 
 			//data
-			Solver* m_solver;
+			Type m_type;
 			static Model* m_model;
 			Assembler* m_assembler;
+			StaticLinear* m_solver_static_linear;
+			StaticNonlinear* m_solver_static_nonlinear;
 
 			//friends
 			friend class fea::Model;

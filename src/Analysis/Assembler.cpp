@@ -233,8 +233,8 @@ namespace fea
 		{
 			dof_map();
 			dof_local();
-			m_analysis->m_solver->rows_map(m_rows_map);
-			m_analysis->m_solver->cols_map(m_cols_map);
+			m_analysis->solver()->rows_map(m_rows_map);
+			m_analysis->solver()->cols_map(m_cols_map);
 		}
 
 		//assemble
@@ -276,9 +276,9 @@ namespace fea
 		{
 			//setup
 			if(cleanup) memset(fd, 0, m_dof_unknow * sizeof(double));
-			if(m_analysis->m_solver->load_combination() == UINT32_MAX) return;
+			if(m_analysis->solver()->load_combination() == UINT32_MAX) return;
 			//data
-			const uint32_t index = m_analysis->m_solver->load_combination();
+			const uint32_t index = m_analysis->solver()->load_combination();
 			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
 			//load cases
 			for(const boundary::LoadItem* item : load_combination->load_items())
@@ -310,9 +310,9 @@ namespace fea
 		{
 			//setup
 			if(cleanup) memset(fr, 0, m_dof_unknow * sizeof(double));
-			if(m_analysis->m_solver->load_combination() == UINT32_MAX) return;
+			if(m_analysis->solver()->load_combination() == UINT32_MAX) return;
 			//data
-			const uint32_t index = m_analysis->m_solver->load_combination();
+			const uint32_t index = m_analysis->solver()->load_combination();
 			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
 			//load cases
 			for(const boundary::LoadItem* item : load_combination->load_items())

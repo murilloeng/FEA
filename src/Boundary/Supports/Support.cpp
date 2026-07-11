@@ -31,17 +31,31 @@ namespace fea
 		}
 
 		//data
-		double Support::state(void)
+		Support::Function Support::state(void) const
 		{
-			return m_state ? m_state(m_boundary->model()->analysis()->solver()->time_new()) : 0;
+			return m_state;
 		}
-		double Support::velocity(void)
+		Support::Function Support::state(Function state)
 		{
-			return m_velocity ? m_velocity(m_boundary->model()->analysis()->solver()->time_new()) : 0;
+			return m_state = state;
 		}
-		double Support::acceleration(void)
+
+		Support::Function Support::velocity(void) const
 		{
-			return m_acceleration ? m_acceleration(m_boundary->model()->analysis()->solver()->time_new()) : 0;
+			return m_velocity;
+		}
+		Support::Function Support::velocity(Function velocity)
+		{
+			return m_velocity = velocity;
+		}
+
+		Support::Function Support::acceleration(void) const
+		{
+			return m_acceleration;
+		}
+		Support::Function Support::acceleration(Function acceleration)
+		{
+			return m_acceleration = acceleration;
 		}
 
 		uint32_t Support::index_node(void) const
@@ -65,6 +79,20 @@ namespace fea
 		mesh::nodes::DOF Support::dof(mesh::nodes::DOF dof)
 		{
 			return m_dof = dof;
+		}
+
+		//time
+		double Support::state(double t) const
+		{
+			return m_state ? m_state(t) : 0;
+		}
+		double Support::velocity(double t) const
+		{
+			return m_velocity ? m_velocity(t) : 0;
+		}
+		double Support::acceleration(double t) const
+		{
+			return m_acceleration ? m_acceleration(t) : 0;
 		}
 
 		//analysis

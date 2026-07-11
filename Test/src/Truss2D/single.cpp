@@ -20,7 +20,7 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
 
 void test::truss2D::single(void)
 {
@@ -48,7 +48,7 @@ void test::truss2D::single(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(1, fea::mesh::nodes::DOF::Translation_1, 0.01 * E * A / L);
 	//solver
-	model.analysis()->solver()->load_combination(0);
+	model.analysis()->solver_static_linear()->load_combination(0);
 	//solve
 	model.solve();
 	printf("displacement: %+.2e\n", model.mesh()->node(1)->state(fea::mesh::nodes::DOF::Translation_1));

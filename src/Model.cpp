@@ -47,7 +47,7 @@ namespace fea
 	{
 		check();
 		setup();
-		m_analysis->m_solver->solve();
+		m_analysis->solver()->solve();
 	}
 	void Model::compute(void)
 	{

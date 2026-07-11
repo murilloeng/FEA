@@ -66,13 +66,12 @@ void test::truss3D::pyramid(void)
 	const double P = n * E * A / 2 * pow(H / L, 3);
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(0, fea::mesh::nodes::DOF::Translation_3, -P);
-	//solver
-	model.analysis()->create_solver(fea::analysis::Type::StaticNonlinear);
 	//setup
-	model.analysis()->solver()->load_combination(0);
-	model.analysis()->solver()->watch_dof().node(0);
-	model.analysis()->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
-	dynamic_cast<fea::analysis::StaticNonlinear*>(model.analysis()->solver())->step_max(400);
+	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->step_max(400);
+	model.analysis()->solver_static_nonlinear()->load_combination(0);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node(0);
+	model.analysis()->solver_static_nonlinear()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
 	//solve
 	model.solve();
 	//save

@@ -33,11 +33,19 @@ namespace fea
 			//destructor
 			~Support(void);
 
+			//types
+			typedef std::function<double(double)> Function;
+
 		public:
 			//data
-			double state(void);
-			double velocity(void);
-			double acceleration(void);
+			Function state(Function);
+			Function state(void) const;
+
+			Function velocity(Function);
+			Function velocity(void) const;
+
+			Function acceleration(Function);
+			Function acceleration(void) const;
 
 			uint32_t index_node(void) const;
 
@@ -46,6 +54,11 @@ namespace fea
 
 			mesh::nodes::DOF dof(void) const;
 			mesh::nodes::DOF dof(mesh::nodes::DOF);
+
+			//time
+			double state(double) const;
+			double velocity(double) const;
+			double acceleration(double) const;
 
 		private:
 			//analysis
