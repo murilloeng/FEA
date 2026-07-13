@@ -21,6 +21,9 @@ namespace fea
 
 			public:
 				//data
+				double residual_stress(double);
+				double residual_stress(void) const;
+
 				static StrainMeasure strain_measure(void);
 				static StrainMeasure strain_measure(StrainMeasure);
 

@@ -24,6 +24,15 @@ namespace fea
 			}
 
 			//data
+			double Truss::residual_stress(double sr)
+			{
+				return m_sr = sr;
+			}
+			double Truss::residual_stress(void) const
+			{
+				return m_sr;
+			}
+
 			StrainMeasure Truss::strain_measure(void)
 			{
 				return m_strain_measure;
