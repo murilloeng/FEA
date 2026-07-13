@@ -44,14 +44,11 @@ run : exe
 debug : exe
 	gdb ./$(out_exe)
 
-lib : $(out_lib)
+lib : sections materials $(out_lib)
 	@echo 'library - $(mode): complete!'
 
-exe : math sections materials lib $(out_exe)
+exe : lib $(out_exe)
 	@echo 'executable - $(mode): complete!'
-
-math :
-	+@cd ../Math && $(MAKE) -f Makefile lib m=$m
 
 sections :
 	+@cd ../Sections && $(MAKE) -f Makefile lib m=$m
