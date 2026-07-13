@@ -38,8 +38,8 @@ namespace fea
 
 	protected:
 		//analysis
-		void check(void);
-		void setup(void);
+		virtual void check(void);
+		virtual void setup(void);
 
 		//data
 		mesh::Mesh* m_mesh;
