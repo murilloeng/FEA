@@ -1,5 +1,12 @@
+//std
+#include <stdexcept>
+
 //Math
 #include "Math/inc/Linear/Vec3.hpp"
+
+//Materials
+#include "Materials/inc/Mechanic/Stress.hpp"
+#include "Materials/inc/Mechanic/Uniaxial.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
@@ -43,6 +50,14 @@ namespace fea
 			}
 
 			//analysis
+			void Truss::check(void)
+			{
+				Frame::check();
+				if(!dynamic_cast<const materials::Uniaxial*>(m_material))
+				{
+					throw std::runtime_error("Error: Truss element must have an Uniaxial material!");
+				}
+			}
 			void Truss::setup(void)
 			{
 				//data
@@ -51,6 +66,8 @@ namespace fea
 				const math::Vec3 z2 = node(1)->position_ref();
 				//length
 				m_Lr = (z2 - z1).norm();
+				//point
+				m_point.prepare(uint32_t(materials::Stress::type::s11));
 			}
 			void Truss::compute(void)
 			{
@@ -58,15 +75,14 @@ namespace fea
 				const double A = m_section->area();
 				const math::Vec3 x1 = node(0)->position_new();
 				const math::Vec3 x2 = node(1)->position_new();
-				const double E = m_material->elastic_modulus();
 				//strain
 				m_Ln = (x2 - x1).norm();
 				m_em = elements::strain_measure(m_strain_measure, m_Ln / m_Lr);
 				m_eh = elements::strain_hessian(m_strain_measure, m_Ln / m_Lr);
 				m_eg = elements::strain_gradient(m_strain_measure, m_Ln / m_Lr);
 				//material
-				const double C = E;
-				const double s = E * m_em + m_sr;
+				double s, C;
+				((materials::Uniaxial*) m_material)->return_mapping(s, C, m_em, m_sr, m_point);
 				//compute
 				m_f = s * A * m_eg;
 				m_K = (C * m_eg * m_eg + s * m_eh) * A / m_Lr;
