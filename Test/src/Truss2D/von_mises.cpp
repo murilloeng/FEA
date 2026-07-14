@@ -10,6 +10,9 @@
 //Materials
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
 
+//Math
+#include "Math/inc/Validation/Validator.hpp"
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -32,12 +35,18 @@ static const double R = 1.00e+00;
 static const double E = 2.10e+11;
 static const double L = sqrt(H * H + R * R);
 
+static double function(double u)
+{
+	return -(1 + u / H) * (2 + u / H) * u / H;
+}
+
 void test::truss2D::von_mises(void)
 {
 	//data
 	fea::Model model;
 	sections::CHS section;
 	materials::Uniaxial material;
+	math::validation::Validator validator;
 	//nodes
 	model.mesh()->create_node(-R, 0, 0);
 	model.mesh()->create_node(+0, H, 0);
@@ -63,6 +72,7 @@ void test::truss2D::von_mises(void)
 	model.boundary()->create_load_case(1, fea::mesh::nodes::DOF::Translation_2, -E * A * pow(H / L, 3));
 	//setup
 	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
@@ -71,4 +81,11 @@ void test::truss2D::von_mises(void)
 	model.solve();
 	//save
 	model.save_results("Test/data/Truss 2D/von Mises");
+	model.analysis()->solver()->save("Test/data/Truss 2D/von Mises/data.txt");
+	//validator
+	validator.create_item();
+	validator.item(0)->function(function);
+	validator.item(0)->load_numeric("Test/data/Truss 2D/von Mises/data.txt", 1, 2);
+	//validate
+	validator.validate();
 }

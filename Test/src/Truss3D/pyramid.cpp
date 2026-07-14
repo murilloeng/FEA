@@ -10,6 +10,9 @@
 //Materials
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
 
+//Math
+#include "Math/inc/Validation/Validator.hpp"
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -33,12 +36,18 @@ static const double R = 1.00e+00;
 static const double E = 2.10e+11;
 static const double L = sqrt(H * H + R * R);
 
+static double function(double u)
+{
+	return -(1 + u / H) * (2 + u / H) * u / H;
+}
+
 void test::truss3D::pyramid(void)
 {
 	//data
 	fea::Model model;
 	sections::CHS section;
 	materials::Uniaxial material;
+	math::validation::Validator validator;
 	//nodes
 	model.mesh()->create_node(0, 0, H);
 	for(uint32_t i = 0; i < n; i++)
@@ -70,6 +79,7 @@ void test::truss3D::pyramid(void)
 	model.boundary()->create_load_case(0, fea::mesh::nodes::DOF::Translation_3, -P);
 	//setup
 	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(0);
@@ -78,4 +88,11 @@ void test::truss3D::pyramid(void)
 	model.solve();
 	//save
 	model.save_results("Test/data/Truss 3D/Pyramid");
+	model.analysis()->solver()->save("Test/data/Truss 3D/Pyramid/data.txt");
+	//validator
+	validator.create_item();
+	validator.item(0)->function(function);
+	validator.item(0)->load_numeric("Test/data/Truss 3D/Pyramid/data.txt", 2, 3);
+	//validation
+	validator.validate();
 }
