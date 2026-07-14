@@ -31,15 +31,15 @@ namespace fea
 		void Mesh::save(FILE* file) const
 		{
 			//header
-			fprintf(file, "# Mesh\n\n");
+			fprintf(file, "# Mesh\n");
 			//nodes
+			fprintf(file, "\n");
 			fprintf(file, "## Nodes: %zd\n", m_nodes.size());
 			for(const nodes::Node* node : m_nodes) node->save(file), fprintf(file, "\n");
-			fprintf(file, "\n");
 			//elements
+			fprintf(file, "\n");
 			fprintf(file, "## Elements: %zd\n", m_elements.size());
 			for(const elements::Element* element : m_elements) element->save(file), fprintf(file, "\n");
-			fprintf(file, "\n");
 		}
 
 		//data

@@ -27,13 +27,16 @@ namespace fea
 			const uint32_t nn = m_loads_nodes.size();
 			const uint32_t ne = m_loads_elements.size();
 			//header
-			fprintf(file, "## Load Case %d:\n\n", m_index);
+			fprintf(file, "\n");
+			fprintf(file, "### Load Case %d:\n", m_index);
 			//nodes
-			fprintf(file, "### Loads on nodes: %d\n", nn);
-			for(const loads::Node* load : m_loads_nodes) load->save(file);
+			fprintf(file, "\n");
+			fprintf(file, "#### Loads on nodes: %d\n", nn);
+			for(const loads::Node* load : m_loads_nodes) load->save(file), fprintf(file, "\n");
 			//elements
-			fprintf(file, "### Loads on elements: %d\n", ne);
-			for(const loads::Element* load : m_loads_elements) load->save(file);
+			fprintf(file, "\n");
+			fprintf(file, "#### Loads on elements: %d\n", ne);
+			for(const loads::Element* load : m_loads_elements) load->save(file), fprintf(file, "\n");
 		}
 
 		//data

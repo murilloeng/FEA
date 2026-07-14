@@ -47,6 +47,7 @@ namespace fea
 			void setup(void);
 
 			//data
+			uint32_t m_index;
 			static Boundary* m_boundary;
 			std::vector<LoadItem*> m_load_items;
 

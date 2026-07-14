@@ -49,20 +49,30 @@ namespace fea
 		void Boundary::save(FILE* file) const
 		{
 			//header
-			fprintf(file, "# Boundary\n\n");
+			fprintf(file, "\n");
+			fprintf(file, "# Boundary\n");
 			//initials
+			fprintf(file, "\n");
 			fprintf(file, "## Initials: %zd\n", m_initials.size());
 			for(const Initial* initial : m_initials) initial->save(file), fprintf(file, "\n");
 			//Supports
+			fprintf(file, "\n");
 			fprintf(file, "## Supports: %zd\n", m_supports.size());
+			for(const Support* support : m_supports) support->save(file), fprintf(file, "\n");
 			//Load cases
+			fprintf(file, "\n");
 			fprintf(file, "## Load cases: %zd\n", m_load_cases.size());
+			for(const LoadCase* load_case : m_load_cases) load_case->save(file);
 			//Constraints
+			fprintf(file, "\n");
 			fprintf(file, "## Constraints: %zd\n", m_constraints.size());
 			//Dependencies
+			fprintf(file, "\n");
 			fprintf(file, "## Dependencies: %zd\n", m_dependencies.size());
 			//Load Combinations
+			fprintf(file, "\n");
 			fprintf(file, "## Load combinations: %zd\n", m_load_combinations.size());
+			for(const LoadCombination* load_combination : m_load_combinations) load_combination->save(file);
 
 		}
 
@@ -184,20 +194,31 @@ namespace fea
 		//create
 		void Boundary::create_support(uint32_t node, mesh::nodes::DOF dof)
 		{
-			m_supports.push_back(new Support(node, dof));
+			//data
+			const uint32_t ns = m_supports.size();
+			Support* support = new Support(node, dof);
+			//append
+			support->m_index = ns;
+			m_supports.push_back(support);
 		}
 
 		void Boundary::create_load_combination(void)
 		{
-			m_load_combinations.push_back(new LoadCombination);
+			//data
+			const uint32_t nc = m_load_combinations.size();
+			LoadCombination* load_combination = new LoadCombination;
+			//append
+			load_combination->m_index = nc;
+			m_load_combinations.push_back(load_combination);
 		}
 		void Boundary::create_load_combination(uint32_t load_case, bool fixed, double value)
 		{
 			//data
+			const uint32_t nc = m_load_combinations.size();
 			LoadCombination* load_combination = new LoadCombination;
-			//setup
 			load_combination->create_load_item(load_case, value, fixed);
 			//append
+			load_combination->m_index = nc;
 			m_load_combinations.push_back(load_combination);
 		}
 
@@ -214,8 +235,10 @@ namespace fea
 		{
 			//data
 			LoadCase* load_case = new LoadCase;
+			const uint32_t nc = m_load_cases.size();
 			load_case->create_load_node(node, dof, value);
 			//append
+			load_case->m_index = nc;
 			m_load_cases.push_back(load_case);
 		}
 

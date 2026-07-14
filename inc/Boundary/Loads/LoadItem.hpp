@@ -45,6 +45,7 @@ namespace fea
 			//data
 			bool m_fixed;
 			double m_value;
+			uint32_t m_index;
 			uint32_t m_load_case;
 
 			//friends

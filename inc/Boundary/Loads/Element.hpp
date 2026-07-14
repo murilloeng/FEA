@@ -30,6 +30,9 @@ namespace fea
 				//destructor
 				virtual ~Element(void);
 
+				//serialization
+				void save(FILE*) const override;
+
 			public:
 				//data
 				uint32_t element(uint32_t) const;

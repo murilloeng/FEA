@@ -30,6 +30,12 @@ namespace fea
 			return;
 		}
 
+		//serialization
+		void Support::save(FILE* file) const
+		{
+			fprintf(file, "Index: %d Node: %4d DOF: %d ", m_index, m_node, uint32_t(m_dof));
+		}
+
 		//data
 		Support::Function Support::state(void) const
 		{

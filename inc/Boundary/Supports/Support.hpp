@@ -70,6 +70,7 @@ namespace fea
 
 			//data
 			uint32_t m_node;
+			uint32_t m_index;
 			uint32_t m_dof_index;
 			mesh::nodes::DOF m_dof;
 			static Boundary* m_boundary;

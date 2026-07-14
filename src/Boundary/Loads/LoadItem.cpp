@@ -17,6 +17,12 @@ namespace fea
 			return;
 		}
 
+		//serialization
+		void LoadItem::save(FILE* file) const
+		{
+			fprintf(file, "Index: %d Load Case: %d Fixed: %d Value: %+.6e ", m_index, m_load_case, m_fixed, m_value);
+		}
+
 		//data
 		bool LoadItem::fixed(void) const
 		{
