@@ -22,6 +22,9 @@ namespace fea
 				//destructor
 				~Truss(void);
 
+				//save
+				void save(FILE*) const override;
+
 			public:
 				//data
 				double residual_stress(double);

@@ -37,7 +37,7 @@ namespace fea
 				virtual ~Element(void);
 
 				//serialization
-				void save(FILE*) const;
+				virtual void save(FILE*) const;
 
 			public:
 				//data

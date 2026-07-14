@@ -30,6 +30,12 @@ namespace fea
 				return;
 			}
 
+			//save
+			void Truss::save(FILE* file) const
+			{
+				fprintf(file, "Residual stress: %+.6e Strain measure: %d ", m_sr, uint32_t(m_strain_measure));
+			}
+
 			//data
 			double Truss::residual_stress(double sr)
 			{

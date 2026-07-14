@@ -31,8 +31,8 @@ namespace fea
 			//serialization
 			void Element::save(FILE* file) const
 			{
-				fprintf(file, "Index: %4d Nodes: %2zd - ", m_index, m_nodes.size());
-				for(uint32_t node : m_nodes) fprintf(file, "%4d ", node);
+				fprintf(file, "Index: %d Nodes: %zd - ", m_index, m_nodes.size());
+				for(uint32_t node : m_nodes) fprintf(file, "%d ", node);
 			}
 
 			//data

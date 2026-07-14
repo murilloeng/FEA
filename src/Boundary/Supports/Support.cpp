@@ -33,7 +33,7 @@ namespace fea
 		//serialization
 		void Support::save(FILE* file) const
 		{
-			fprintf(file, "Index: %d Node: %4d DOF: %d ", m_index, m_node, uint32_t(m_dof));
+			fprintf(file, "Index: %d Node: %d DOF: %d ", m_index, m_node, uint32_t(m_dof));
 		}
 
 		//data

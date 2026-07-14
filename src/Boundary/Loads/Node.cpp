@@ -32,7 +32,7 @@ namespace fea
 			void Node::save(FILE* file) const
 			{
 				Load::save(file);
-				fprintf(file, "Node: %4d DOF: %d ", m_node, uint32_t(m_dof));
+				fprintf(file, "Node: %d DOF: %d ", m_node, uint32_t(m_dof));
 			}
 
 			//data
