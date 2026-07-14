@@ -1,5 +1,6 @@
 //std
 #include <cstring>
+#include <filesystem>
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -20,7 +21,7 @@ namespace fea
 		{
 			return;
 		}
-	
+
 		//destructor
 		Solver::~Solver(void)
 		{

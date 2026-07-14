@@ -14,7 +14,7 @@ namespace fea
 		{
 			return;
 		}
-	
+
 		//destructor
 		StaticLinear::~StaticLinear(void)
 		{

@@ -21,7 +21,7 @@ namespace fea
 			{
 				m_value = value;
 			}
-		
+
 			//destructor
 			Node::~Node(void)
 			{

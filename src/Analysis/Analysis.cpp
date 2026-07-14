@@ -26,7 +26,7 @@ namespace fea
 			WatchDOF::m_analysis = this;
 			Assembler::m_analysis = this;
 		}
-	
+
 		//destructor
 		Analysis::~Analysis(void)
 		{

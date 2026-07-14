@@ -70,5 +70,5 @@ void test::truss2D::von_mises(void)
 	//solve
 	model.solve();
 	//save
-	model.save("von mises.txt");
+	model.save_results("Test/data/Truss 2D/von Mises");
 }

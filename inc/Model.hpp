@@ -29,6 +29,7 @@ namespace fea
 
 		//serialization
 		void save(const char*) const;
+		void save_results(const char*) const;
 
 		//data
 		mesh::Mesh* mesh(void) const;

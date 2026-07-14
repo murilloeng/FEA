@@ -12,7 +12,7 @@ namespace fea
 			{
 				return;
 			}
-		
+
 			//destructor
 			Load::~Load(void)
 			{

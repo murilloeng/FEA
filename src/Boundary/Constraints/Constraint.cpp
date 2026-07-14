@@ -19,7 +19,7 @@ namespace fea
 		{
 			return;
 		}
-	
+
 		//destructor
 		Constraint::~Constraint(void)
 		{
@@ -62,7 +62,7 @@ namespace fea
 			{
 				m_dof_indexes.push_back(m_boundary->model()->mesh()->node(m_nodes[i])->dof_index(m_dof[i]));
 			}
-		
+
 		}
 		void Constraint::dof_setup(uint32_t& dof_counter)
 		{

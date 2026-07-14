@@ -49,7 +49,7 @@ namespace fea
 				//data
 				uint32_t index(void) const;
 				uint32_t dof_index(DOF) const;
-			
+
 				double state(DOF) const;
 				double velocity(DOF) const;
 				double acceleration(DOF) const;

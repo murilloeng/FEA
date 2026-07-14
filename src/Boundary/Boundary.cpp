@@ -33,7 +33,7 @@ namespace fea
 			loads::Load::m_boundary = this;
 			LoadCombination::m_boundary = this;
 		}
-	
+
 		//destructor
 		Boundary::~Boundary(void)
 		{

@@ -32,7 +32,6 @@ namespace fea
 			//destructor
 			~WatchDOF(void);
 
-			
 		public:
 			//data
 			uint32_t node(uint32_t);
@@ -45,7 +44,7 @@ namespace fea
 			double state(void) const;
 			double velocity(void) const;
 			double acceleration(void) const;
-		
+
 		private:
 			//analysis
 			void check(void);

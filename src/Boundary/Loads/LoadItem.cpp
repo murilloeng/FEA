@@ -10,7 +10,7 @@ namespace fea
 		{
 			return;
 		}
-		
+
 		//destructor
 		LoadItem::~LoadItem(void)
 		{

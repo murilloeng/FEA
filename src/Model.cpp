@@ -1,3 +1,6 @@
+//std
+#include <filesystem>
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -31,6 +34,9 @@ namespace fea
 	//serialization
 	void Model::save(const char* path) const
 	{
+		//setup
+		std::filesystem::path dir = std::filesystem::path(path).parent_path();
+		if(!dir.empty() && !std::filesystem::exists(dir)) std::filesystem::create_directories(dir);
 		//file
 		FILE* file = fopen(path, "w");
 		//save
@@ -39,6 +45,17 @@ namespace fea
 		m_analysis->save(file);
 		//close
 		fclose(file);
+	}
+	void Model::save_results(const char* path) const
+	{
+		//data
+		std::filesystem::path dir = std::filesystem::path(path);
+		//create
+		save((dir / std::string("Model.txt")).c_str());
+		std::filesystem::create_directories(dir / std::string("Nodes"));
+		std::filesystem::create_directories(dir / std::string("Solver"));
+		std::filesystem::create_directories(dir / std::string("Elements"));
+		std::filesystem::create_directories(dir / std::string("Supports"));
 	}
 
 	//data

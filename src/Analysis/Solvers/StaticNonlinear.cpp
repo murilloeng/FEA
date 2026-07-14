@@ -17,7 +17,7 @@ namespace fea
 		{
 			return;
 		}
-	
+
 		//destructor
 		StaticNonlinear::~StaticNonlinear(void)
 		{

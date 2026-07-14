@@ -19,7 +19,7 @@ namespace fea
 			nodes::Node::m_mesh = this;
 			elements::Element::m_mesh = this;
 		}
-	
+
 		//destructor
 		Mesh::~Mesh(void)
 		{

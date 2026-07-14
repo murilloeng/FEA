@@ -39,7 +39,7 @@ namespace fea
 			{
 				return;
 			}
-		
+
 			//destructor
 			Node::~Node(void)
 			{

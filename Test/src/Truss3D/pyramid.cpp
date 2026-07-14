@@ -77,5 +77,5 @@ void test::truss3D::pyramid(void)
 	//solve
 	model.solve();
 	//save
-	model.analysis()->solver()->save("pyramid.txt");
+	model.save_results("Test/data/Truss 3D/Pyramid");
 }

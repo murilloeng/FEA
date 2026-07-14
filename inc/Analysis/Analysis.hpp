@@ -26,13 +26,13 @@ namespace fea
 		private:
 			//constructor
 			Analysis(void);
-			
+
 			//destructor
 			~Analysis(void);
 
 			//serialization
 			void save(FILE*) const;
-			
+
 		public:
 			//data
 			Type type(Type);
