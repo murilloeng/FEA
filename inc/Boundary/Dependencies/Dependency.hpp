@@ -54,6 +54,7 @@ namespace fea
 			bool operator==(const Dependency&) const;
 
 			//data
+			uint32_t m_index;
 			uint32_t m_nodes[2];
 			mesh::nodes::DOF m_dof[2];
 			static Boundary* m_boundary;

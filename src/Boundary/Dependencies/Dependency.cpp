@@ -28,6 +28,12 @@ namespace fea
 			return;
 		}
 
+		//serialization
+		void Dependency::save(FILE* file) const
+		{
+			fprintf(file, "Index: %d Nodes: %d %d DOF: %d %d ", m_index, m_nodes[0], m_nodes[1], uint32_t(m_dof[0]), uint32_t(m_dof[1]));
+		}
+
 		//analysis
 		void Dependency::check(void)
 		{

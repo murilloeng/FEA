@@ -66,9 +66,11 @@ namespace fea
 			//Constraints
 			fprintf(file, "\n");
 			fprintf(file, "## Constraints: %zd\n", m_constraints.size());
+			for(const Constraint* constraint : m_constraints) constraint->save(file);
 			//Dependencies
 			fprintf(file, "\n");
 			fprintf(file, "## Dependencies: %zd\n", m_dependencies.size());
+			for(const Dependency* dependency : m_dependencies) dependency->save(file);
 			//Load Combinations
 			fprintf(file, "\n");
 			fprintf(file, "## Load combinations: %zd\n", m_load_combinations.size());

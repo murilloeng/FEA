@@ -26,6 +26,20 @@ namespace fea
 			return;
 		}
 
+		//serialization
+		void Constraint::save(FILE* file) const
+		{
+			//header
+			fprintf(file, "Index: %d Size: %zd ", m_index, m_dof.size());
+			//nodes
+			fprintf(file, "Nodes: ");
+			for(uint32_t node : m_nodes) fprintf(file, "%d ", node);
+			//dof
+			fprintf(file, "DOF: ");
+			for(mesh::nodes::DOF dof : m_dof) fprintf(file, "%d ", uint32_t(dof));
+
+		}
+
 		//analysis
 		void Constraint::check(void)
 		{

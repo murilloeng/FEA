@@ -46,6 +46,7 @@ namespace fea
 			void dof_setup(uint32_t&);
 
 			//data
+			uint32_t m_index;
 			uint32_t m_dof_index;
 			static Boundary* m_boundary;
 			std::vector<uint32_t> m_nodes;
