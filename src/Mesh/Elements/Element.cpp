@@ -28,6 +28,13 @@ namespace fea
 				return;
 			}
 
+			//serialization
+			void Element::save(FILE* file) const
+			{
+				fprintf(file, "Index: %4d Nodes: %2zd - ", m_index, m_nodes.size());
+				for(uint32_t node : m_nodes) fprintf(file, "%4d ", node);
+			}
+
 			//data
 			uint32_t Element::index(void) const
 			{

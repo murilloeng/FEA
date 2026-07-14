@@ -28,6 +28,12 @@ namespace fea
 				return;
 			}
 
+			//serialization
+			void Node::save(FILE* file) const
+			{
+				fprintf(file, "Node: %4d DOF: %d ", m_node, uint32_t(m_dof));
+			}
+
 			//data
 			uint32_t Node::node(void) const
 			{

@@ -19,6 +19,12 @@ namespace fea
 				return;
 			}
 
+			//serialization
+			void Load::save(FILE* file) const
+			{
+				fprintf(file, "Value: %+.6e ", m_value);
+			}
+
 			//data
 			double Load::value(void) const
 			{

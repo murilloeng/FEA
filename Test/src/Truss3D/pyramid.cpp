@@ -8,7 +8,7 @@
 #include "Sections/inc/CHS.hpp"
 
 //Materials
-#include "Materials/inc/Mechanic/Steel.hpp"
+#include "Materials/inc/Mechanic/Uniaxial.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -26,17 +26,19 @@
 #include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
+//data
+static const uint32_t n = 3;
+static const double H = 1.00e-01;
+static const double R = 1.00e+00;
+static const double E = 2.10e+11;
+static const double L = sqrt(H * H + R * R);
+
 void test::truss3D::pyramid(void)
 {
 	//data
 	fea::Model model;
 	sections::CHS section;
-	materials::Steel material;
-	//data
-	const uint32_t n = 3;
-	const double H = 1.00e-01;
-	const double R = 1.00e+00;
-	const double L = sqrt(H * H + R * R);
+	materials::Uniaxial material;
 	//nodes
 	model.mesh()->create_node(0, 0, H);
 	for(uint32_t i = 0; i < n; i++)
@@ -61,8 +63,8 @@ void test::truss3D::pyramid(void)
 	}
 	//loads
 	section.compute();
+	material.elastic_modulus(E);
 	const double A = section.area();
-	const double E = material.elastic_modulus();
 	const double P = n * E * A / 2 * pow(H / L, 3);
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(0, fea::mesh::nodes::DOF::Translation_3, -P);

@@ -16,7 +16,8 @@ namespace fea
 	namespace boundary
 	{
 		//constructor
-		Initial::Initial(void) : m_state{0}, m_velocity{0}, m_node{0}, m_dof_index{0}, m_dof{mesh::nodes::DOF::Translation_1}
+		Initial::Initial(void) : 
+			m_state{0}, m_velocity{0}, m_node{0}, m_dof_index{0}, m_dof{mesh::nodes::DOF::Translation_1}
 		{
 			return;
 		}
@@ -25,6 +26,12 @@ namespace fea
 		Initial::~Initial(void)
 		{
 			return;
+		}
+
+		//serialization
+		void Initial::save(FILE* file) const
+		{
+			fprintf(file, "Index: %d Node: %4d DOF: %d ", m_index, m_node, uint32_t(m_dof));
 		}
 
 		//data

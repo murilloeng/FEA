@@ -2,6 +2,7 @@
 
 //std
 #include <vector>
+#include <cstdio>
 #include <cstdint>
 
 namespace fea
@@ -41,6 +42,9 @@ namespace fea
 
 			//destructor
 			~Boundary(void);
+
+			//serialization
+			void save(FILE*) const;
 
 		public:
 			//data

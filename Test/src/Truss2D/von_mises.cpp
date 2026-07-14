@@ -8,7 +8,7 @@
 #include "Sections/inc/CHS.hpp"
 
 //Materials
-#include "Materials/inc/Mechanic/Steel.hpp"
+#include "Materials/inc/Mechanic/Uniaxial.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -26,15 +26,18 @@
 #include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
+//data
+static const double H = 1.00e-01;
+static const double R = 1.00e+00;
+static const double E = 2.10e+11;
+static const double L = sqrt(H * H + R * R);
+
 void test::truss2D::von_mises(void)
 {
 	//data
 	fea::Model model;
 	sections::CHS section;
-	materials::Steel material;
-	const double H = 1.00e-01;
-	const double R = 1.00e+00;
-	const double L = sqrt(H * H + R * R);
+	materials::Uniaxial material;
 	//nodes
 	model.mesh()->create_node(-R, 0, 0);
 	model.mesh()->create_node(+0, H, 0);
@@ -54,8 +57,8 @@ void test::truss2D::von_mises(void)
 	model.boundary()->create_support(2, fea::mesh::nodes::DOF::Translation_2);
 	//loads
 	section.compute();
+	material.elastic_modulus(E);
 	const double A = section.area();
-	const double E = material.elastic_modulus();
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(1, fea::mesh::nodes::DOF::Translation_2, -E * A * pow(H / L, 3));
 	//setup
@@ -67,5 +70,5 @@ void test::truss2D::von_mises(void)
 	//solve
 	model.solve();
 	//save
-	model.analysis()->solver()->save("von mises.txt");
+	model.save("von mises.txt");
 }

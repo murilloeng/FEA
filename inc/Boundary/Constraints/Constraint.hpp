@@ -37,6 +37,9 @@ namespace fea
 			//destructor
 			~Constraint(void);
 
+			//serialization
+			void save(FILE*) const;
+
 			//analysis
 			void check(void);
 			void setup(void);

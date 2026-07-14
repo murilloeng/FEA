@@ -33,6 +33,9 @@ namespace fea
 			//destructor
 			~Support(void);
 
+			//serialization
+			void save(FILE*) const;
+
 			//types
 			typedef std::function<double(double)> Function;
 

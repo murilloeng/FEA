@@ -35,6 +35,9 @@ namespace fea
 			//destructor
 			~Dependency(void);
 
+			//serialization
+			void save(FILE*) const;
+
 			//analysis
 			void check(void);
 			void setup(void);

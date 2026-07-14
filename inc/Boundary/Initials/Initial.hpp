@@ -32,6 +32,9 @@ namespace fea
 			//destructor
 			~Initial(void);
 
+			//serialization
+			void save(FILE*) const;
+
 		public:
 			//data
 			double state(double);
@@ -58,6 +61,7 @@ namespace fea
 			double m_velocity;
 
 			uint32_t m_node;
+			uint32_t m_index;
 			uint32_t m_dof_index;
 			mesh::nodes::DOF m_dof;
 

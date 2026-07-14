@@ -35,6 +35,12 @@ namespace fea
 			delete m_solver_static_nonlinear;
 		}
 
+		//serialization
+		void Analysis::save(FILE* file) const
+		{
+			return;
+		}
+
 		//data
 		Type Analysis::type(Type type)
 		{

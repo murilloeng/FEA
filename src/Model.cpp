@@ -28,6 +28,19 @@ namespace fea
 		delete m_analysis;
 	}
 
+	//serialization
+	void Model::save(const char* path) const
+	{
+		//file
+		FILE* file = fopen(path, "w");
+		//save
+		m_mesh->save(file);
+		m_boundary->save(file);
+		m_analysis->save(file);
+		//close
+		fclose(file);
+	}
+
 	//data
 	mesh::Mesh* Model::mesh(void) const
 	{

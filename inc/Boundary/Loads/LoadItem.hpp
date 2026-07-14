@@ -1,6 +1,7 @@
 #pragma once
 
 //std
+#include <cstdio>
 #include <cstdint>
 
 namespace fea
@@ -25,6 +26,9 @@ namespace fea
 
 			//destructor
 			~LoadItem(void);
+
+			//serialization
+			void save(FILE*) const;
 
 		public:
 			//data

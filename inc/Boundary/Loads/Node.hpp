@@ -1,7 +1,7 @@
 #pragma once
 
 //std
-#include "cstdint"
+#include <cstdint>
 
 //FEA
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
@@ -29,6 +29,9 @@ namespace fea
 
 				//destructor
 				~Node(void);
+
+				//serialization
+				void save(FILE*) const override;
 
 			public:
 				//data

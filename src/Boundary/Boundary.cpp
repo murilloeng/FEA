@@ -45,6 +45,27 @@ namespace fea
 			for(const LoadCombination* load_combination : m_load_combinations) delete load_combination;
 		}
 
+		//serialization
+		void Boundary::save(FILE* file) const
+		{
+			//header
+			fprintf(file, "# Boundary\n\n");
+			//initials
+			fprintf(file, "## Initials: %zd\n", m_initials.size());
+			for(const Initial* initial : m_initials) initial->save(file), fprintf(file, "\n");
+			//Supports
+			fprintf(file, "## Supports: %zd\n", m_supports.size());
+			//Load cases
+			fprintf(file, "## Load cases: %zd\n", m_load_cases.size());
+			//Constraints
+			fprintf(file, "## Constraints: %zd\n", m_constraints.size());
+			//Dependencies
+			fprintf(file, "## Dependencies: %zd\n", m_dependencies.size());
+			//Load Combinations
+			fprintf(file, "## Load combinations: %zd\n", m_load_combinations.size());
+
+		}
+
 		//data
 		Model* Boundary::model(void)
 		{
@@ -182,7 +203,12 @@ namespace fea
 
 		void Boundary::create_load_case(void)
 		{
-			m_load_cases.push_back(new LoadCase);
+			//data
+			LoadCase* load_case = new LoadCase;
+			const uint32_t nc = m_load_cases.size();
+			//append
+			load_case->m_index = nc;
+			m_load_cases.push_back(load_case);
 		}
 		void Boundary::create_load_case(uint32_t node, mesh::nodes::DOF dof, double value)
 		{

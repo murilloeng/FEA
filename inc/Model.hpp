@@ -27,6 +27,9 @@ namespace fea
 		//destructor
 		~Model(void);
 
+		//serialization
+		void save(const char*) const;
+
 		//data
 		mesh::Mesh* mesh(void) const;
 		boundary::Boundary* boundary(void) const;

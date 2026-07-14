@@ -28,6 +28,9 @@ namespace fea
 			//destructor
 			~LoadCombination(void);
 
+			//serialization
+			void save(FILE*) const;
+
 		public:
 			//create
 			void create_load_item(uint32_t, double, bool);

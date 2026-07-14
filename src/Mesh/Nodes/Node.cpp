@@ -46,6 +46,12 @@ namespace fea
 				return;
 			}
 
+			//serialization
+			void Node::save(FILE* file) const
+			{
+				fprintf(file, "Index: %4d Position: %+.6e %+.6e %+.6e", m_index, m_position_ref[0], m_position_ref[1], m_position_ref[2]);
+			}
+
 			//data
 			uint32_t Node::index(void) const
 			{

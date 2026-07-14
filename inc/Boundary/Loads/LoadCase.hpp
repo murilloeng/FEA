@@ -29,6 +29,9 @@ namespace fea
 			//destructor
 			~LoadCase(void);
 
+			//serialization
+			void save(FILE*) const;
+
 		public:
 			//data
 			static Boundary* boundary(void);
@@ -48,6 +51,7 @@ namespace fea
 			void setup(void);
 
 			//data
+			uint32_t m_index;
 			static Boundary* m_boundary;
 			std::vector<loads::Node*> m_loads_nodes;
 			std::vector<loads::Element*> m_loads_elements;
