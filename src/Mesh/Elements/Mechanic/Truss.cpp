@@ -33,6 +33,7 @@ namespace fea
 			//save
 			void Truss::save(FILE* file) const
 			{
+				Frame::save(file);
 				fprintf(file, "Residual stress: %+.6e Strain measure: %d ", m_sr, uint32_t(m_strain_measure));
 			}
 
@@ -67,7 +68,7 @@ namespace fea
 			void Truss::setup(void)
 			{
 				//data
-				Mechanic::setup();
+				Frame::setup();
 				const math::Vec3 z1 = node(0)->position_ref();
 				const math::Vec3 z2 = node(1)->position_ref();
 				//length
