@@ -4,13 +4,13 @@
 #include "Math/inc/Solvers/NewtonRaphson.hpp"
 
 //FEA
-#include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Solvers/Incremental.hpp"
 
 namespace fea
 {
 	namespace analysis
 	{
-		class StaticNonlinear : virtual public Solver, virtual public math::solvers::NewtonRaphson
+		class StaticNonlinear : virtual public Incremental, virtual public math::solvers::NewtonRaphson
 		{
 		private:
 			//constructor

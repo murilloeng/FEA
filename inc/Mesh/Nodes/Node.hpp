@@ -48,6 +48,7 @@ namespace fea
 			public:
 				//data
 				uint32_t index(void) const;
+				uint32_t dof_set(void) const;
 				uint32_t dof_index(DOF) const;
 
 				double state(DOF) const;
