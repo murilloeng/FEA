@@ -134,7 +134,75 @@ namespace fea
 			return m_load_combinations;
 		}
 
+		//create
+		void Boundary::create_support(uint32_t node, mesh::nodes::DOF dof)
+		{
+			//data
+			const uint32_t ns = m_supports.size();
+			Support* support = new Support(node, dof);
+			//append
+			support->m_index = ns;
+			m_supports.push_back(support);
+		}
+
+		void Boundary::create_load_combination(void)
+		{
+			//data
+			const uint32_t nc = m_load_combinations.size();
+			LoadCombination* load_combination = new LoadCombination;
+			//append
+			load_combination->m_index = nc;
+			m_load_combinations.push_back(load_combination);
+		}
+		void Boundary::create_load_combination(uint32_t load_case, bool fixed, double value)
+		{
+			//data
+			const uint32_t nc = m_load_combinations.size();
+			LoadCombination* load_combination = new LoadCombination;
+			load_combination->create_load_item(load_case, value, fixed);
+			//append
+			load_combination->m_index = nc;
+			m_load_combinations.push_back(load_combination);
+		}
+
+		void Boundary::create_load_case(void)
+		{
+			//data
+			LoadCase* load_case = new LoadCase;
+			const uint32_t nc = m_load_cases.size();
+			//append
+			load_case->m_index = nc;
+			m_load_cases.push_back(load_case);
+		}
+		void Boundary::create_load_case(uint32_t node, mesh::nodes::DOF dof, double value)
+		{
+			//data
+			LoadCase* load_case = new LoadCase;
+			const uint32_t nc = m_load_cases.size();
+			load_case->create_load_node(node, dof, value);
+			//append
+			load_case->m_index = nc;
+			m_load_cases.push_back(load_case);
+		}
+
 		//analysis
+		void Boundary::clear(void)
+		{
+			//delete
+			for(const Initial* initial : m_initials) delete initial;
+			for(const Support* support : m_supports) delete support;
+			for(const LoadCase* load_case : m_load_cases) delete load_case;
+			for(const Constraint* constraint : m_constraints) delete constraint;
+			for(const Dependency* dependency : m_dependencies) delete dependency;
+			for(const LoadCombination* load_combination : m_load_combinations) delete load_combination;
+			//clear
+			m_initials.clear();
+			m_supports.clear();
+			m_load_cases.clear();
+			m_constraints.clear();
+			m_dependencies.clear();
+			m_load_combinations.clear();
+		}
 		void Boundary::check(void)
 		{
 			for(Initial* initial : m_initials) initial->check();
@@ -191,57 +259,6 @@ namespace fea
 		void Boundary::dof_setup(uint32_t& dof_counter)
 		{
 			for(Constraint* constraint : m_constraints) constraint->dof_setup(dof_counter);
-		}
-
-		//create
-		void Boundary::create_support(uint32_t node, mesh::nodes::DOF dof)
-		{
-			//data
-			const uint32_t ns = m_supports.size();
-			Support* support = new Support(node, dof);
-			//append
-			support->m_index = ns;
-			m_supports.push_back(support);
-		}
-
-		void Boundary::create_load_combination(void)
-		{
-			//data
-			const uint32_t nc = m_load_combinations.size();
-			LoadCombination* load_combination = new LoadCombination;
-			//append
-			load_combination->m_index = nc;
-			m_load_combinations.push_back(load_combination);
-		}
-		void Boundary::create_load_combination(uint32_t load_case, bool fixed, double value)
-		{
-			//data
-			const uint32_t nc = m_load_combinations.size();
-			LoadCombination* load_combination = new LoadCombination;
-			load_combination->create_load_item(load_case, value, fixed);
-			//append
-			load_combination->m_index = nc;
-			m_load_combinations.push_back(load_combination);
-		}
-
-		void Boundary::create_load_case(void)
-		{
-			//data
-			LoadCase* load_case = new LoadCase;
-			const uint32_t nc = m_load_cases.size();
-			//append
-			load_case->m_index = nc;
-			m_load_cases.push_back(load_case);
-		}
-		void Boundary::create_load_case(uint32_t node, mesh::nodes::DOF dof, double value)
-		{
-			//data
-			LoadCase* load_case = new LoadCase;
-			const uint32_t nc = m_load_cases.size();
-			load_case->create_load_node(node, dof, value);
-			//append
-			load_case->m_index = nc;
-			m_load_cases.push_back(load_case);
 		}
 
 		//static

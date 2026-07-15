@@ -37,6 +37,7 @@ namespace fea
 		analysis::Analysis* analysis(void) const;
 
 		//solve
+		void clear(void);
 		void solve(void);
 		void compute(void);
 

@@ -104,6 +104,15 @@ namespace fea
 		}
 
 		//analysis
+		void Mesh::clear(void)
+		{
+			//delete
+			for(const nodes::Node* node : m_nodes) delete node;
+			for(const elements::Element* element : m_elements) delete element;
+			//clear
+			m_nodes.clear();
+			m_elements.clear();
+		}
 		void Mesh::check(void)
 		{
 			for(elements::Element* element : m_elements) element->check();

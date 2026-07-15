@@ -73,6 +73,11 @@ namespace fea
 	}
 
 	//solve
+	void Model::clear(void)
+	{
+		m_mesh->clear();
+		m_boundary->clear();
+	}
 	void Model::solve(void)
 	{
 		check();
