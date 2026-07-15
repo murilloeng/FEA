@@ -50,6 +50,7 @@ namespace fea
 		}
 		void Solver::setup(void)
 		{
+			cleanup();
 			allocate();
 			math::solvers::Solver::setup();
 			math::solvers::Solver::m_watch_dof = m_analysis->model()->mesh()->node(m_watch_dof.m_node)->dof_index(m_watch_dof.m_dof);
