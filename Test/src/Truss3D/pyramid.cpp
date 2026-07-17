@@ -79,8 +79,9 @@ void test::truss3D::pyramid(void)
 	model.boundary()->create_load_case(0, fea::mesh::nodes::DOF::Translation_3, -P);
 	//setup
 	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(true);
+	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
+	model.analysis()->solver_static_nonlinear()->stability(true);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);

@@ -26,7 +26,7 @@ namespace fea
 			//save
 			using math::solvers::Solver::save;
 			using math::solvers::Incremental::save;
-			void save(const char*, std::vector<std::pair<uint32_t, mesh::nodes::DOF>>) const;
+			virtual void save(const char*, std::vector<std::pair<uint32_t, mesh::nodes::DOF>>) const;
 
 		protected:
 			//analysis
