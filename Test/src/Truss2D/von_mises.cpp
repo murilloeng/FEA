@@ -74,6 +74,7 @@ void test::truss2D::von_mises(void)
 	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
+	model.analysis()->solver_static_nonlinear()->stability(true);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_2);
