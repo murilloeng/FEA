@@ -5,6 +5,8 @@
 
 //Math
 #include "Math/inc/Solvers/Solver.hpp"
+#include "Math/inc/Eigen/SparseSymStd.hpp"
+#include "Math/inc/Eigen/SparseSymGen.hpp"
 
 //FEA
 #include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
@@ -38,6 +40,9 @@ namespace fea
 			uint32_t load_combination(uint32_t);
 			uint32_t load_combination(void) const;
 
+			math::eigen::SparseSymStd& eigen_std(void);
+			math::eigen::SparseSymGen& eigen_gen(void);
+
 		protected:
 			//analysis
 			void check(void) override;
@@ -45,9 +50,12 @@ namespace fea
 			void allocate(void) override;
 
 			//data
+			double *m_s, *m_U;
 			WatchDOF m_watch_dof;
 			uint32_t m_load_combination;
 			static Analysis* m_analysis;
+			math::eigen::SparseSymStd m_eigen_std;
+			math::eigen::SparseSymGen m_eigen_gen;
 
 			using math::solvers::Solver::size;
 			using math::solvers::Solver::rows_map;

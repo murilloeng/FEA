@@ -17,7 +17,7 @@ namespace fea
 	namespace analysis
 	{
 		//constructor
-		Solver::Solver(void) : m_load_combination{UINT32_MAX}
+		Solver::Solver(void) : m_s{nullptr}, m_U{nullptr}, m_load_combination{UINT32_MAX}
 		{
 			return;
 		}
@@ -25,7 +25,8 @@ namespace fea
 		//destructor
 		Solver::~Solver(void)
 		{
-			return;
+			delete[] m_s;
+			delete[] m_U;
 		}
 
 		//data
@@ -43,6 +44,15 @@ namespace fea
 			return m_load_combination = load_combination;
 		}
 
+		math::eigen::SparseSymStd& Solver::eigen_std(void)
+		{
+			return m_eigen_std;
+		}
+		math::eigen::SparseSymGen& Solver::eigen_gen(void)
+		{
+			return m_eigen_gen;
+		}
+
 		//analysis
 		void Solver::check(void)
 		{
@@ -58,7 +68,14 @@ namespace fea
 		void Solver::allocate(void)
 		{
 			//data
-			math::solvers::Solver::allocate(m_analysis->m_assembler->dof_unknow());
+			const uint32_t nm = m_eigen_std.modes();
+			const uint32_t nu = m_analysis->m_assembler->dof_unknow();
+			//setup
+			delete[] m_s;
+			delete[] m_U;
+			m_s = new double[nu];
+			m_U = new double[nu * nm];
+			math::solvers::Solver::allocate(nu);
 			//setup
 			memset(m_x_old, 0, m_size * sizeof(double));
 		}

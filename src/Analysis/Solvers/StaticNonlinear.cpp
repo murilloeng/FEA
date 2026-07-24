@@ -2,9 +2,6 @@
 #include <cstdio>
 #include <stdexcept>
 
-//Math
-#include "Math/inc/Linear/Eigen.hpp"
-
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -39,6 +36,10 @@ namespace fea
 			Solver::setup();
 			math::solvers::Implicit::setup();
 			math::solvers::Incremental::setup();
+			//eigen
+			const uint32_t nv = m_eigen_std.vectors();
+			const uint32_t nu = m_analysis->assembler()->dof_unknow();
+			m_eigen_std.setup(nu, 1, nv, m_rows_map, m_cols_map, m_K, m_s, m_U);
 			//system
 			m_system = [this](double* r, double* fe, double* K, double p, const double* x)
 			{
@@ -79,18 +80,13 @@ namespace fea
 		//compute
 		void StaticNonlinear::compute_stability(void)
 		{
-			//data
-			double s;
-			double* z = new double[m_size];
 			//compute
-			if(!math::Eigen(m_K, m_size, m_rows_map, m_cols_map, &s, z, 1, std::min(m_size, 5U)).compute())
+			if(!m_eigen_std.compute())
 			{
-				throw std::runtime_error("Error: StaticNonlinear stability computation failed!");
+				throw std::runtime_error("Error: Static Nonlinear solver stability computation failed!");
 			}
 			//stability
-			m_stability_data[m_step] = s > 0;
-			//delete
-			delete[] z;
+			m_stability_data[m_step] = m_s[0] > 0;
 		}
 	}
 }
