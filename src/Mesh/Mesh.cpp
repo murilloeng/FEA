@@ -86,7 +86,7 @@ namespace fea
 			m_nodes.push_back(node);
 		}
 
-		void Mesh::create_element(elements::Element* element)
+		void Mesh::append_element(elements::Element* element)
 		{
 			//data
 			const uint32_t ne = m_elements.size();

@@ -45,9 +45,17 @@ namespace fea
 				return m_nodes[index];
 			}
 
+			void Element::append_node(uint32_t node)
+			{
+				m_nodes.push_back(node);
+			}
 			nodes::Node* Element::node(uint32_t index) const
 			{
 				return m_mesh->node(m_nodes[index]);
+			}
+			nodes::Node* Element::node(uint32_t index, uint32_t node)
+			{
+				return m_mesh->node(m_nodes[index] = node);
 			}
 
 			//analysis
