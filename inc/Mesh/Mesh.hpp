@@ -55,7 +55,8 @@ namespace fea
 			//create
 			void create_node(const double*);
 			void create_node(double, double, double);
-			
+
+			void create_element(elements::Element*);
 			void create_element(elements::Type, std::vector<uint32_t>);
 			
 			private:

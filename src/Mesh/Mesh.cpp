@@ -86,6 +86,14 @@ namespace fea
 			m_nodes.push_back(node);
 		}
 
+		void Mesh::create_element(elements::Element* element)
+		{
+			//data
+			const uint32_t ne = m_elements.size();
+			//append
+			element->m_index = ne;
+			m_elements.push_back(element);
+		}
 		void Mesh::create_element(elements::Type type, std::vector<uint32_t> nodes)
 		{
 			//data
