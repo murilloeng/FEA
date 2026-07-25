@@ -11,7 +11,7 @@ namespace fea
 		{
 			enum class Type : uint32_t
 			{
-				Truss2D, Truss3D
+				Beam2D, Beam3D, Truss2D, Truss3D
 			};
 		}
 	}

@@ -11,7 +11,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Mechanic::Mechanic(void) : m_material{nullptr}
+			Mechanic::Mechanic(void) : m_formulation{Formulation::Lagragian}, m_material{nullptr}
 			{
 				return;
 			}
@@ -23,6 +23,15 @@ namespace fea
 			}
 
 			//data
+			Mechanic::Formulation Mechanic::formulation(void) const
+			{
+				return m_formulation;
+			}
+			Mechanic::Formulation Mechanic::formulation(Formulation formulation)
+			{
+				return m_formulation = formulation;
+			}
+
 			const materials::Mechanic* Mechanic::material(void) const
 			{
 				return m_material;
