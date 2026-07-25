@@ -17,6 +17,23 @@ namespace fea
 
 				//destructor
 				~Beam3D(void);
+
+				//data
+				uint32_t dof_set(uint32_t) const override;
+
+				//tangents
+				void inertia(double*) const override;
+				void damping(double*) const override;
+				void stiffness(double*) const override;
+
+				//forces
+				void internal_force(double*) const override;
+
+				//analysis
+				void compute(void) override;
+
+				//friends
+				friend class fea::mesh::Mesh;
 			};
 		}
 	}

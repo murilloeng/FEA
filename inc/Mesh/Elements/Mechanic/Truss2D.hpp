@@ -7,14 +7,6 @@ namespace fea
 {
 	namespace mesh
 	{
-		class Mesh;
-	}
-}
-
-namespace fea
-{
-	namespace mesh
-	{
 		namespace elements
 		{
 			class Truss2D : public Truss
