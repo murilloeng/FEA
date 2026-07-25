@@ -72,7 +72,7 @@ void test::truss2D::von_mises(void)
 	model.boundary()->create_load_case(1, fea::mesh::nodes::DOF::Translation_2, -E * A * pow(H / L, 3));
 	//setup
 	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->stability(true);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

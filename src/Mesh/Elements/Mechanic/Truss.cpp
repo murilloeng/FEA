@@ -19,7 +19,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Truss::Truss(void)
+			Truss::Truss(void) : m_sr{0}
 			{
 				return;
 			}
