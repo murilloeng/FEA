@@ -12,6 +12,7 @@ namespace fea
 	}
 	namespace analysis
 	{
+		class Solver;
 		class Analysis;
 	}
 }
@@ -39,16 +40,21 @@ namespace fea
 		//solve
 		void clear(void);
 		void solve(void);
-		void compute(void);
-
-	protected:
+		
+		protected:
 		//analysis
 		virtual void check(void);
 		virtual void setup(void);
+		virtual void update(void);
+		virtual void restore(void);
+		virtual void compute(void);
 
 		//data
 		mesh::Mesh* m_mesh;
 		boundary::Boundary* m_boundary;
 		analysis::Analysis* m_analysis;
+
+		//friends
+		friend class fea::analysis::Solver;
 	};
 }

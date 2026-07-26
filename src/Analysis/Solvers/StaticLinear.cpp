@@ -39,7 +39,7 @@ namespace fea
 		void StaticLinear::solve(void)
 		{
 			//assemble
-			m_analysis->model()->compute();
+			model_compute();
 			m_analysis->assembler()->assemble_stiffness(m_K);
 			m_analysis->assembler()->assemble_reference_force(m_fe);
 			//solve

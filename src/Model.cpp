@@ -84,10 +84,6 @@ namespace fea
 		setup();
 		m_analysis->solver()->solve();
 	}
-	void Model::compute(void)
-	{
-		m_mesh->compute();
-	}
 
 	//analysis
 	void Model::check(void)
@@ -104,5 +100,17 @@ namespace fea
 		m_mesh->setup();
 		m_boundary->setup();
 		m_analysis->setup();
+	}
+	void Model::update(void)
+	{
+		m_mesh->compute();
+	}
+	void Model::restore(void)
+	{
+		m_mesh->compute();
+	}
+	void Model::compute(void)
+	{
+		m_mesh->compute();
 	}
 }

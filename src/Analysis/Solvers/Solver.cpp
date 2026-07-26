@@ -80,6 +80,19 @@ namespace fea
 			memset(m_x_old, 0, m_size * sizeof(double));
 		}
 
+		void Solver::model_update(void) const
+		{
+			m_analysis->m_model->update();
+		}
+		void Solver::model_restore(void) const
+		{
+			m_analysis->m_model->restore();
+		}
+		void Solver::model_compute(void) const
+		{
+			m_analysis->m_model->compute();
+		}
+
 		//static
 		Analysis* Solver::m_analysis = nullptr;
 	}

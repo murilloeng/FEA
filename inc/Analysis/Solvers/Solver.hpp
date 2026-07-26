@@ -49,6 +49,10 @@ namespace fea
 			void setup(void) override;
 			void allocate(void) override;
 
+			void model_update(void) const;
+			void model_restore(void) const;
+			void model_compute(void) const;
+
 			//data
 			double *m_s, *m_U;
 			WatchDOF m_watch_dof;

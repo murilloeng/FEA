@@ -134,6 +134,14 @@ namespace fea
 			for(nodes::Node* node : m_nodes) node->setup();
 			for(elements::Element* element : m_elements) element->setup();
 		}
+		void Mesh::update(void)
+		{
+			for(elements::Element* element : m_elements) element->update();
+		}
+		void Mesh::restore(void)
+		{
+			for(elements::Element* element : m_elements) element->restore();
+		}
 		void Mesh::compute(void)
 		{
 			for(nodes::Node* node : m_nodes) node->compute();

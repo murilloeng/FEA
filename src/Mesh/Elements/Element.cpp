@@ -84,6 +84,14 @@ namespace fea
 					}
 				}
 			}
+			void Element::update(void)
+			{
+				return;
+			}
+			void Element::restore(void)
+			{
+				return;
+			}
 
 			//static
 			Mesh* Element::m_mesh = nullptr;
