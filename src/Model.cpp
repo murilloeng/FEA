@@ -103,11 +103,11 @@ namespace fea
 	}
 	void Model::update(void)
 	{
-		m_mesh->compute();
+		m_mesh->update();
 	}
 	void Model::restore(void)
 	{
-		m_mesh->compute();
+		m_mesh->restore();
 	}
 	void Model::compute(void)
 	{

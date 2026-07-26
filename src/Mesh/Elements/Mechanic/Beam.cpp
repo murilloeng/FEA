@@ -39,8 +39,8 @@ namespace fea
 			}
 
 			//static
-			bool Beam::m_shear = true;
-			bool Beam::m_mixed = true;
+			bool Beam::m_shear = false;
+			bool Beam::m_mixed = false;
 		}
 	}
 }

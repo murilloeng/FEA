@@ -161,15 +161,14 @@ namespace fea
 				const math::Vector sn = (x2 - x1) / Ln;
 				const math::Vector s0 = (z2 - z1) / L0;
 				//rigid rotation
-				const double tr_old = m_tr_old;
-				const double cr_old = cos(tr_old);
-				const double sr_old = sin(tr_old);
+				const double cr_old = cos(m_tr_old);
+				const double sr_old = sin(m_tr_old);
 				const double cr_new = sn[0] * s0[0] + sn[1] * s0[1];
 				const double sr_new = sn[1] * s0[0] - sn[0] * s0[1];
 				const double cr_inc = cr_new * cr_old + sr_new * sr_old;
 				const double sr_inc = sr_new * cr_old - cr_new * sr_old;
 				//state
-				m_tr_new = tr_old + atan2(sr_inc, cr_inc);
+				m_tr_new = m_tr_old + atan2(sr_inc, cr_inc);
 				const double t1 = node(0)->state(nodes::DOF::Rotation_3);
 				const double t2 = node(1)->state(nodes::DOF::Rotation_3);
 				//local state

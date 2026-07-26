@@ -11,7 +11,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Mechanic::Mechanic(void) : m_formulation{Formulation::Lagragian}, m_material{nullptr}
+			Mechanic::Mechanic(void) : m_material{nullptr}
 			{
 				return;
 			}
@@ -23,7 +23,7 @@ namespace fea
 			}
 
 			//data
-			Mechanic::Formulation Mechanic::formulation(void) const
+			Mechanic::Formulation Mechanic::formulation(void)
 			{
 				return m_formulation;
 			}
@@ -50,6 +50,9 @@ namespace fea
 				}
 				Element::check();
 			}
+
+			//static
+			Mechanic::Formulation Mechanic::m_formulation = Mechanic::Formulation::Corotational;
 		}
 	}
 }
