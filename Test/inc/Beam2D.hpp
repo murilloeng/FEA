@@ -6,6 +6,7 @@ namespace test
 	{
 		namespace elastic
 		{
+			void frame_lee(void);
 			void cantilever_bending(void);
 		}
 	}

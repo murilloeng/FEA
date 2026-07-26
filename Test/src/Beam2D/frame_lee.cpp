@@ -31,31 +31,18 @@
 
 //data
 static const uint32_t ne = 10;
-static const double b = 1.00e-01;
-static const double h = 1.00e-01;
-static const double L = 1.00e+00;
+static const double L = 1.20e+02;
 static const double v = 3.00e-01;
-static const double E = 2.10e+11;
+static const double E = 7.20e+02;
+static const double A = 6.00e+00;
+static const double I = 2.00e+00;
 
-static const double A = b * h;
-static const double I = b * h * h * h / 12;
+//reference
+//K. H. Schweizerhof and P. Wriggers
+//Consistent linearization for path following methods in nonlinear FE analysis.
+//Computer Methods in Applied Mechanics and Engineering, vol. 59, pp. 269-279, 1986.
 
-static double function_t3(double t)
-{
-	return 2 * M_PI * t;
-}
-static double function_u1(double t)
-{
-	t *= 2 * M_PI;
-	return t == 0 ? 0 : L * (sin(t) / t - 1);
-}
-static double function_u2(double t)
-{
-	t *= 2 * M_PI;
-	return t == 0 ? 0 : L * (1 - cos(t)) / t;
-}
-
-void test::beam2D::elastic::cantilever_bending(void)
+void test::beam2D::elastic::frame_lee(void)
 {
 	//data
 	fea::Model model;
@@ -68,10 +55,14 @@ void test::beam2D::elastic::cantilever_bending(void)
 	//nodes
 	for(uint32_t i = 0; i <= ne; i++)
 	{
-		model.mesh()->create_node(L * i / ne, 0, 0);
+		model.mesh()->create_node(0, L * i / ne, 0);
+	}
+	for(uint32_t i = 1; i <= ne; i++)
+	{
+		model.mesh()->create_node(L * i / ne, L, 0);
 	}
 	//elements
-	for(uint32_t i = 0; i < ne; i++)
+	for(uint32_t i = 0; i < 2 * ne; i++)
 	{
 		model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {i, i + 1});
 		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->section(&section);
@@ -79,40 +70,43 @@ void test::beam2D::elastic::cantilever_bending(void)
 	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
-	model.boundary()->create_support(0, dof::Rotation_3);
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
+	model.boundary()->create_support(2 * ne, dof::Translation_1);
+	model.boundary()->create_support(2 * ne, dof::Translation_2);
 	//loads
 	section.area(A);
 	section.inertia(1, I);
 	material.poisson_ratio(v);
 	material.elastic_modulus(E);
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(ne, dof::Rotation_3, 2 * M_PI * E * I /  L);
+	model.boundary()->create_load_case(12, dof::Translation_2, -1);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(true);
+	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
+	model.analysis()->solver_static_nonlinear()->step_size(1.00e-01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node(ne);
-	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_3);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node(12);
+	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().parameter_max(3.00e+00);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::ParameterLimitMaximum);
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/cantilever bending");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/cantilever bending/data.txt", {
-		{ne, dof::Translation_1}, {ne, dof::Translation_2}, {ne, dof::Rotation_3}
+	model.save_results("Test/data/Beam 2D/frame Lee");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/frame Lee/data.txt", {
+		{12, dof::Translation_1}, {12, dof::Translation_2}, {12, dof::Rotation_3}
 	});
 	//validator
 	validator.create_item();
 	validator.create_item();
-	validator.create_item();
-	validator.item(0)->function(function_u1);
-	validator.item(1)->function(function_u2);
-	validator.item(2)->function(function_t3);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 0);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 1);
-	validator.item(2)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 2);
-	//validate
+	validator.item(0)->tolerance(1e-0);
+	validator.item(1)->tolerance(1e-0);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 0, 3);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 1, 3);
+	validator.item(0)->load_reference("Test/data/Beam 2D/frame Lee/reference-u.dat", 0, 1);
+	validator.item(1)->load_reference("Test/data/Beam 2D/frame Lee/reference-v.dat", 0, 1);
+	// //validate
 	validator.validate();
 }
