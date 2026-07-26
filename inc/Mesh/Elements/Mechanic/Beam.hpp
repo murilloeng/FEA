@@ -19,16 +19,16 @@ namespace fea
 				~Beam(void);
 
 				//data
-				bool shear(bool);
-				bool shear(void) const;
+				static bool shear(bool);
+				static bool shear(void);
 
-				bool mixed(bool);
-				bool mixed(void) const;
+				static bool mixed(bool);
+				static bool mixed(void);
 
 			protected:
 				//data
-				bool m_shear;
-				bool m_mixed;
+				static bool m_shear;
+				static bool m_mixed;
 			};
 		}
 	}

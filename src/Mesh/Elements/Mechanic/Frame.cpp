@@ -1,7 +1,11 @@
 //std
 #include <stdexcept>
 
+//Math
+#include "Math/inc/Linear/Vec3.hpp"
+
 //FEA
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Frame.hpp"
 
 namespace fea
@@ -40,6 +44,15 @@ namespace fea
 					throw std::runtime_error("Error: Frame element has unset section!");
 				}
 				Mechanic::check();
+			}
+			void Frame::setup(void)
+			{
+				//data
+				Mechanic::setup();
+				const math::Vec3 z1 = node(0)->position_ref();
+				const math::Vec3 z2 = node(1)->position_ref();
+				//length
+				m_Lr = (z2 - z1).norm();
 			}
 		}
 	}

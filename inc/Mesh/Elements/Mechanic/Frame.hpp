@@ -29,8 +29,10 @@ namespace fea
 			protected:
 				//analysis
 				void check(void) override;
+				void setup(void) override;
 
 				//data
+				double m_Lr;
 				const sections::Section* m_section;
 			};
 		}

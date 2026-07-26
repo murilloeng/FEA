@@ -39,6 +39,10 @@ namespace fea
 				void internal_force_TL(double*) const;
 				void internal_force(double*) const override;
 
+				//analysis
+				void update(void) override;
+				void restore(void) override;
+
 				//compute
 				void compute_TL(void);
 				void compute_CR(void);
@@ -50,8 +54,8 @@ namespace fea
 				void compute_CR_plastic(void);
 
 				//data
-				double m_dl[3];
 				double m_tr_old, m_tr_new;
+				double m_dl[3], m_fl[3], m_Kl[9];
 
 				//friends
 				friend class fea::mesh::Mesh;

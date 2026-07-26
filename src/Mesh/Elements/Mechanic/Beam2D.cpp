@@ -16,7 +16,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Beam2D::Beam2D(void)
+			Beam2D::Beam2D(void) : m_tr_old{0}, m_tr_new{0}
 			{
 				return;
 			}
@@ -67,9 +67,26 @@ namespace fea
 			{
 				m_formulation == Formulation::Corotational ? stiffness_CR(K) : stiffness_TL(K);
 			}
-			void Beam2D::stiffness_CR(double*) const
+			void Beam2D::stiffness_CR(double* K) const
 			{
-				return;
+				//data
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
+				//direction
+				const double Ln = (x2 - x1).norm();
+				const double cn = (x2[0] - x1[0]) / Ln;
+				const double sn = (x2[1] - x1[1]) / Ln;
+				//gradient
+				const math::Vector a({-cn, -sn, 0, cn, sn, 0});
+				const math::Vector b({sn, -cn, 0, -sn, cn, 0});
+				const math::Matrix B({
+					{-cn, -sn, 0, +cn, +sn, 0},
+					{-sn / Ln, +cn / Ln, 1, +sn / Ln, -cn / Ln, 0},
+					{-sn / Ln, +cn / Ln, 0, +sn / Ln, -cn / Ln, 1}
+				});
+				//stiffness
+				math::Matrix(K, 6, 6) = B.transpose() * math::Matrix(m_Kl, 3, 3) * B;
+				math::Matrix(K, 6, 6) += m_fl[0] / Ln * b.outer() + (m_fl[1] + m_fl[2]) / Ln / Ln * (a.outer(b) + b.outer(a));
 			}
 			void Beam2D::stiffness_TL(double*) const
 			{
@@ -81,13 +98,38 @@ namespace fea
 			{
 				m_formulation == Formulation::Corotational ? internal_force_CR(f) : internal_force_TL(f);
 			}
-			void Beam2D::internal_force_CR(double*) const
+			void Beam2D::internal_force_CR(double* f) const
 			{
-				return;
+				//data
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
+				//directions
+				const double Ln = (x2 - x1).norm();
+				const double cn = (x2[0] - x1[0]) / Ln;
+				const double sn = (x2[1] - x1[1]) / Ln;
+				//internal force
+				f[2] = m_fl[1];
+				f[5] = m_fl[2];
+				f[0] = -cn * m_fl[0] - sn * (m_fl[1] + m_fl[2]) / Ln;
+				f[1] = -sn * m_fl[0] + cn * (m_fl[1] + m_fl[2]) / Ln;
+				f[3] = +cn * m_fl[0] + sn * (m_fl[1] + m_fl[2]) / Ln;
+				f[4] = +sn * m_fl[0] - cn * (m_fl[1] + m_fl[2]) / Ln;
 			}
 			void Beam2D::internal_force_TL(double*) const
 			{
 				return;
+			}
+
+			//analysis
+			void Beam2D::update(void)
+			{
+				Beam::update();
+				m_tr_old = m_tr_new;
+			}
+			void Beam2D::restore(void)
+			{
+				Beam::restore();
+				m_tr_new = m_tr_old;
 			}
 
 			//analysis
@@ -98,7 +140,7 @@ namespace fea
 			void Beam2D::compute_CR(void)
 			{
 				compute_CR_state();
-				m_formulation == Formulation::Corotational ? compute_CR_elastic() : compute_CR_plastic();
+				materials::Mechanic::inelastic() ? compute_CR_plastic() : compute_CR_elastic();
 			}
 			void Beam2D::compute_TL(void)
 			{
@@ -137,7 +179,30 @@ namespace fea
 			}
 			void Beam2D::compute_CR_elastic(void)
 			{
-				return;
+				//dof
+				const double u2 = m_dl[0];
+				const double t1 = m_dl[1];
+				const double t2 = m_dl[2];
+				//section
+				const double A = m_section->area();
+				const double I33 = m_section->inertia(1);
+				const double A22 = m_section->shear_area(0);
+				//material
+				const double G = m_material->shear_modulus();
+				const double E = m_material->elastic_modulus();
+				//shear
+				const double q = G * A22 * m_Lr * m_Lr;
+				const double w = !m_shear ? 0 : E * I33 / q;
+				const double m = !m_shear ? 1 : 1 / (1 + 12 * w);
+				//force
+				m_fl[0] = E * A * u2 / m_Lr;
+				m_fl[1] = E * I33 / m_Lr * m * (4 * (1 + 3 * w) * t1 + 2 * (1 - 6 * w) * t2);
+				m_fl[2] = E * I33 / m_Lr * m * (4 * (1 + 3 * w) * t2 + 2 * (1 - 6 * w) * t1);
+				//local stiffness
+				m_Kl[0 + 3 * 0] = E * A / m_Lr;
+				m_Kl[2 + 3 * 1] = m_Kl[1 + 3 * 2] = 2 * E * I33 / m_Lr * m * (1 - 6 * w);
+				m_Kl[1 + 3 * 1] = m_Kl[2 + 3 * 2] = 4 * E * I33 / m_Lr * m * (1 + 3 * w);
+				m_Kl[1 + 3 * 0] = m_Kl[0 + 3 * 1] = m_Kl[2 + 3 * 0] = m_Kl[0 + 3 * 2] = 0;
 			}
 			void Beam2D::compute_CR_plastic(void)
 			{

@@ -67,13 +67,7 @@ namespace fea
 			}
 			void Truss::setup(void)
 			{
-				//data
 				Frame::setup();
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
-				//length
-				m_Lr = (z2 - z1).norm();
-				//point
 				m_point.prepare(uint32_t(materials::Stress::type::s11));
 			}
 			void Truss::compute(void)

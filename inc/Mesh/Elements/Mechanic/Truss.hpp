@@ -41,7 +41,7 @@ namespace fea
 
 				//data
 				double m_f, m_K;
-				double m_Lr, m_Ln, m_sr;
+				double m_Ln, m_sr;
 				double m_em, m_eg, m_eh;
 				materials::Point m_point;
 				static StrainMeasure m_strain_measure;

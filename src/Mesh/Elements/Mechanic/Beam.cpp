@@ -20,7 +20,7 @@ namespace fea
 			}
 
 			//data
-			bool Beam::shear(void) const
+			bool Beam::shear(void)
 			{
 				return m_shear;
 			}
@@ -29,7 +29,7 @@ namespace fea
 				return m_shear = shear;
 			}
 
-			bool Beam::mixed(void) const
+			bool Beam::mixed(void)
 			{
 				return m_mixed;
 			}
@@ -37,6 +37,10 @@ namespace fea
 			{
 				return m_mixed;
 			}
+
+			//static
+			bool Beam::m_shear = true;
+			bool Beam::m_mixed = true;
 		}
 	}
 }
