@@ -83,7 +83,7 @@ void test::beam2D::elastic::frame_lee(void)
 	model.boundary()->create_load_case(12, dof::Translation_2, -1);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->step_size(1.00e-01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
@@ -101,8 +101,8 @@ void test::beam2D::elastic::frame_lee(void)
 	//validator
 	validator.create_item();
 	validator.create_item();
-	validator.item(0)->tolerance(1e-0);
-	validator.item(1)->tolerance(1e-0);
+	validator.item(0)->tolerance(1.20e-01);
+	validator.item(1)->tolerance(1.20e-01);
 	validator.item(0)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 0, 3);
 	validator.item(1)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 1, 3);
 	validator.item(0)->load_reference("Test/data/Beam 2D/frame Lee/reference-u.dat", 0, 1);
