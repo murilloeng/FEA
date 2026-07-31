@@ -1,7 +1,7 @@
 #compiler
 CXX = g++
-INCS = -I ..
 WARS = -Wall -Werror
+INCS = -I .. -I /usr/include/freetype2
 LIBS = -l openblas -l umfpack -l arpack -l quadrule -l fftw3 -l gmsh
 CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
@@ -20,6 +20,7 @@ out_exe = Test/dist/$(mode)/test.out
 
 #libraries
 libMath = ../Math/dist/$(mode)/libmath.so
+libCanvas = ../Canvas/dist/$(mode)/libcanvas.so
 libSections = ../Sections/dist/$(mode)/libsections.so
 libMaterials = ../Materials/dist/$(mode)/libmaterials.so
 
@@ -44,11 +45,14 @@ run : exe
 debug : exe
 	gdb ./$(out_exe)
 
-lib : sections materials $(out_lib)
+lib : canvas sections materials $(out_lib)
 	@echo 'library - $(mode): complete!'
 
 exe : lib $(out_exe)
 	@echo 'executable - $(mode): complete!'
+
+canvas : 
+	+@cd ../Canvas && $(MAKE) -f Makefile lib m=$m
 
 sections :
 	+@cd ../Sections && $(MAKE) -f Makefile lib m=$m
@@ -63,7 +67,7 @@ $(out_lib) : $(obj_lib)
 
 $(out_exe) : $(obj_exe)
 	@mkdir -p $(dir $@)
-	@g++ -o $(out_exe) $(obj_exe) $(out_lib) $(libMaterials) $(libSections) $(libMath) $(LIBS)
+	@g++ -o $(out_exe) $(obj_exe) $(out_lib) $(libMaterials) $(libSections) $(libMath) $(libCanvas) $(LIBS)
 	@echo 'linking - $(mode): $@'
 
 build/$(mode)/%.o : src/%.cpp build/$(mode)/%.d
