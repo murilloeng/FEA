@@ -50,7 +50,7 @@ namespace fea
 						if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i)))
 						{
 							const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i));
-							positions_data[3 * nn * step + 3 * index + i] += scale * float(m_x_data[nu * step + dof_index]);
+							if(dof_index < nu) positions_data[3 * nn * step + 3 * index + i] += scale * float(m_x_data[nu * step + dof_index]);
 						}
 					}
 				}

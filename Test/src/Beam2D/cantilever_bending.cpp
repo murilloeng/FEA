@@ -13,6 +13,8 @@
 //FEA
 #include "FEA/inc/Model.hpp"
 
+#include "FEA/inc/Draw/Engine.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
@@ -115,4 +117,6 @@ void test::beam2D::elastic::cantilever_bending(void)
 	validator.item(2)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 2);
 	//validate
 	validator.validate();
+	//draw
+	fea::draw::Engine(&model).start();
 }
