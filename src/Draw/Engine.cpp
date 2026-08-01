@@ -3,8 +3,13 @@
 #include <stdexcept>
 
 //FEA
+#include "FEA/inc/Model.hpp"
+
 #include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Engine.hpp"
+
+#include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 //Canvas
 #include "Canvas/inc/API/Loader.hpp"
@@ -114,6 +119,8 @@ namespace fea
 			//camera
 			m_scene->setup();
 			m_scene->update();
+			m_scene->camera().fixed_bounding_box(true);
+			m_scene->camera().bounding_box(m_draw->bounding_box());
 			//screen
 			int32_t width, height;
 			glfwGetWindowSize(m_window, &width, &height);
@@ -146,7 +153,17 @@ namespace fea
 		}
 		void Engine::update_step(GLFWwindow * window, bool increase)
 		{
-			return;
+			//data
+			const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
+			//step
+			const uint32_t is = engine->m_draw->m_step;
+			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
+			const uint32_t js = increase ? (is + 1) % (ns + 1) : is != 0 ? is - 1 : ns;
+			//draw
+			engine->m_draw->step(js);
+			if(!engine->m_show_fps) printf("step: %d\n", js);
+			//update
+			engine->m_scene->update();
 		}
 		void Engine::update_framerate(GLFWwindow* window, bool increase)
 		{

@@ -21,6 +21,17 @@ namespace fea
 			return;
 		}
 
+		//solve
+		void StaticLinear::solve(void)
+		{
+			//assemble
+			model_compute();
+			m_analysis->assembler()->assemble_stiffness(m_K);
+			m_analysis->assembler()->assemble_reference_force(m_fe);
+			//solve
+			math::solvers::Solver::solve(m_K, m_fe, m_x_new);
+		}
+
 		//data
 		uint32_t StaticLinear::state_set(void) const
 		{
@@ -35,15 +46,18 @@ namespace fea
 			return 1 << uint32_t(math::solvers::Solver::Tangent::K);
 		}
 
-		//solve
-		void StaticLinear::solve(void)
+		//draw
+		uint32_t StaticLinear::draw_steps(void) const
 		{
-			//assemble
-			model_compute();
-			m_analysis->assembler()->assemble_stiffness(m_K);
-			m_analysis->assembler()->assemble_reference_force(m_fe);
-			//solve
-			math::solvers::Solver::solve(m_K, m_fe, m_x_new);
+			return 2;
+		}
+		void StaticLinear::draw_positions(float*, float) const
+		{
+			return;
+		}
+		void StaticLinear::draw_rotations(float*, float) const
+		{
+			return;
 		}
 	}
 }

@@ -122,8 +122,8 @@ namespace fea
 			for(uint32_t i = 0; i < nn; i++)
 			{
 				ibo_ptr[i] = m_index_vertices + i;
-				vbo_ptr[i].m_color = m_draw->colors().nodes();
-				vbo_ptr[i].m_position = m_mesh->node(i)->position_ref();
+				vbo_ptr[i].m_color = m_draw->m_colors.nodes();
+				vbo_ptr[i].m_position = m_draw->m_positions_data + 3 * nn * m_draw->m_step + 3 * i;
 			}
 			//update
 			m_index_dots += nn;
@@ -132,16 +132,16 @@ namespace fea
 		void Mesh::update_element_1D(const mesh::elements::Element* element)
 		{
 			//data
+			const uint32_t nn = m_mesh->nodes().size();
 			uint32_t* ibo_ptr = m_ibo.data() + m_counter_dots + m_index_edges;
 			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
 			//ibo data
 			ibo_ptr[0] = m_index_vertices + 0;
 			ibo_ptr[1] = m_index_vertices + 1;
 			//vbo data
-			vbo_ptr[0].m_color = m_draw->colors().elements();
-			vbo_ptr[1].m_color = m_draw->colors().elements();
-			vbo_ptr[0].m_position = element->node(0)->position_ref();
-			vbo_ptr[1].m_position = element->node(1)->position_ref();
+			vbo_ptr[0].m_color = vbo_ptr[1].m_color = m_draw->m_colors.elements();
+			vbo_ptr[0].m_position = m_draw->m_positions_data + 3 * nn * m_draw->m_step + 3 * element->index_node(0);
+			vbo_ptr[1].m_position = m_draw->m_positions_data + 3 * nn * m_draw->m_step + 3 * element->index_node(1);
 			//update
 			m_index_edges += 2;
 			m_index_vertices += 2;
@@ -153,17 +153,6 @@ namespace fea
 		void Mesh::update_element_3D(const mesh::elements::Element* element)
 		{
 			return;
-		}
-		void Mesh::update_bounding_box(canvas::cameras::BoundingBox& bounding_box) const
-		{
-			//data
-			const uint32_t nv = m_vbo.vertex_count();
-			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data();
-			//update
-			for(uint32_t i = 0; i < nv; i++)
-			{
-				bounding_box.insert_vertex(vbo_ptr[i].m_position.data());
-			}
 		}
 	}
 }

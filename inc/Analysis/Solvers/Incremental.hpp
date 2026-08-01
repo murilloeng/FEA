@@ -23,6 +23,11 @@ namespace fea
 			//destructor
 			~Incremental(void);
 
+			//draw
+			uint32_t draw_steps(void) const override;
+			void draw_positions(float*, float) const override;
+			void draw_rotations(float*, float) const override;
+
 			//save
 			using math::solvers::Solver::save;
 			using math::solvers::Incremental::save;

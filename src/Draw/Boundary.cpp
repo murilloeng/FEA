@@ -90,16 +90,5 @@ namespace fea
 		{
 			return;
 		}
-		void Boundary::update_bounding_box(canvas::cameras::BoundingBox& bounding_box) const
-		{
-			//data
-			const uint32_t nv = m_vbo.vertex_count();
-			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data();
-			//update
-			for(uint32_t i = 0; i < nv; i++)
-			{
-				bounding_box.insert_vertex(vbo_ptr[i].m_position.data());
-			}
-		}
 	}
 }

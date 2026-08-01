@@ -44,7 +44,6 @@ namespace fea
 			//update
 			void update_loads(void);
 			void update_supports(void);
-			void update_bounding_box(canvas::cameras::BoundingBox&) const override;
 
 		private:
 			//data

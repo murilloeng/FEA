@@ -52,7 +52,6 @@ namespace fea
 			void update_element_1D(const mesh::elements::Element*);
 			void update_element_2D(const mesh::elements::Element*);
 			void update_element_3D(const mesh::elements::Element*);
-			void update_bounding_box(canvas::cameras::BoundingBox&) const override;
 
 			//data
 			const Draw* m_draw;
