@@ -13,8 +13,16 @@ namespace fea
 	{
 		class Draw;
 	}
+	namespace mesh
+	{
+		namespace nodes
+		{
+			enum class DOF : uint32_t;
+		}
+	}
 	namespace boundary
 	{
+		class Support;
 		class Boundary;
 	}
 }
@@ -37,22 +45,29 @@ namespace fea
 			void setup(void) override;
 			void update(void) override;
 
+		private:
 			//setup
 			void setup_loads(void);
 			void setup_supports(void);
+
+			void setup_support_position(void);
+			void setup_support_rotation(void);
 
 			//update
 			void update_loads(void);
 			void update_supports(void);
 
-		private:
+			void update_support_position(const boundary::Support*);
+			void update_support_rotation(const boundary::Support*);
+
+			//transform
+			void transform(const boundary::Support*, uint32_t) const;
+
 			//data
-			uint32_t m_index_dots;
 			uint32_t m_index_edges;
 			uint32_t m_index_faces;
 			uint32_t m_index_vertices;
 			
-			uint32_t m_counter_dots;
 			uint32_t m_counter_edges;
 			uint32_t m_counter_faces;
 			uint32_t m_counter_vertices;

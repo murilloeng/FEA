@@ -1,8 +1,5 @@
 #pragma once
 
-//std
-#include <cstdio>
-
 //Canvas
 #include "Canvas/inc/Colors/Color.hpp"
 

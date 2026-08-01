@@ -1,6 +1,17 @@
+//std
+#include <cmath>
+
 //FEA
+#include "FEA/inc/Model.hpp"
+
+#include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Boundary.hpp"
+
+#include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
+
 #include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Supports/Support.hpp"
 
 //Canvas
 #include "Canvas/inc/Vertices/Model3D.hpp"
@@ -39,10 +50,7 @@ namespace fea
 			m_vao.bind();
 			m_shader.bind();
 			uint32_t offset = 0;
-			//draw dots
-			glDrawElements(GL_POINTS, m_counter_dots, GL_UNSIGNED_INT, (void*) uintptr_t(offset));
 			//draw edges
-			offset += m_counter_dots * sizeof(uint32_t);
 			glDrawElements(GL_LINES, m_counter_edges, GL_UNSIGNED_INT, (void*) uintptr_t(offset));
 			//draw faces
 			offset += m_counter_edges * sizeof(uint32_t);
@@ -50,22 +58,26 @@ namespace fea
 		}
 		void Boundary::setup(void)
 		{
-			//setup
-			m_counter_dots = 0;
+			//data
 			m_counter_edges = 0;
 			m_counter_faces = 0;
 			m_counter_vertices = 0;
+			//setup
+			setup_loads();
+			setup_supports();
 			//allocate
 			m_vbo.allocate(m_counter_vertices);
-			m_ibo.allocate(m_counter_dots + m_counter_edges + m_counter_faces);
+			m_ibo.allocate(m_counter_edges + m_counter_faces);
 		}
 		void Boundary::update(void)
 		{
-			//setup
-			m_index_dots = 0;
+			//data
 			m_index_edges = 0;
 			m_index_faces = 0;
 			m_index_vertices = 0;
+			//update
+			update_loads();
+			update_supports();
 			//transfers
 			m_vbo.transfer();
 			m_ibo.transfer();
@@ -78,7 +90,32 @@ namespace fea
 		}
 		void Boundary::setup_supports(void)
 		{
-			return;
+			//data
+			const mesh::nodes::DOF dr[] = {
+				mesh::nodes::DOF::Rotation_1, mesh::nodes::DOF::Rotation_2, mesh::nodes::DOF::Rotation_3
+			};
+			const mesh::nodes::DOF dp[] = {
+				mesh::nodes::DOF::Translation_1, mesh::nodes::DOF::Translation_2, mesh::nodes::DOF::Translation_3
+			};
+			//setup
+			for(const boundary::Support* support : m_boundary->supports())
+			{
+				if(std::find(dp, dp + 3, support->dof()) != dp + 3) setup_support_position();
+				if(std::find(dr, dr + 3, support->dof()) != dr + 3) setup_support_rotation();
+			}
+		}
+
+		void Boundary::setup_support_position(void)
+		{
+			m_counter_edges += 16;
+			m_counter_faces += 18;
+			m_counter_vertices += 10;
+		}
+		void Boundary::setup_support_rotation(void)
+		{
+			m_counter_edges += 30;
+			m_counter_faces += 36;
+			m_counter_vertices += 20;
 		}
 
 		//update
@@ -88,7 +125,116 @@ namespace fea
 		}
 		void Boundary::update_supports(void)
 		{
-			return;
+			//data
+			const mesh::nodes::DOF dr[] = {
+				mesh::nodes::DOF::Rotation_1, mesh::nodes::DOF::Rotation_2, mesh::nodes::DOF::Rotation_3
+			};
+			const mesh::nodes::DOF dp[] = {
+				mesh::nodes::DOF::Translation_1, mesh::nodes::DOF::Translation_2, mesh::nodes::DOF::Translation_3
+			};
+			//update
+			for(const boundary::Support* support : m_boundary->supports())
+			{
+				if(std::find(dp, dp + 3, support->dof()) != dp + 3) update_support_position(support);
+				if(std::find(dr, dr + 3, support->dof()) != dr + 3) update_support_rotation(support);
+			}
+		}
+
+		void Boundary::update_support_position(const boundary::Support* support)
+		{
+			//data
+			const float t = float(M_PI) / 6;
+			const canvas::Color color_faces = m_draw->colors().supports();
+			const canvas::Color color_edges = m_draw->colors().background().inverse();
+			const uint32_t ibo_data_edges[] = {0, 1, 0, 2, 0, 3, 0, 4, 1, 2, 2, 3, 3, 4, 4, 1};
+			const uint32_t ibo_data_faces[] = {0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1, 1, 2, 3, 1, 3, 4};
+			//buffers data
+			uint32_t* ibo_ptr_edges = m_ibo.data() + m_index_edges;
+			uint32_t* ibo_ptr_faces = m_ibo.data() + m_counter_edges + m_index_faces;
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+			//vbo position data
+			vbo_ptr[0 + 5 * 0].m_position = vbo_ptr[0 + 5 * 1].m_position = {0, 0, 0};
+			vbo_ptr[1 + 5 * 0].m_position = vbo_ptr[1 + 5 * 1].m_position = canvas::vec3(-cosf(t), -sinf(t), -sinf(t));
+			vbo_ptr[2 + 5 * 0].m_position = vbo_ptr[2 + 5 * 1].m_position = canvas::vec3(-cosf(t), +sinf(t), -sinf(t));
+			vbo_ptr[3 + 5 * 0].m_position = vbo_ptr[3 + 5 * 1].m_position = canvas::vec3(-cosf(t), +sinf(t), +sinf(t));
+			vbo_ptr[4 + 5 * 0].m_position = vbo_ptr[4 + 5 * 1].m_position = canvas::vec3(-cosf(t), -sinf(t), +sinf(t));
+			//vbo color data
+			for(uint32_t i = 0; i < 5; i++) vbo_ptr[i + 5 * 0].m_color = color_edges;
+			for(uint32_t i = 0; i < 5; i++) vbo_ptr[i + 5 * 1].m_color = color_faces;
+			//ibo data
+			for(uint32_t i = 0; i < 16; i++) ibo_ptr_edges[i] = ibo_data_edges[i] + m_index_vertices;
+			for(uint32_t i = 0; i < 18; i++) ibo_ptr_faces[i] = ibo_data_faces[i] + m_index_vertices + 5;
+			//transform
+			transform(support, 10);
+			//update
+			m_index_edges += 16;
+			m_index_faces += 18;
+			m_index_vertices += 10;
+		}
+		void Boundary::update_support_rotation(const boundary::Support* support)
+		{
+			//data
+			const float t = float(M_PI) / 6;
+			const uint32_t ibo_data_edges[] = {
+				0, 1, 2, 4, 3, 5, 2, 3, 3, 4, 
+				4, 5, 5, 2, 6, 7, 7, 8, 8, 9, 
+				9, 6, 2, 6, 3, 7, 4, 8, 5, 9
+			};
+			const uint32_t ibo_data_faces[] = {
+				2, 3, 4, 2, 4, 5, 6, 7, 8, 6, 8, 9,
+				2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
+				4, 5, 9, 4, 9, 8, 5, 2, 6, 5, 6, 9
+			};
+			const canvas::Color color_faces = m_draw->colors().supports();
+			const canvas::Color color_edges = m_draw->colors().background().inverse();
+			//buffers data
+			uint32_t* ibo_ptr_edges = m_ibo.data() + m_index_edges;
+			uint32_t* ibo_ptr_faces = m_ibo.data() + m_counter_edges+ m_index_faces;
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+			//vbo positon data
+			vbo_ptr[0 + 10 * 0].m_position = vbo_ptr[0 + 10 * 1].m_position = {0, 0, 0};
+			vbo_ptr[1 + 10 * 0].m_position = vbo_ptr[1 + 10 * 1].m_position = {-cosf(t), 0, 0};
+			vbo_ptr[6 + 10 * 0].m_position = vbo_ptr[6 + 10 * 1].m_position = {-1, -cosf(t), -cosf(t)};
+			vbo_ptr[7 + 10 * 0].m_position = vbo_ptr[7 + 10 * 1].m_position = {-1, +cosf(t), -cosf(t)};
+			vbo_ptr[8 + 10 * 0].m_position = vbo_ptr[8 + 10 * 1].m_position = {-1, +cosf(t), +cosf(t)};
+			vbo_ptr[9 + 10 * 0].m_position = vbo_ptr[9 + 10 * 1].m_position = {-1, -cosf(t), +cosf(t)};
+			vbo_ptr[2 + 10 * 0].m_position = vbo_ptr[2 + 10 * 1].m_position = {-cosf(t), -cosf(t), -cosf(t)};
+			vbo_ptr[3 + 10 * 0].m_position = vbo_ptr[3 + 10 * 1].m_position = {-cosf(t), +cosf(t), -cosf(t)};
+			vbo_ptr[4 + 10 * 0].m_position = vbo_ptr[4 + 10 * 1].m_position = {-cosf(t), +cosf(t), +cosf(t)};
+			vbo_ptr[5 + 10 * 0].m_position = vbo_ptr[5 + 10 * 1].m_position = {-cosf(t), -cosf(t), +cosf(t)};
+			//vbo color data
+			for(uint32_t i = 0; i < 10; i++) vbo_ptr[i + 10 * 0].m_color = color_edges;
+			for(uint32_t i = 0; i < 10; i++) vbo_ptr[i + 10 * 1].m_color = color_faces;
+			//ibo data
+			for(uint32_t i = 0; i < 30; i++) ibo_ptr_edges[i] = ibo_data_edges[i] + m_index_vertices;
+			for(uint32_t i = 0; i < 36; i++) ibo_ptr_faces[i] = ibo_data_faces[i] + m_index_vertices + 10;
+			//transform
+			transform(support, 20);
+			//update
+			m_index_edges += 30;
+			m_index_faces += 36;
+			m_index_vertices += 20;
+		}
+
+		//transform
+		void Boundary::transform(const boundary::Support* support, uint32_t count) const
+		{
+			//data
+			const uint32_t d2 = 
+				1 << uint32_t(mesh::nodes::DOF::Rotation_2) |
+				1 << uint32_t(mesh::nodes::DOF::Translation_2);
+			const uint32_t d3 = 
+				1 << uint32_t(mesh::nodes::DOF::Rotation_3) |
+				1 << uint32_t(mesh::nodes::DOF::Translation_3);
+			const float* x = m_draw->position(support->index_node());
+			const float s = m_draw->sizes().supports() * m_draw->m_bounding_box.radius();
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+			//transformation
+			canvas::mat4 A = canvas::mat4::shifting(x) * canvas::mat4::scaling(s);
+			if(1 << uint32_t(support->dof()) & d2) A = A * canvas::mat4::rotation({0, 0, +M_PI_2});
+			if(1 << uint32_t(support->dof()) & d3) A = A * canvas::mat4::rotation({0, -M_PI_2, 0});
+			//update
+			for(uint32_t i = 0; i < count; i++) vbo_ptr[i].m_position *= A;
 		}
 	}
 }

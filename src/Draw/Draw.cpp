@@ -58,6 +58,15 @@ namespace fea
 			return m_step = step;
 		}
 
+		Sizes& Draw::sizes(void)
+		{
+			return m_sizes;
+		}
+		const Sizes& Draw::sizes(void) const
+		{
+			return m_sizes;
+		}
+
 		Colors& Draw::colors(void)
 		{
 			return m_colors;
@@ -84,11 +93,10 @@ namespace fea
 			m_boundary->update();
 		}
 
-		//buonding box
-		canvas::cameras::BoundingBox Draw::bounding_box(void) const
+		//compute
+		void Draw::compute_bounding_box(void)
 		{
 			//data
-			canvas::cameras::BoundingBox bounding_box;
 			const uint32_t nn = m_model->mesh()->nodes().size();
 			const uint32_t ns = m_model->analysis()->solver()->draw_steps();
 			//positions
@@ -96,11 +104,21 @@ namespace fea
 			{
 				for(uint32_t j = 0; j < nn; j++)
 				{
-					bounding_box.insert_vertex(m_positions_data + 3 * nn * i + 3 * j);
+					m_bounding_box.insert_vertex(m_positions_data + 3 * nn * i + 3 * j);
 				}
 			}
-			//return
-			return bounding_box;
+		}
+
+		//data
+		const float* Draw::position(uint32_t index) const
+		{
+			const uint32_t nn = m_model->mesh()->nodes().size();
+			return m_positions_data + 3 * nn * m_step + 3 * index;
+		}
+		const float* Draw::rotation(uint32_t index) const
+		{
+			const uint32_t nn = m_model->mesh()->nodes().size();
+			return m_rotations_data + 3 * nn * m_step + 3 * index;
 		}
 	}
 }

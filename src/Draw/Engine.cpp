@@ -114,13 +114,14 @@ namespace fea
 			canvas::shaders::Shader::add_path("../Canvas/shd/");
 			//draw
 			m_draw = new Draw{m_model};
+			m_draw->compute_bounding_box();
 			//objects
 			m_scene->add_object(m_draw);
 			//camera
 			m_scene->setup();
 			m_scene->update();
 			m_scene->camera().fixed_bounding_box(true);
-			m_scene->camera().bounding_box(m_draw->bounding_box());
+			m_scene->camera().bounding_box(m_draw->m_bounding_box);
 			//screen
 			int32_t width, height;
 			glfwGetWindowSize(m_window, &width, &height);

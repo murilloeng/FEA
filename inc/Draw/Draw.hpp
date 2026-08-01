@@ -1,6 +1,7 @@
 #pragma once
 
 //FEA
+#include "FEA/inc/Draw/Sizes.hpp"
 #include "FEA/inc/Draw/Colors.hpp"
 
 //Canvas
@@ -38,6 +39,9 @@ namespace fea
 			uint32_t step(uint32_t);
 			uint32_t step(void) const;
 
+			Sizes& sizes(void);
+			const Sizes& sizes(void) const;
+
 			Colors& colors(void);
 			const Colors& colors(void) const;
 
@@ -46,11 +50,16 @@ namespace fea
 			void draw(void) override;
 			void setup(void) override;
 			void update(void) override;
-
-			//bounding box
-			canvas::cameras::BoundingBox bounding_box(void) const;
+			
+			//compute
+			void compute_bounding_box(void);
 
 			//data
+			const float* position(uint32_t) const;
+			const float* rotation(uint32_t) const;
+
+			//data
+			Sizes m_sizes;
 			Colors m_colors;
 			
 			Mesh* m_mesh;
@@ -61,6 +70,8 @@ namespace fea
 			uint32_t m_step;
 			float* m_positions_data;
 			float* m_rotations_data;
+
+			canvas::cameras::BoundingBox m_bounding_box;
 
 			//friends
 			friend class fea::draw::Mesh;
