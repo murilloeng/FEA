@@ -238,7 +238,7 @@ namespace fea
 			{
 				for(const loads::Node* load : load_case->m_loads_nodes)
 				{
-					m_model->mesh()->node(load->node())->m_dof_set |= 1 << uint32_t(load->dof());
+					m_model->mesh()->node(load->index_node())->m_dof_set |= 1 << uint32_t(load->dof());
 				}
 			}
 			//constraints

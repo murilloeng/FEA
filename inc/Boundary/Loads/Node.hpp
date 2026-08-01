@@ -5,6 +5,7 @@
 
 //FEA
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Boundary/Loads/Load.hpp"
 
 namespace fea
@@ -12,6 +13,10 @@ namespace fea
 	namespace boundary
 	{
 		class LoadCase;
+	}
+	namespace analysis
+	{
+		class Assembler;
 	}
 }
 
@@ -35,10 +40,10 @@ namespace fea
 
 			public:
 				//data
-				uint32_t node(uint32_t);
-				uint32_t node(void) const;
+				uint32_t index_node(void) const;
 
-				uint32_t dof_index(void) const;
+				mesh::nodes::Node* node(uint32_t);
+				mesh::nodes::Node* node(void) const;
 
 				mesh::nodes::DOF dof(void) const;
 				mesh::nodes::DOF dof(mesh::nodes::DOF);
@@ -55,6 +60,7 @@ namespace fea
 
 				//friends
 				friend class fea::boundary::LoadCase;
+				friend class fea::analysis::Assembler;
 			};
 		}
 	}

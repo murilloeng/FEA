@@ -58,6 +58,15 @@ namespace fea
 			return m_step = step;
 		}
 
+		What& Draw::what(void)
+		{
+			return m_what;
+		}
+		const What& Draw::what(void) const
+		{
+			return m_what;
+		}
+
 		Sizes& Draw::sizes(void)
 		{
 			return m_sizes;

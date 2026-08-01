@@ -36,19 +36,20 @@ namespace fea
 			}
 
 			//data
-			uint32_t Node::node(void) const
+			uint32_t Node::index_node(void) const
 			{
 				return m_node;
 			}
-			uint32_t Node::node(uint32_t node)
+
+			mesh::nodes::Node* Node::node(void) const
 			{
-				return m_node = node;
+				return m_boundary->model()->mesh()->node(m_node);
+			}
+			mesh::nodes::Node* Node::node(uint32_t node)
+			{
+				return m_boundary->model()->mesh()->node(m_node = node);
 			}
 
-			uint32_t Node::dof_index(void) const
-			{
-				return m_dof_index;
-			}
 
 			mesh::nodes::DOF Node::dof(void) const
 			{

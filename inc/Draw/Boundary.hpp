@@ -24,6 +24,10 @@ namespace fea
 	{
 		class Support;
 		class Boundary;
+		namespace loads
+		{
+			class Node;
+		}
 	}
 }
 
@@ -40,15 +44,22 @@ namespace fea
 			//destructor
 			~Boundary(void);
 
+			//data
+			uint32_t load_case(uint32_t);
+			uint32_t load_case(void) const;
+
+		private:
 			//draw
 			void draw(void) override;
 			void setup(void) override;
 			void update(void) override;
 
-		private:
 			//setup
 			void setup_loads(void);
 			void setup_supports(void);
+
+			void setup_load_force(void);
+			void setup_load_moment(void);
 
 			void setup_support_position(void);
 			void setup_support_rotation(void);
@@ -57,13 +68,19 @@ namespace fea
 			void update_loads(void);
 			void update_supports(void);
 
+			void update_load_force(const boundary::loads::Node*);
+			void update_load_moment(const boundary::loads::Node*);
+
 			void update_support_position(const boundary::Support*);
 			void update_support_rotation(const boundary::Support*);
 
 			//transform
 			void transform(const boundary::Support*, uint32_t) const;
+			void transform(const boundary::loads::Node*, uint32_t) const;
 
 			//data
+			uint32_t m_load_case;
+
 			uint32_t m_index_edges;
 			uint32_t m_index_faces;
 			uint32_t m_index_vertices;

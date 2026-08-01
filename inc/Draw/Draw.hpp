@@ -1,6 +1,7 @@
 #pragma once
 
 //FEA
+#include "FEA/inc/Draw/What.hpp"
 #include "FEA/inc/Draw/Sizes.hpp"
 #include "FEA/inc/Draw/Colors.hpp"
 
@@ -39,6 +40,9 @@ namespace fea
 			uint32_t step(uint32_t);
 			uint32_t step(void) const;
 
+			What& what(void);
+			const What& what(void) const;
+
 			Sizes& sizes(void);
 			const Sizes& sizes(void) const;
 
@@ -59,6 +63,7 @@ namespace fea
 			const float* rotation(uint32_t) const;
 
 			//data
+			What m_what;
 			Sizes m_sizes;
 			Colors m_colors;
 			

@@ -287,7 +287,7 @@ namespace fea
 				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fd[load->dof_index()] += s * item->value() * load->value();
+					fd[load->m_dof_index] += s * item->value() * load->value();
 				}
 			}
 		}
@@ -321,7 +321,7 @@ namespace fea
 				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fr[load->dof_index()] += s * item->value() * load->value();
+					fr[load->m_dof_index] += s * item->value() * load->value();
 				}
 			}
 		}

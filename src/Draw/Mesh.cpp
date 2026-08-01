@@ -60,13 +60,8 @@ namespace fea
 			m_counter_faces = 0;
 			m_counter_vertices = 0;
 			//setup
-			setup_nodes();
-			for(const mesh::elements::Element* element : m_mesh->elements())
-			{
-				if(element->dimension() == 1) setup_element_1D(element);
-				if(element->dimension() == 2) setup_element_2D(element);
-				if(element->dimension() == 3) setup_element_3D(element);
-			}
+			if(m_draw->what().nodes()) setup_nodes();
+			if(m_draw->what().elements()) setup_elements();
 			//allocate
 			m_vbo.allocate(m_counter_vertices);
 			m_ibo.allocate(m_counter_dots + m_counter_edges + m_counter_faces);
@@ -79,13 +74,8 @@ namespace fea
 			m_index_faces = 0;
 			m_index_vertices = 0;
 			//update
-			update_nodes();
-			for(const mesh::elements::Element* element : m_mesh->elements())
-			{
-				if(element->dimension() == 1) update_element_1D(element);
-				if(element->dimension() == 2) update_element_2D(element);
-				if(element->dimension() == 3) update_element_3D(element);
-			}
+			if(m_draw->what().nodes()) update_nodes();
+			if(m_draw->what().elements()) update_elements();
 			//transfers
 			m_vbo.transfer();
 			m_ibo.transfer();
@@ -96,6 +86,15 @@ namespace fea
 		{
 			m_counter_dots += m_mesh->nodes().size();
 			m_counter_vertices += m_mesh->nodes().size();
+		}
+		void Mesh::setup_elements(void)
+		{
+			for(const mesh::elements::Element* element : m_mesh->elements())
+			{
+				if(element->dimension() == 1) setup_element_1D(element);
+				if(element->dimension() == 2) setup_element_2D(element);
+				if(element->dimension() == 3) setup_element_3D(element);
+			}
 		}
 		void Mesh::setup_element_1D(const mesh::elements::Element* element)
 		{
@@ -128,6 +127,15 @@ namespace fea
 			//update
 			m_index_dots += nn;
 			m_index_vertices += nn;
+		}
+		void Mesh::update_elements(void)
+		{
+			for(const mesh::elements::Element* element : m_mesh->elements())
+			{
+				if(element->dimension() == 1) update_element_1D(element);
+				if(element->dimension() == 2) update_element_2D(element);
+				if(element->dimension() == 3) update_element_3D(element);
+			}
 		}
 		void Mesh::update_element_1D(const mesh::elements::Element* element)
 		{
