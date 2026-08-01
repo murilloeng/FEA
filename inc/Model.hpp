@@ -6,6 +6,10 @@ namespace fea
 	{
 		class Mesh;
 	}
+	namespace geometry
+	{
+		class Geometry;
+	}
 	namespace boundary
 	{
 		class Boundary;
@@ -34,6 +38,7 @@ namespace fea
 
 		//data
 		mesh::Mesh* mesh(void) const;
+		geometry::Geometry* geometry(void) const;
 		boundary::Boundary* boundary(void) const;
 		analysis::Analysis* analysis(void) const;
 
@@ -51,6 +56,7 @@ namespace fea
 
 		//data
 		mesh::Mesh* m_mesh;
+		geometry::Geometry* m_geometry;
 		boundary::Boundary* m_boundary;
 		analysis::Analysis* m_analysis;
 

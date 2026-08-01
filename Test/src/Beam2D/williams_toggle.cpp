@@ -33,18 +33,17 @@
 
 //data
 static const uint32_t ne = 10;
-static const double L = 1.20e+02;
-static const double v = 3.00e-01;
-static const double E = 7.20e+02;
-static const double A = 6.00e+00;
-static const double I = 2.00e+00;
+static const double L = 1.294e+01;
+static const double v = 3.000e-01;
+static const double E = 1.000e+00;
+static const double A = 1.885e+06;
+static const double I = 9.270e+03;
+static const double b1 = 2.470e-02;
+static const double b2 = 2.985e-02;
 
-//reference
-//K. H. Schweizerhof and P. Wriggers
-//Consistent linearization for path following methods in nonlinear FE analysis.
-//Computer Methods in Applied Mechanics and Engineering, vol. 59, pp. 269-279, 1986.
+//reference: https://doi.org/10.1093/qjmam/17.4.451
 
-void test::beam2D::elastic::frame_lee(void)
+void test::beam2D::elastic::williams_toggle(void)
 {
 	//data
 	fea::Model model;
@@ -55,27 +54,15 @@ void test::beam2D::elastic::frame_lee(void)
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
 	//nodes
-	for(uint32_t i = 0; i <= ne; i++)
-	{
-		model.mesh()->create_node(0, L * i / ne, 0);
-	}
-	for(uint32_t i = 1; i <= ne; i++)
-	{
-		model.mesh()->create_node(L * i / ne, L, 0);
-	}
 	//elements
-	for(uint32_t i = 0; i < 2 * ne; i++)
-	{
-		model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {i, i + 1});
-		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->section(&section);
-		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->material(&material);
-	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
+	model.boundary()->create_support(0, dof::Rotation_3);
+	model.boundary()->create_support(2, dof::Rotation_3);
 	model.boundary()->create_support(0, dof::Translation_1);
+	model.boundary()->create_support(2, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
-	model.boundary()->create_support(2 * ne, dof::Translation_1);
-	model.boundary()->create_support(2 * ne, dof::Translation_2);
+	model.boundary()->create_support(2, dof::Translation_2);
 	//loads
 	section.area(A);
 	section.inertia(1, I);
@@ -105,10 +92,10 @@ void test::beam2D::elastic::frame_lee(void)
 	validator.create_item();
 	validator.item(0)->tolerance(1.20e-01);
 	validator.item(1)->tolerance(1.20e-01);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 0, 3);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 1, 3);
-	validator.item(0)->load_reference("Test/data/Beam 2D/frame Lee/reference-u.dat", 0, 1);
-	validator.item(1)->load_reference("Test/data/Beam 2D/frame Lee/reference-v.dat", 0, 1);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Lee frame/data.txt", 0, 3);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/Lee frame/data.txt", 1, 3);
+	validator.item(0)->load_reference("Test/data/Beam 2D/Lee frame/reference-u.dat", 0, 1);
+	validator.item(1)->load_reference("Test/data/Beam 2D/Lee frame/reference-v.dat", 0, 1);
 	//validate
 	validator.validate();
 	//draw

@@ -6,6 +6,8 @@
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 
+#include "FEA/inc/Geometry/Geometry.hpp"
+
 #include "FEA/inc/Boundary/Boundary.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
@@ -16,9 +18,10 @@ namespace fea
 {
 	//constructor
 	Model::Model(void) : 
-		m_mesh{new mesh::Mesh}, m_boundary{new boundary::Boundary}, m_analysis{new analysis::Analysis}
+		m_mesh{new mesh::Mesh}, m_geometry{new geometry::Geometry}, m_boundary{new boundary::Boundary}, m_analysis{new analysis::Analysis}
 	{
 		mesh::Mesh::m_model = this;
+		geometry::Geometry::m_model = this;
 		boundary::Boundary::m_model = this;
 		analysis::Analysis::m_model = this;
 	}
@@ -27,6 +30,7 @@ namespace fea
 	Model::~Model(void)
 	{
 		delete m_mesh;
+		delete m_geometry;
 		delete m_boundary;
 		delete m_analysis;
 	}
@@ -41,6 +45,7 @@ namespace fea
 		FILE* file = fopen(path, "w");
 		//save
 		m_mesh->save(file);
+		m_geometry->save(file);
 		m_boundary->save(file);
 		m_analysis->save(file);
 		//close
@@ -62,6 +67,10 @@ namespace fea
 	mesh::Mesh* Model::mesh(void) const
 	{
 		return m_mesh;
+	}
+	geometry::Geometry* Model::geometry(void) const
+	{
+		return m_geometry;
 	}
 	boundary::Boundary* Model::boundary(void) const
 	{
