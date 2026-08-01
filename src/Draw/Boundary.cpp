@@ -144,7 +144,7 @@ namespace fea
 		void Boundary::setup_load_moment(void)
 		{
 			m_counter_edges += 18;
-			m_counter_vertices += 10;
+			m_counter_vertices += 11;
 		}
 
 		void Boundary::setup_support_position(void)
@@ -223,7 +223,35 @@ namespace fea
 		}
 		void Boundary::update_load_moment(const boundary::loads::Node* load)
 		{
-			return;
+			//data
+			const float t = float(M_PI) / 6;
+			const float s = math::sign(load->value());
+			const canvas::Color color = m_draw->colors().loads();
+			const uint32_t ibo_data[] = {0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 6, 7, 6, 8, 6, 9, 6, 10};
+			//buffers data
+			uint32_t* ibo_ptr = m_ibo.data() + m_index_edges;
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+			//vbo position data
+			vbo_ptr[ 0].m_position = {0, 0, 0};
+			vbo_ptr[ 1].m_position = {-s, 0, 0};
+			vbo_ptr[ 6].m_position = {-s / 2, 0, 0};
+			vbo_ptr[ 2].m_position = {-0.3f * s * cosf(t), -0.3f * s * sinf(t), 0};
+			vbo_ptr[ 3].m_position = {-0.3f * s * cosf(t), +0.3f * s * sinf(t), 0};
+			vbo_ptr[ 4].m_position = {-0.3f * s * cosf(t), 0, -0.3f * s * sinf(t)};
+			vbo_ptr[ 5].m_position = {-0.3f * s * cosf(t), 0, +0.3f * s * sinf(t)};
+			vbo_ptr[ 7].m_position = {-s / 2 - 0.3f * s * cosf(t), -0.3f * s * sinf(t), 0};
+			vbo_ptr[ 8].m_position = {-s / 2 - 0.3f * s * cosf(t), +0.3f * s * sinf(t), 0};
+			vbo_ptr[ 9].m_position = {-s / 2 - 0.3f * s * cosf(t), 0, -0.3f * s * sinf(t)};
+			vbo_ptr[10].m_position = {-s / 2 - 0.3f * s * cosf(t), 0, +0.3f * s * sinf(t)};
+			//vbo color data
+			for(uint32_t i = 0; i < 11; i++) vbo_ptr[i].m_color = color;
+			//ibo data
+			for(uint32_t i = 0; i < 18; i++) ibo_ptr[i] = ibo_data[i] + m_index_vertices;
+			//transform
+			transform(load, 11);
+			//update
+			m_index_edges += 18;
+			m_index_vertices += 11;
 		}
 
 		void Boundary::update_support_position(const boundary::Support* support)
@@ -332,7 +360,7 @@ namespace fea
 				1 << uint32_t(mesh::nodes::DOF::Rotation_3) |
 				1 << uint32_t(mesh::nodes::DOF::Translation_3);
 			const float* x = m_draw->position(load->index_node());
-			const float s = m_draw->sizes().supports() * m_draw->m_bounding_box.radius();
+			const float s = m_draw->sizes().loads() * m_draw->m_bounding_box.radius();
 			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
 			//transformation
 			canvas::mat4 A = canvas::mat4::shifting(x) * canvas::mat4::scaling(s);
