@@ -47,6 +47,7 @@ namespace fea
 				void append_node(uint32_t);
 				nodes::Node* node(uint32_t) const;
 				nodes::Node* node(uint32_t, uint32_t);
+				virtual uint32_t dimension(void) const = 0;
 				virtual uint32_t dof_set(uint32_t) const = 0;
 
 				//tangents

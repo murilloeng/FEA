@@ -23,6 +23,8 @@ namespace fea
 
 			public:
 				//data
+				uint32_t dimension(void) const override;
+
 				const sections::Section* section(void) const;
 				const sections::Section* section(sections::Section*);
 
