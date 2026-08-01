@@ -10,7 +10,7 @@ namespace fea
 	{
 		//constructor
 		Draw::Draw(const Model* model) : 
-			m_mesh{new Mesh{model->mesh()}}, m_boundary{new Boundary{model->boundary()}}
+			m_mesh{new Mesh{this, model->mesh()}}, m_boundary{new Boundary{this, model->boundary()}}
 		{
 			return;
 		}
@@ -20,6 +20,16 @@ namespace fea
 		{
 			delete m_mesh;
 			delete m_boundary;
+		}
+
+		//data
+		Colors& Draw::colors(void)
+		{
+			return m_colors;
+		}
+		const Colors& Draw::colors(void) const
+		{
+			return m_colors;
 		}
 
 		//draw
@@ -37,6 +47,13 @@ namespace fea
 		{
 			m_mesh->update();
 			m_boundary->update();
+		}
+
+		//update
+		void Draw::update_bounding_box(canvas::cameras::BoundingBox& bounding_box) const
+		{
+			m_mesh->update_bounding_box(bounding_box);
+			m_boundary->update_bounding_box(bounding_box);
 		}
 	}
 }

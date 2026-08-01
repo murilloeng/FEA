@@ -23,7 +23,7 @@ namespace fea
 		{
 		public:
 			//constructor
-			Engine(Model*);
+			Engine(const Model*);
 
 			//destructor
 			~Engine(void);
@@ -44,6 +44,9 @@ namespace fea
 			void setup_scene(void);
 			void setup_callbacks(void);
 
+			//print
+			void print_fps(float&, float);
+
 			//update
 			static void update_playing(GLFWwindow*);
 			static void update_step(GLFWwindow*, bool);
@@ -62,10 +65,10 @@ namespace fea
 
 			//data
 			Draw* m_draw;
-			Model* m_model;
 			bool m_playing;
 			bool m_show_fps;
 			double m_framerate;
+			const Model* m_model;
 			GLFWwindow* m_window;
 			canvas::Scene* m_scene;
 		};

@@ -27,7 +27,7 @@ namespace fea
 		{
 		private:
 			//constructor
-			Boundary(const boundary::Boundary*);
+			Boundary(const Draw*, const boundary::Boundary*);
 
 			//destructor
 			~Boundary(void);
@@ -44,6 +44,7 @@ namespace fea
 			//update
 			void update_loads(void);
 			void update_supports(void);
+			void update_bounding_box(canvas::cameras::BoundingBox&) const override;
 
 		private:
 			//data
@@ -62,6 +63,7 @@ namespace fea
 			canvas::buffers::VBO m_vbo;
 			canvas::shaders::Shader m_shader;
 
+			const Draw* m_draw;
 			const boundary::Boundary* m_boundary;
 
 			//friends

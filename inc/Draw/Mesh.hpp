@@ -27,7 +27,7 @@ namespace fea
 		{
 		private:
 			//constructor
-			Mesh(const mesh::Mesh*);
+			Mesh(const Draw*, const mesh::Mesh*);
 
 			//destructor
 			~Mesh(void);
@@ -48,8 +48,10 @@ namespace fea
 			void update_elements_1D(void);
 			void update_elements_2D(void);
 			void update_elements_3D(void);
+			void update_bounding_box(canvas::cameras::BoundingBox&) const override;
 
 			//data
+			const Draw* m_draw;
 			const mesh::Mesh* m_mesh;
 
 			uint32_t m_index_dots;

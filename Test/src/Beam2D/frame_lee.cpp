@@ -13,6 +13,8 @@
 //FEA
 #include "FEA/inc/Model.hpp"
 
+#include "FEA/inc/Draw/Engine.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
@@ -107,6 +109,8 @@ void test::beam2D::elastic::frame_lee(void)
 	validator.item(1)->load_numeric("Test/data/Beam 2D/frame Lee/data.txt", 1, 3);
 	validator.item(0)->load_reference("Test/data/Beam 2D/frame Lee/reference-u.dat", 0, 1);
 	validator.item(1)->load_reference("Test/data/Beam 2D/frame Lee/reference-v.dat", 0, 1);
-	// //validate
+	//validate
 	validator.validate();
+	//draw
+	fea::draw::Engine(&model).start();
 }

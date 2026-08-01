@@ -1,16 +1,20 @@
 //FEA
+#include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Mesh.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 //Canvas
 #include "Canvas/inc/Vertices/Model3D.hpp"
+#include "Canvas/inc/Cameras/BoundingBox.hpp"
 
 namespace fea
 {
 	namespace draw
 	{
 		//constructor
-		Mesh::Mesh(const mesh::Mesh* mesh) : m_mesh{mesh}, m_shader{"Model3D"}
+		Mesh::Mesh(const Draw* draw, const mesh::Mesh* mesh) : m_draw{draw}, m_mesh{mesh}, m_shader{"Model3D"}
 		{
 			//vbo setup
 			m_vbo.vertex_size(sizeof(canvas::vertices::Model3D));
@@ -83,7 +87,8 @@ namespace fea
 		//setup
 		void Mesh::setup_nodes(void)
 		{
-			return;
+			m_counter_dots += m_mesh->nodes().size();
+			m_counter_vertices += m_mesh->nodes().size();
 		}
 		void Mesh::setup_elements_1D(void)
 		{
@@ -101,7 +106,20 @@ namespace fea
 		//update
 		void Mesh::update_nodes(void)
 		{
-			return;
+			//data
+			const uint32_t nn = m_mesh->nodes().size();
+			uint32_t* ibo_ptr = m_ibo.data() + m_index_dots;
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+			//buffers data
+			for(uint32_t i = 0; i < nn; i++)
+			{
+				ibo_ptr[i] = m_index_vertices + i;
+				vbo_ptr[i].m_color = m_draw->colors().nodes();
+				vbo_ptr[i].m_position = m_mesh->node(i)->position_ref();
+			}
+			//update
+			m_index_dots += nn;
+			m_index_vertices += nn;
 		}
 		void Mesh::update_elements_1D(void)
 		{
@@ -114,6 +132,17 @@ namespace fea
 		void Mesh::update_elements_3D(void)
 		{
 			return;
+		}
+		void Mesh::update_bounding_box(canvas::cameras::BoundingBox& bounding_box) const
+		{
+			//data
+			const uint32_t nv = m_vbo.vertex_count();
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data();
+			//update
+			for(uint32_t i = 0; i < nv; i++)
+			{
+				bounding_box.insert_vertex(vbo_ptr[i].m_position.data());
+			}
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace fea
 	namespace draw
 	{
 		//destructor
-		Engine::Engine(Model* model) : m_draw{nullptr}, m_model{model}, m_playing{false}, m_show_fps{true}, m_framerate{60}
+		Engine::Engine(const Model* model) : m_draw{nullptr}, m_playing{false}, m_show_fps{false}, m_framerate{60}, m_model{model}
 		{
 			setup_glfw();
 			setup_scene();
@@ -53,11 +53,7 @@ namespace fea
 				m_scene->draw();
 				glfwSwapBuffers(m_window);
 				//framerate
-				if(m_show_fps)
-				{
-					printf("FPS: %d\n", uint32_t(1 / (t2 - t1)));
-					t1 = t2;
-				}
+				print_fps(t1, t2);
 			}
 		}
 
@@ -110,17 +106,14 @@ namespace fea
 		{
 			//scene
 			m_scene = new canvas::Scene;
-			canvas::shaders::Shader::add_path("../../Canvas/shd/");
+			canvas::shaders::Shader::add_path("../Canvas/shd/");
 			//draw
 			m_draw = new Draw{m_model};
-			// m_draw->compute_bounding_boxes();
 			//objects
 			m_scene->add_object(m_draw);
 			//camera
 			m_scene->setup();
 			m_scene->update();
-			// m_scene->camera().fixed_bounding_box(true);
-			// m_scene->camera().bounding_box(m_draw->bounding_box());
 			//screen
 			int32_t width, height;
 			glfwGetWindowSize(m_window, &width, &height);
@@ -134,6 +127,13 @@ namespace fea
 			glfwSetWindowSizeCallback(m_window, callback_resize);
 			glfwSetCursorPosCallback(m_window, callback_position);
 			glfwSetMouseButtonCallback(m_window, callback_button);
+		}
+
+		//print
+		void Engine::print_fps(float& t1, float t2)
+		{
+			t1 = t2;
+			if(m_show_fps) printf("FPS: %d\n", uint32_t(1 / (t2 - t1)));
 		}
 
 		//update
