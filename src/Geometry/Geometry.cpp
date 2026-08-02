@@ -247,74 +247,27 @@ namespace fea
 		}
 		void Geometry::generate_mesh_elements(void) const
 		{
-			generate_mesh_elements_curves();
-			generate_mesh_elements_surfaces();
-		}
-
-		void Geometry::generate_mesh_elements_curves(void) const
-		{
 			//data
-			std::vector<int32_t> ec;
-			std::vector<uint32_t> nodes;
-			mesh::elements::Element* element;
-			std::vector<std::vector<std::size_t>> et, en;
-			uint32_t ne = m_model->mesh()->elements().size();
+			std::vector<int32_t> types;
+			std::vector<std::vector<std::size_t>> tags, nodes;
 			//curves
 			for(Curve* curve : m_curves)
 			{
-				gmsh::model::mesh::getElements(ec, et, en, 1, curve->m_index + 1);
-				for(uint32_t j = 0; j < ec.size(); j++)
+				if(curve->m_generate_elements)
 				{
-					if(gmsh_cell(ec[j]) & (uint32_t) cell->type())
-					{
-						nodes.resize(cell->vertices());
-						for(uint32_t k = 0; k < et[j].size(); k++)
-						{
-							for(uint32_t a = 0; a < nodes.size(); a++)
-							{
-								nodes[a] = en[j][k * nodes.size() + a] - 1;
-							}
-							curve->m_elements.push_back(ne++);
-							element = m_model->mesh()->create_element(element_type, nodes, material_index, cell_index);
-							((mesh::elements::Frame*) element)->major_axis(curve->m_major_axis);
-						}
-					}
+					gmsh::model::mesh::getElements(types, tags, nodes, 1, curve->m_index + 1);
+					for(uint32_t i = 0; i < types.size(); i++) curve->m_generate_elements(types[i], tags[i].size(), nodes[i].data());
 				}
 			}
-		}
-		void Geometry::generate_mesh_elements_surfaces(void) const
-		{
-			// //data
-			// std::vector<int32_t> ec;
-			// std::vector<uint32_t> nodes;
-			// std::vector<std::vector<std::size_t>> et, en;
-			// uint32_t ne = m_model->mesh()->elements().size();
-			// //surfaces
-			// for(surfaces::Surface* surface : m_surfaces)
-			// {
-			// 	if(!surface->active()) continue;
-			// 	const uint32_t cell_index = surface->m_cell;
-			// 	const mesh::cells::Cell* cell = surface->cell();
-			// 	const uint32_t material_index = surface->m_material;
-			// 	mesh::elements::Type element_type = surface->m_element;
-			// 	gmsh::model::mesh::getElements(ec, et, en, 2, surface->m_index + 1);
-			// 	for(uint32_t j = 0; j < ec.size(); j++)
-			// 	{
-			// 		if(gmsh_cell(ec[j]) & (uint32_t) cell->type())
-			// 		{
-			// 			nodes.resize(cell->vertices());
-			// 			for(uint32_t k = 0; k < et[j].size(); k++)
-			// 			{
-			// 				for(uint32_t a = 0; a < nodes.size(); a++)
-			// 				{
-			// 					nodes[a] = en[j][k * nodes.size() + a] - 1;
-			// 				}
-			// 				surface->m_elements.push_back(ne++);
-			// 				m_model->mesh()->create_element(element_type, nodes, material_index, cell_index);
-			// 			}
-			// 		}
-			// 	}
-			// }
+			//surfaces
+			for(Surface* surface : m_surfaces)
+			{
+				if(surface->m_generate_elements)
+				{
+					gmsh::model::mesh::getElements(types, tags, nodes, 2, surface->m_index + 1);
+					for(uint32_t i = 0; i < types.size(); i++) surface->m_generate_elements(types[i], tags[i].size(), nodes[i].data());
+				}
+			}
 		}
 
 		//data

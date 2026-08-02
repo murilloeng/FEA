@@ -14,7 +14,7 @@ int main(void)
 	{
 		// test::truss3D::pyramid();
 		// test::truss2D::von_mises();
-		test::beam2D::elastic::lee_frame();
+		test::beam2D::elastic::cantilever_bending();
 	}
 	catch(const std::exception& exception)
 	{

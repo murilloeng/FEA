@@ -61,16 +61,13 @@ namespace fea
 			Point* create_point(const double*, double = 0);
 			Point* create_point(double, double, double, double = 0);
 
-			//mesh
+			//generate
 			void generate_mesh(void) const;
 
 		protected:
-			//mesh
+			//generate
 			void generate_mesh_nodes(void) const;
 			void generate_mesh_elements(void) const;
-
-			void generate_mesh_elements_curves(void) const;
-			void generate_mesh_elements_surfaces(void) const;
 
 			//data
 			uint32_t m_order;

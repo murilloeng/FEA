@@ -62,6 +62,8 @@ namespace fea
 			std::vector<uint32_t> m_nodes;
 			std::vector<uint32_t> m_elements;
 
+			std::function<void(int32_t, size_t, const size_t*)> m_generate_elements;
+
 			//friends
 			friend class fea::geometry::Geometry;
 		};
