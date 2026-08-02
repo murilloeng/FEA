@@ -10,7 +10,7 @@ namespace fea
 	namespace geometry
 	{
 		//constructors
-		Curve::Curve(void) : m_major_axis{0, 0, 1}, m_structured{0}
+		Curve::Curve(void) : m_structured{0}, m_major_axis{0, 0, 1}
 		{
 			return;
 		}
@@ -45,7 +45,7 @@ namespace fea
 		{
 			return m_structured = structured;
 		}
-
+		
 		Point* Curve::point(uint32_t index) const
 		{
 			return m_geometry->point(m_points[index]);
@@ -57,6 +57,15 @@ namespace fea
 		const std::vector<uint32_t>& Curve::points(void) const
 		{
 			return m_points;
+		}
+
+		Curve::function Curve::generate_elements(void) const
+		{
+			return m_generate_elements;
+		}
+		Curve::function Curve::generate_elements(function generate_elements)
+		{
+			return m_generate_elements = generate_elements;
 		}
 
 		const double* Curve::major_axis(void) const

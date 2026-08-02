@@ -32,12 +32,18 @@ namespace fea
 			//serialization
 			void save(FILE*) const;
 
+			//types
+			typedef std::function<void(int32_t, size_t, const size_t*)> function;
+
 		public:
 			//data
 			bool structured(bool);
 			bool structured(void) const;
 
 			static Geometry* geometry(void);
+
+			function generate_elements(function);
+			function generate_elements(void) const;
 			
 			Loop& loop(uint32_t);
 			Loop& create_loop(void);
@@ -59,10 +65,10 @@ namespace fea
 			std::vector<Loop> m_loops;
 			static Geometry* m_geometry;
 
+			function m_generate_elements;
+
 			std::vector<uint32_t> m_nodes;
 			std::vector<uint32_t> m_elements;
-
-			std::function<void(int32_t, size_t, const size_t*)> m_generate_elements;
 
 			//friends
 			friend class fea::geometry::Geometry;

@@ -31,12 +31,18 @@ namespace fea
 			//serialization
 			virtual void save(FILE*) const;
 
+			//types
+			typedef std::function<void(int32_t, size_t, const size_t*)> function;
+
 		public:
 			//data
 			static Geometry* geometry(void);
 
 			uint32_t structured(uint32_t);
 			uint32_t structured(void) const;
+
+			function generate_elements(function);
+			function generate_elements(void) const;
 
 			Point* point(uint32_t) const;
 			Point* point(uint32_t, uint32_t);
@@ -57,9 +63,10 @@ namespace fea
 			virtual void mesh(void) const = 0;
 
 			//data
+			uint32_t m_index;
+			uint32_t m_structured;
 			double m_major_axis[3];
 			static Geometry* m_geometry;
-			uint32_t m_index, m_structured;
 
 			std::vector<uint32_t> m_nodes;
 			std::vector<uint32_t> m_points;

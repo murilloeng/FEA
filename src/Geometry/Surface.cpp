@@ -45,7 +45,7 @@ namespace fea
 		{
 			return m_structured = structured;
 		}
-
+		
 		const std::vector<uint32_t>& Surface::nodes(void) const
 		{
 			return m_nodes;
@@ -53,6 +53,15 @@ namespace fea
 		const std::vector<uint32_t>& Surface::elements(void) const
 		{
 			return m_elements;
+		}
+
+		Surface::function Surface::generate_elements(void) const
+		{
+			return m_generate_elements;
+		}
+		Surface::function Surface::generate_elements(function generate_elements)
+		{
+			return m_generate_elements = generate_elements;
 		}
 
 		//loops

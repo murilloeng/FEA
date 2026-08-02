@@ -11,8 +11,8 @@ namespace fea
 		//constructors
 		Line::Line(uint32_t p1, uint32_t p2)
 		{
-			m_nodes.push_back(p1);
-			m_nodes.push_back(p2);
+			m_points.push_back(p1);
+			m_points.push_back(p2);
 		}
 
 		//destructor

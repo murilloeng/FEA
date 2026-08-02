@@ -9,6 +9,7 @@
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 
+#include "FEA/inc/Geometry/Line.hpp"
 #include "FEA/inc/Geometry/Point.hpp"
 #include "FEA/inc/Geometry/Curve.hpp"
 #include "FEA/inc/Geometry/Surface.hpp"
@@ -150,6 +151,18 @@ namespace fea
 			m_surfaces.push_back(surface);
 			//return
 			return surface;
+		}
+
+		Curve* Geometry::create_line(uint32_t p1, uint32_t p2)
+		{
+			//data
+			Line* line = new Line(p1, p2);
+			const uint32_t nc = m_curves.size();
+			//list
+			line->m_index = nc;
+			m_curves.push_back(line);
+			//return
+			return line;
 		}
 
 		Point* Geometry::create_point(const double* p, double s)

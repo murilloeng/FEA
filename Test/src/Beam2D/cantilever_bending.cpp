@@ -21,6 +21,9 @@
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 
+#include "FEA/inc/Geometry/Curve.hpp"
+#include "FEA/inc/Geometry/Geometry.hpp"
+
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
@@ -67,17 +70,31 @@ void test::beam2D::elastic::cantilever_bending(void)
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
-	//nodes
-	for(uint32_t i = 0; i <= ne; i++)
+	//points
+	model.geometry()->create_point(0, 0, 0);
+	model.geometry()->create_point(L, 0, 0);
+	//curves
+	model.geometry()->create_line(0, 1);
+	model.geometry()->curve(0)->structured(ne);
+	model.geometry()->curve(0)->generate_elements([&model](int32_t type, size_t ne, const size_t* nodes)
 	{
-		model.mesh()->create_node(L * i / ne, 0, 0);
-	}
+		if(type == 1)
+		{
+			for(uint32_t i = 0; i < ne; i++)
+			{
+				const uint32_t n1 = nodes[2 * i + 0] - 1;
+				const uint32_t n2 = nodes[2 * i + 1] - 1;
+				model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {n1, n2});
+			}
+		}
+	});
+	//generate
+	model.geometry()->generate_mesh();
 	//elements
-	for(uint32_t i = 0; i < ne; i++)
+	for(fea::mesh::elements::Element* element : model.mesh()->elements())
 	{
-		model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {i, i + 1});
-		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->section(&section);
-		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->material(&material);
+		((fea::mesh::elements::Beam2D*) element)->section(&section);
+		((fea::mesh::elements::Beam2D*) element)->material(&material);
 	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
@@ -90,20 +107,20 @@ void test::beam2D::elastic::cantilever_bending(void)
 	material.poisson_ratio(v);
 	material.elastic_modulus(E);
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(ne, dof::Rotation_3, 2 * M_PI * E * I /  L);
+	model.boundary()->create_load_case(1, dof::Rotation_3, 2 * M_PI * E * I /  L);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node(ne);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_3);
 	//solve
 	model.solve();
 	//save
 	model.save_results("Test/data/Beam 2D/cantilever bending");
 	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/cantilever bending/data.txt", {
-		{ne, dof::Translation_1}, {ne, dof::Translation_2}, {ne, dof::Rotation_3}
+		{1, dof::Translation_1}, {1, dof::Translation_2}, {1, dof::Rotation_3}
 	});
 	//validator
 	validator.create_item();
