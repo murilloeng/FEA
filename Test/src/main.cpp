@@ -12,7 +12,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::cantilever_force();
+		test::beam2D::elastic::square_frame();
 	}
 	catch(const std::exception& exception)
 	{

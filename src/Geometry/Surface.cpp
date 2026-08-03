@@ -7,12 +7,14 @@
 //FEA
 #include "FEA/inc/Geometry/Surface.hpp"
 
+#include "FEA/inc/Mesh/Elements/Type.hpp"
+
 namespace fea
 {
 	namespace geometry
 	{
 		//constructors
-		Surface::Surface(void) : m_structured{false}
+		Surface::Surface(void) : m_structured{false}, m_element_type{mesh::elements::Type::Last}
 		{
 			return;
 		}
@@ -55,13 +57,13 @@ namespace fea
 			return m_elements;
 		}
 
-		Surface::function Surface::generate_elements(void) const
+		mesh::elements::Type Surface::element_type(void) const
 		{
-			return m_generate_elements;
+			return m_element_type;
 		}
-		Surface::function Surface::generate_elements(function generate_elements)
+		mesh::elements::Type Surface::element_type(mesh::elements::Type element_type)
 		{
-			return m_generate_elements = generate_elements;
+			return m_element_type = element_type;
 		}
 
 		//loops

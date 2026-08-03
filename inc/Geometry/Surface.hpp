@@ -14,6 +14,13 @@ namespace fea
 	{
 		class Geometry;
 	}
+	namespace mesh
+	{
+		namespace elements
+		{
+			enum class Type : uint32_t;
+		}
+	}
 }
 
 namespace fea
@@ -32,9 +39,6 @@ namespace fea
 			//serialization
 			void save(FILE*) const;
 
-			//types
-			typedef std::function<void(int32_t, size_t, const size_t*)> function;
-
 		public:
 			//data
 			bool structured(bool);
@@ -42,15 +46,15 @@ namespace fea
 
 			static Geometry* geometry(void);
 
-			function generate_elements(function);
-			function generate_elements(void) const;
-			
 			Loop& loop(uint32_t);
 			Loop& create_loop(void);
 			const std::vector<Loop>& loops(void) const;
 
 			const std::vector<uint32_t>& nodes(void) const;
 			const std::vector<uint32_t>& elements(void) const;
+
+			mesh::elements::Type element_type(void) const;
+			mesh::elements::Type element_type(mesh::elements::Type);
 
 			//index
 			uint32_t index(void) const;
@@ -65,10 +69,10 @@ namespace fea
 			std::vector<Loop> m_loops;
 			static Geometry* m_geometry;
 
-			function m_generate_elements;
-
 			std::vector<uint32_t> m_nodes;
 			std::vector<uint32_t> m_elements;
+
+			mesh::elements::Type m_element_type;
 
 			//friends
 			friend class fea::geometry::Geometry;

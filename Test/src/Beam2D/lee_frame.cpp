@@ -39,10 +39,7 @@ static const double E = 7.20e+02;
 static const double A = 6.00e+00;
 static const double I = 2.00e+00;
 
-//reference
-//K. H. Schweizerhof and P. Wriggers
-//Consistent linearization for path following methods in nonlinear FE analysis.
-//Computer Methods in Applied Mechanics and Engineering, vol. 59, pp. 269-279, 1986.
+//reference: doi.org/10.1061/JMCEA3.0000966
 
 void test::beam2D::elastic::lee_frame(void)
 {

@@ -45,6 +45,8 @@ static const double E = 2.10e+11;
 static const double A = b * h;
 static const double I = b * h * h * h / 12;
 
+//reference: doi.org/10.1002/nme.1620170113
+
 void test::beam2D::elastic::cantilever_force(void)
 {
 	//data
@@ -61,16 +63,7 @@ void test::beam2D::elastic::cantilever_force(void)
 	//curves
 	model.geometry()->create_line(0, 1);
 	model.geometry()->curve(0)->structured(ne);
-	model.geometry()->curve(0)->generate_elements([&model](int32_t type, size_t ne, const size_t* nodes)
-	{
-		if(type != 1) return;
-		for(uint32_t i = 0; i < ne; i++)
-		{
-			const uint32_t n1 = nodes[2 * i + 0] - 1;
-			const uint32_t n2 = nodes[2 * i + 1] - 1;
-			model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {n1, n2});
-		}
-	});
+	model.geometry()->curve(0)->element_type(fea::mesh::elements::Type::Beam2D);
 	//generate
 	model.geometry()->generate_mesh();
 	//elements

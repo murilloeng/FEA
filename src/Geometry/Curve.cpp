@@ -5,12 +5,14 @@
 #include "FEA/inc/Geometry/Curve.hpp"
 #include "FEA/inc/Geometry/Geometry.hpp"
 
+#include "FEA/inc/Mesh/Elements/Type.hpp"
+
 namespace fea
 {
 	namespace geometry
 	{
 		//constructors
-		Curve::Curve(void) : m_structured{0}, m_major_axis{0, 0, 1}
+		Curve::Curve(void) : m_structured{0}, m_major_axis{0, 0, 1}, m_element_type{mesh::elements::Type::Last}
 		{
 			return;
 		}
@@ -59,15 +61,6 @@ namespace fea
 			return m_points;
 		}
 
-		Curve::function Curve::generate_elements(void) const
-		{
-			return m_generate_elements;
-		}
-		Curve::function Curve::generate_elements(function generate_elements)
-		{
-			return m_generate_elements = generate_elements;
-		}
-
 		const double* Curve::major_axis(void) const
 		{
 			return m_major_axis;
@@ -91,6 +84,15 @@ namespace fea
 		const std::vector<uint32_t>& Curve::elements(void) const
 		{
 			return m_elements;
+		}
+
+		mesh::elements::Type Curve::element_type(void) const
+		{
+			return m_element_type;
+		}
+		mesh::elements::Type Curve::element_type(mesh::elements::Type element_type)
+		{
+			return m_element_type = element_type;
 		}
 
 		//index

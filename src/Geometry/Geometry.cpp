@@ -8,6 +8,7 @@
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Elements/Type.hpp"
 
 #include "FEA/inc/Geometry/Line.hpp"
 #include "FEA/inc/Geometry/Point.hpp"
@@ -261,24 +262,40 @@ namespace fea
 		void Geometry::generate_mesh_elements(void) const
 		{
 			//data
+			std::string name;
+			std::vector<double> local;
+			int32_t dim, order, nn, np;
 			std::vector<int32_t> types;
+			std::vector<uint32_t> mesh_nodes;
 			std::vector<std::vector<std::size_t>> tags, nodes;
 			//curves
 			for(Curve* curve : m_curves)
 			{
-				if(curve->m_generate_elements)
+				gmsh::model::mesh::getElements(types, tags, nodes, 1, curve->m_index + 1);
+				gmsh::model::mesh::getElementProperties(types[0], name, dim, order, nn, local, np);
+				mesh_nodes.resize(nn);
+				for(std::size_t i = 0; i < tags[0].size(); i++)
 				{
-					gmsh::model::mesh::getElements(types, tags, nodes, 1, curve->m_index + 1);
-					for(uint32_t i = 0; i < types.size(); i++) curve->m_generate_elements(types[i], tags[i].size(), nodes[i].data());
+					for(int32_t j = 0; j < nn; j++) mesh_nodes[j] = nodes[0][i * nn + j] - 1;
+					if(curve->m_element_type != mesh::elements::Type::Last)
+					{
+						m_model->mesh()->create_element(curve->m_element_type, mesh_nodes);
+					}
 				}
 			}
 			//surfaces
 			for(Surface* surface : m_surfaces)
 			{
-				if(surface->m_generate_elements)
+				gmsh::model::mesh::getElements(types, tags, nodes, 2, surface->m_index + 1);
+				gmsh::model::mesh::getElementProperties(types[0], name, dim, order, nn, local, np);
+				mesh_nodes.resize(nn);
+				for(std::size_t i = 0; i < tags[0].size(); i++)
 				{
-					gmsh::model::mesh::getElements(types, tags, nodes, 2, surface->m_index + 1);
-					for(uint32_t i = 0; i < types.size(); i++) surface->m_generate_elements(types[i], tags[i].size(), nodes[i].data());
+					for(int32_t j = 0; j < nn; j++) mesh_nodes[j] = nodes[0][i * nn + j] - 1;
+					if(surface->m_element_type != mesh::elements::Type::Last)
+					{
+						m_model->mesh()->create_element(surface->m_element_type, mesh_nodes);
+					}
 				}
 			}
 		}

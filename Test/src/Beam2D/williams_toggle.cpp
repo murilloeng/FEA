@@ -58,7 +58,7 @@ static double function(double v)
 	return 2 * (F + P * sin(b));
 }
 
-//reference: https://doi.org/10.1093/qjmam/17.4.451
+//reference: doi.org/10.1093/qjmam/17.4.451
 
 void test::beam2D::elastic::williams_toggle(void)
 {
@@ -70,16 +70,6 @@ void test::beam2D::elastic::williams_toggle(void)
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
-	std::function<void(int32_t, size_t, const size_t*)> generate = [&model](int32_t type, size_t ne, const size_t* nodes)
-	{
-		if(type != 1) return;
-		for(uint32_t i = 0; i < ne; i++)
-		{
-			const uint32_t n1 = nodes[2 * i + 0] - 1;
-			const uint32_t n2 = nodes[2 * i + 1] - 1;
-			model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {n1, n2});
-		}
-	};
 	//points
 	model.geometry()->create_point(0, 0, 0);
 	model.geometry()->create_point(-L * cos(b), -L * sin(b), 0);
@@ -89,8 +79,8 @@ void test::beam2D::elastic::williams_toggle(void)
 	model.geometry()->create_line(0, 2);
 	model.geometry()->curve(0)->structured(ne);
 	model.geometry()->curve(1)->structured(ne);
-	model.geometry()->curve(0)->generate_elements(generate);
-	model.geometry()->curve(1)->generate_elements(generate);
+	model.geometry()->curve(0)->element_type(fea::mesh::elements::Type::Beam2D);
+	model.geometry()->curve(1)->element_type(fea::mesh::elements::Type::Beam2D);
 	//generate
 	model.geometry()->generate_mesh();
 	//elements
