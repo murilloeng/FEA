@@ -116,8 +116,8 @@ void test::beam2D::elastic::cantilever_bending(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/cantilever bending");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/cantilever bending/data.txt", {
+	model.save_results("Test/data/Beam 2D/Cantilever Bending");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Cantilever Bending/data.txt", {
 		{1, dof::Translation_1}, {1, dof::Translation_2}, {1, dof::Rotation_3}
 	});
 	//validator
@@ -127,9 +127,9 @@ void test::beam2D::elastic::cantilever_bending(void)
 	validator.item(0)->function(function_u1);
 	validator.item(1)->function(function_u2);
 	validator.item(2)->function(function_t3);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 0);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 1);
-	validator.item(2)->load_numeric("Test/data/Beam 2D/cantilever bending/data.txt", 3, 2);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Cantilever Bending/data.txt", 3, 0);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/Cantilever Bending/data.txt", 3, 1);
+	validator.item(2)->load_numeric("Test/data/Beam 2D/Cantilever Bending/data.txt", 3, 2);
 	//validate
 	validator.validate();
 	//draw
