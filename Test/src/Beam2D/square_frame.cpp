@@ -67,7 +67,6 @@ void test::beam2D::elastic::square_frame(void)
 	model.geometry()->create_point(+0, +L, 0);
 	model.geometry()->create_point(-L, +L, 0);
 	model.geometry()->create_point(-L, +0, 0);
-
 	model.geometry()->create_point(-L, -L, 0);
 	model.geometry()->create_point(+0, -L, 0);
 	model.geometry()->create_point(+L, -L, 0);
@@ -85,7 +84,6 @@ void test::beam2D::elastic::square_frame(void)
 	model.geometry()->create_line( 5,  6);
 	model.geometry()->create_line( 6,  7);
 	model.geometry()->create_line( 7,  0);
-
 	model.geometry()->create_line( 8,  9);
 	model.geometry()->create_line( 9, 10);
 	model.geometry()->create_line(10, 11);
@@ -112,7 +110,6 @@ void test::beam2D::elastic::square_frame(void)
 	model.boundary()->create_support( 1, dof::Translation_1);
 	model.boundary()->create_support( 3, dof::Translation_2);
 	model.boundary()->create_support( 7, dof::Translation_2);
-
 	model.boundary()->create_support( 9, dof::Translation_1);
 	model.boundary()->create_support(11, dof::Translation_2);
 	model.boundary()->create_support(15, dof::Translation_2);
@@ -125,7 +122,6 @@ void test::beam2D::elastic::square_frame(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->load_case(0)->create_load_node( 1, dof::Translation_2, -2 * E * I / L / L);
 	model.boundary()->load_case(0)->create_load_node( 5, dof::Translation_2, +2 * E * I / L / L);
-
 	model.boundary()->load_case(0)->create_load_node( 9, dof::Translation_2, +2 * E * I / L / L);
 	model.boundary()->load_case(0)->create_load_node(13, dof::Translation_2, -2 * E * I / L / L);
 	//setup

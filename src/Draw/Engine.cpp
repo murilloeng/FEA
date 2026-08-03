@@ -163,8 +163,7 @@ namespace fea
 			const uint32_t js = increase ? (is + 1) % ns : is != 0 ? is - 1 : ns - 1;
 			// draw
 			engine->m_draw->step(js);
-			if (!engine->m_show_fps)
-				printf("step: %d\n", js);
+			if(!engine->m_show_fps) printf("step: %d\n", js);
 			// update
 			engine->m_scene->update();
 		}

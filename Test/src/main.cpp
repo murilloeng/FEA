@@ -12,7 +12,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::square_frame();
+		test::beam2D::elastic::diamond_frame();
 	}
 	catch(const std::exception& exception)
 	{

@@ -185,6 +185,21 @@ namespace fea
 			m_load_cases.push_back(load_case);
 		}
 
+		void Boundary::create_dependency(uint32_t node_1, mesh::nodes::DOF dof_1, uint32_t node_2, mesh::nodes::DOF dof_2)
+		{
+			//data
+			Dependency* dependency = new Dependency;
+			const uint32_t nd = m_dependencies.size();
+			//setup
+			dependency->m_index = nd;
+			dependency->m_dof[0] = dof_1;
+			dependency->m_dof[1] = dof_2;
+			dependency->m_nodes[0] = node_1;
+			dependency->m_nodes[1] = node_2;
+			//append
+			m_dependencies.push_back(dependency);
+		}
+
 		//analysis
 		void Boundary::clear(void)
 		{
