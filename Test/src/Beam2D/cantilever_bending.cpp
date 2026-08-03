@@ -78,14 +78,12 @@ void test::beam2D::elastic::cantilever_bending(void)
 	model.geometry()->curve(0)->structured(ne);
 	model.geometry()->curve(0)->generate_elements([&model](int32_t type, size_t ne, const size_t* nodes)
 	{
-		if(type == 1)
+		if(type != 1) return;
+		for(uint32_t i = 0; i < ne; i++)
 		{
-			for(uint32_t i = 0; i < ne; i++)
-			{
-				const uint32_t n1 = nodes[2 * i + 0] - 1;
-				const uint32_t n2 = nodes[2 * i + 1] - 1;
-				model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {n1, n2});
-			}
+			const uint32_t n1 = nodes[2 * i + 0] - 1;
+			const uint32_t n2 = nodes[2 * i + 1] - 1;
+			model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {n1, n2});
 		}
 	});
 	//generate
