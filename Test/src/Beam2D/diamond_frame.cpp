@@ -65,11 +65,23 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.geometry()->create_point(+L * cos(M_PI_4), 0, 0);
 	model.geometry()->create_point(0, +L * sin(M_PI_4), 0);
 	model.geometry()->create_point(0, +L * sin(M_PI_4), 0);
+
+	model.geometry()->create_point(-L * cos(M_PI_4), 0, 0);
+	model.geometry()->create_point(0, -L * sin(M_PI_4), 0);
+	model.geometry()->create_point(0, -L * sin(M_PI_4), 0);
+	model.geometry()->create_point(+L * cos(M_PI_4), 0, 0);
+	model.geometry()->create_point(0, +L * sin(M_PI_4), 0);
+	model.geometry()->create_point(0, +L * sin(M_PI_4), 0);
 	//curves
-	model.geometry()->create_line(0, 1);
-	model.geometry()->create_line(2, 3);
-	model.geometry()->create_line(3, 4);
-	model.geometry()->create_line(5, 0);
+	model.geometry()->create_line( 0,  1);
+	model.geometry()->create_line( 2,  3);
+	model.geometry()->create_line( 3,  4);
+	model.geometry()->create_line( 5,  0);
+
+	model.geometry()->create_line( 6,  7);
+	model.geometry()->create_line( 8,  9);
+	model.geometry()->create_line( 9, 10);
+	model.geometry()->create_line(11,  6);
 	for(fea::geometry::Curve* curve : model.geometry()->curves())
 	{
 		curve->structured(ne);
@@ -91,23 +103,35 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	model.boundary()->create_support(3, dof::Translation_2);
+
+	model.boundary()->create_support(6, dof::Translation_1);
+	model.boundary()->create_support(6, dof::Translation_2);
+	model.boundary()->create_support(9, dof::Translation_2);
 	//loads
 	model.boundary()->create_load_case();
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->load_case(0)->create_load_node(1, dof::Translation_2, -2 * E * I / L / L);
-	model.boundary()->load_case(0)->create_load_node(4, dof::Translation_2, +2 * E * I / L / L);
+	model.boundary()->load_case(0)->create_load_node( 1, dof::Translation_2, -2 * E * I / L / L);
+	model.boundary()->load_case(0)->create_load_node( 4, dof::Translation_2, +2 * E * I / L / L);
+
+	model.boundary()->load_case(0)->create_load_node( 7, dof::Translation_2, +2 * E * I / L / L);
+	model.boundary()->load_case(0)->create_load_node(10, dof::Translation_2, -2 * E * I / L / L);
 	//dependencies
-	model.boundary()->create_dependency(1, dof::Translation_1, 2, dof::Translation_1);
-	model.boundary()->create_dependency(1, dof::Translation_2, 2, dof::Translation_2);
-	model.boundary()->create_dependency(4, dof::Translation_1, 5, dof::Translation_1);
-	model.boundary()->create_dependency(4, dof::Translation_2, 5, dof::Translation_2);
+	model.boundary()->create_dependency( 1, dof::Translation_1,  2, dof::Translation_1);
+	model.boundary()->create_dependency( 1, dof::Translation_2,  2, dof::Translation_2);
+	model.boundary()->create_dependency( 4, dof::Translation_1,  5, dof::Translation_1);
+	model.boundary()->create_dependency( 4, dof::Translation_2,  5, dof::Translation_2);
+
+	model.boundary()->create_dependency( 7, dof::Translation_1,  8, dof::Translation_1);
+	model.boundary()->create_dependency( 7, dof::Translation_2,  8, dof::Translation_2);
+	model.boundary()->create_dependency(10, dof::Translation_1, 11, dof::Translation_1);
+	model.boundary()->create_dependency(10, dof::Translation_2, 11, dof::Translation_2);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
-	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_1);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node(4);
+	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().parameter_max(4.00e+00);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::ParameterLimitMaximum);
 	//solve
