@@ -41,8 +41,22 @@ static const double v = 3.000e-01;
 static const double E = 1.000e+00;
 static const double A = 1.885e+06;
 static const double I = 9.270e+03;
-static const double b1 = 2.470e-02;
-static const double b2 = 2.985e-02;
+static const double b = 2.470e-02;
+
+static double function(double v)
+{
+	v *= -1;
+	const double P = E * A / L * (v * sin(b) - 0.6 * v * v / L);
+	const double p = fmax(P, 0) / (M_PI * M_PI * E * I / L / L);
+	const double w = p != 0 ? M_PI_2 * sqrt(p) / tan(M_PI_2 * sqrt(p)) : 1;
+	const double d1 = p != 0 ? (M_PI * M_PI * p / 4 / (1 - w) + w) / 2 : 2;
+	const double d2 = d1 - w;
+	const double d3 = d1 + d2;
+	const double d4 = d3 / 3;
+	const double d5 = 2 * d4 * w;
+	const double F = 6 * E * I / L / L * d5 * v / L;
+	return 2 * (F + P * sin(b));
+}
 
 //reference: https://doi.org/10.1093/qjmam/17.4.451
 
@@ -56,7 +70,7 @@ void test::beam2D::elastic::williams_toggle(void)
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
-	std::function<void(int32_t, size_t, const size_t*)> generate = [model](int32_t type, size_t ne, const size_t* nodes)
+	std::function<void(int32_t, size_t, const size_t*)> generate = [&model](int32_t type, size_t ne, const size_t* nodes)
 	{
 		if(type != 1) return;
 		for(uint32_t i = 0; i < ne; i++)
@@ -68,8 +82,8 @@ void test::beam2D::elastic::williams_toggle(void)
 	};
 	//points
 	model.geometry()->create_point(0, 0, 0);
-	model.geometry()->create_point(-L * cos(b1), -L * sin(b1), 0);
-	model.geometry()->create_point(+L * cos(b1), -L * sin(b1), 0);
+	model.geometry()->create_point(-L * cos(b), -L * sin(b), 0);
+	model.geometry()->create_point(+L * cos(b), -L * sin(b), 0);
 	//curves
 	model.geometry()->create_line(0, 1);
 	model.geometry()->create_line(0, 2);
@@ -77,6 +91,8 @@ void test::beam2D::elastic::williams_toggle(void)
 	model.geometry()->curve(1)->structured(ne);
 	model.geometry()->curve(0)->generate_elements(generate);
 	model.geometry()->curve(1)->generate_elements(generate);
+	//generate
+	model.geometry()->generate_mesh();
 	//elements
 	for(fea::mesh::elements::Element* element : model.mesh()->elements())
 	{
@@ -85,11 +101,11 @@ void test::beam2D::elastic::williams_toggle(void)
 	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
-	model.boundary()->create_support(0, dof::Rotation_3);
+	model.boundary()->create_support(1, dof::Rotation_3);
 	model.boundary()->create_support(2, dof::Rotation_3);
-	model.boundary()->create_support(0, dof::Translation_1);
+	model.boundary()->create_support(1, dof::Translation_1);
 	model.boundary()->create_support(2, dof::Translation_1);
-	model.boundary()->create_support(0, dof::Translation_2);
+	model.boundary()->create_support(1, dof::Translation_2);
 	model.boundary()->create_support(2, dof::Translation_2);
 	//loads
 	section.area(A);
@@ -102,28 +118,22 @@ void test::beam2D::elastic::williams_toggle(void)
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
-	model.analysis()->solver_static_nonlinear()->step_size(1.00e-01);
+	model.analysis()->solver_static_nonlinear()->step_size(5.00e-01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().parameter_max(7.00e+01);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::ParameterLimitMaximum);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().state_min(-L * sin(b) / 0.6);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	model.solve();
 	//save
 	model.save_results("Test/data/Beam 2D/Williams Toggle");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Williams Toggle/data.txt", {
-		{12, dof::Translation_1}, {12, dof::Translation_2}, {12, dof::Rotation_3}
-	});
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Williams Toggle/data.txt", {{0, dof::Translation_2}});
 	//validator
 	validator.create_item();
-	validator.create_item();
-	validator.item(0)->tolerance(1.20e-01);
-	validator.item(1)->tolerance(1.20e-01);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/Williams Toggle/data.txt", 0, 3);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/Williams Toggle/data.txt", 1, 3);
-	validator.item(0)->load_reference("Test/data/Beam 2D/Williams Toggle/reference-u.dat", 0, 1);
-	validator.item(1)->load_reference("Test/data/Beam 2D/Williams Toggle/reference-v.dat", 0, 1);
+	validator.item(0)->function(function);
+	validator.item(0)->tolerance(1.15e-02);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Williams Toggle/data.txt", 0, 1);
 	//validate
 	validator.validate();
 	//draw

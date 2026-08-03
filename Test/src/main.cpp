@@ -12,9 +12,7 @@ int main(void)
 {
 	try
 	{
-		// test::truss3D::pyramid();
-		// test::truss2D::von_mises();
-		test::beam2D::elastic::lee_frame();
+		test::beam2D::elastic::cantilever_force();
 	}
 	catch(const std::exception& exception)
 	{

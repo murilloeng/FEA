@@ -106,7 +106,7 @@ namespace fea
 		{
 			if(m_node >= m_boundary->model()->mesh()->nodes().size())
 			{
-				throw std::runtime_error("Error: Suuport's node is out of range!");
+				throw std::runtime_error("Error: Support's node is out of range!");
 			}
 		}
 		void Support::setup(void)

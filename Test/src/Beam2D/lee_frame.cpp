@@ -96,8 +96,8 @@ void test::beam2D::elastic::lee_frame(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/Lee Frame ");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Lee Frame /data.txt", {
+	model.save_results("Test/data/Beam 2D/Lee Frame");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Lee Frame/data.txt", {
 		{12, dof::Translation_1}, {12, dof::Translation_2}, {12, dof::Rotation_3}
 	});
 	//validator
