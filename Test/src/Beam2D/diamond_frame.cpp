@@ -131,11 +131,31 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(4);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(1.00e+01);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().parameter_max(4.00e+00);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::ParameterLimitMaximum);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
 	//solve
 	model.solve();
+	//save
+	model.save_results("Test/data/Beam 2D/Diamond Frame");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Diamond Frame/data-tension.txt", {
+		{0, dof::Translation_1}, { 4, dof::Translation_2}, { 5, dof::Rotation_3}
+	});
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Diamond Frame/data-compression.txt", {
+		{6, dof::Translation_1}, {10, dof::Translation_2}, {11, dof::Rotation_3}
+	});
+	//validator
+	// validator.create_item();
+	// validator.create_item();
+	// validator.create_item();
+	// validator.item(0)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 0);
+	// validator.item(1)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 1);
+	// validator.item(2)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 2);
+	// validator.item(0)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 2);
+	// validator.item(1)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 1);
+	// validator.item(2)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 3);
+	//validate
+	// validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
 }

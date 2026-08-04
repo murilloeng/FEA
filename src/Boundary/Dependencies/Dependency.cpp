@@ -85,30 +85,26 @@ namespace fea
 		}
 		void Dependency::check_initials(void) const
 		{
-			bool test = true;
-			for(uint32_t i = 0; i < 2; i++)
+			bool test_1 = false, test_2 = false;
+			for(const Initial* initial : m_boundary->initials())
 			{
-				for(const Initial* initial : m_boundary->initials())
-				{
-					test = test && (m_nodes[i] != initial->index_node() || m_dof[i] != initial->dof());
-				}
+				test_1 = test_1 || (m_nodes[0] == initial->index_node() && m_dof[0] == initial->dof());
+				test_2 = test_2 || (m_nodes[1] == initial->index_node() && m_dof[1] == initial->dof());
 			}
-			if(!test)
+			if(test_1 && test_2)
 			{
-				throw std::runtime_error("Error: Dependency is inconsistent with supports!");
+				throw std::runtime_error("Error: Dependency is inconsistent with initials!");
 			}
 		}
 		void Dependency::check_supports(void) const
 		{
-			bool test = true;
-			for(uint32_t i = 0; i < 2; i++)
+			bool test_1 = false, test_2 = false;
+			for(const Support* support : m_boundary->supports())
 			{
-				for(const Support* support : m_boundary->supports())
-				{
-					test = test && (m_nodes[i] != support->index_node() || m_dof[i] != support->dof());
-				}
+				test_1 = test_1 && (m_nodes[0] == support->index_node() && m_dof[0] == support->dof());
+				test_2 = test_2 && (m_nodes[1] == support->index_node() && m_dof[1] == support->dof());
 			}
-			if(!test)
+			if(test_1 && test_2)
 			{
 				throw std::runtime_error("Error: Dependency is inconsistent with supports!");
 			}
@@ -117,13 +113,15 @@ namespace fea
 		//operators
 		bool Dependency::operator==(const Dependency& dependency) const
 		{
-			const bool test[] = {
+			//data
+			const bool test_1 =
 				m_nodes[0] == dependency.m_nodes[0] && m_dof[0] == dependency.m_dof[0] &&
-				m_nodes[1] == dependency.m_nodes[1] && m_dof[1] == dependency.m_dof[1],
+				m_nodes[1] == dependency.m_nodes[1] && m_dof[1] == dependency.m_dof[1];
+			const bool test_2 =
 				m_nodes[0] == dependency.m_nodes[1] && m_dof[0] == dependency.m_dof[1] &&
-				m_nodes[1] == dependency.m_nodes[0] && m_dof[1] == dependency.m_dof[0]
-			};
-			return test[0] || test[1];
+				m_nodes[1] == dependency.m_nodes[0] && m_dof[1] == dependency.m_dof[0];
+				//return
+			return test_1 || test_2;
 		}
 
 		//static

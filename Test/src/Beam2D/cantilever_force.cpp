@@ -91,8 +91,8 @@ void test::beam2D::elastic::cantilever_force(void)
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_3);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().parameter_max(1.00e+01);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::ParameterLimitMaximum);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(1.00e+01);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
 	//solve
 	model.solve();
 	//save
