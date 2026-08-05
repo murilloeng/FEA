@@ -38,10 +38,24 @@ namespace fea
 			//serialization
 			void save(FILE*) const;
 
+		public:
+			//data
+			mesh::nodes::Node* node(uint32_t) const;
+			mesh::nodes::Node* node(uint32_t, uint32_t);
+
+			mesh::nodes::DOF dof(uint32_t) const;
+			mesh::nodes::DOF dof(uint32_t, mesh::nodes::DOF);
+
+			//index
+			uint32_t index(void) const;
+
+			uint32_t index_node(uint32_t) const;
+			uint32_t index_node(uint32_t, uint32_t);
+
+		private:
 			//analysis
 			void check(void);
 			void setup(void);
-			uint32_t dof_index(bool) const;
 
 			//check
 			void check_inner(void) const;

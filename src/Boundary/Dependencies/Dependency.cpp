@@ -34,6 +34,40 @@ namespace fea
 			fprintf(file, "Index: %d Nodes: %d %d DOF: %d %d ", m_index, m_nodes[0], m_nodes[1], uint32_t(m_dof[0]), uint32_t(m_dof[1]));
 		}
 
+		//data
+		mesh::nodes::Node* Dependency::node(uint32_t index) const
+		{
+			return m_boundary->model()->mesh()->node(m_nodes[index]);
+		}
+		mesh::nodes::Node* Dependency::node(uint32_t index, uint32_t node)
+		{
+			return m_boundary->model()->mesh()->node(m_nodes[index] = node);
+		}
+
+		mesh::nodes::DOF Dependency::dof(uint32_t index) const
+		{
+			return m_dof[index];
+		}
+		mesh::nodes::DOF Dependency::dof(uint32_t index, mesh::nodes::DOF dof)
+		{
+			return m_dof[index] = dof;
+		}
+
+		//index
+		uint32_t Dependency::index(void) const
+		{
+			return m_index;
+		}
+
+		uint32_t Dependency::index_node(uint32_t index) const
+		{
+			return m_nodes[index];
+		}
+		uint32_t Dependency::index_node(uint32_t index, uint32_t node)
+		{
+			return m_nodes[index] = node;
+		}
+
 		//analysis
 		void Dependency::check(void)
 		{
@@ -46,13 +80,6 @@ namespace fea
 		void Dependency::setup(void)
 		{
 			return;
-		}
-		uint32_t Dependency::dof_index(bool flag) const
-		{
-			return 
-				m_nodes[0] < m_nodes[1] || (m_nodes[0] == m_nodes[1] && m_dof[0] < m_dof[1]) ? 
-				m_boundary->model()->mesh()->node(m_nodes[flag])->dof_index(m_dof[flag]) : 
-				m_boundary->model()->mesh()->node(m_nodes[!flag])->dof_index(m_dof[!flag]);
 		}
 
 		//check
@@ -101,8 +128,8 @@ namespace fea
 			bool test_1 = false, test_2 = false;
 			for(const Support* support : m_boundary->supports())
 			{
-				test_1 = test_1 && (m_nodes[0] == support->index_node() && m_dof[0] == support->dof());
-				test_2 = test_2 && (m_nodes[1] == support->index_node() && m_dof[1] == support->dof());
+				test_1 = test_1 || (m_nodes[0] == support->index_node() && m_dof[0] == support->dof());
+				test_2 = test_2 || (m_nodes[1] == support->index_node() && m_dof[1] == support->dof());
 			}
 			if(test_1 && test_2)
 			{

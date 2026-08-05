@@ -96,7 +96,12 @@ namespace fea
 			}
 			for(const boundary::Dependency* dependency : m_analysis->m_model->boundary()->m_dependencies)
 			{
-				dd.push_back(dependency->dof_index(true));
+				const uint32_t d1 = dependency->node(0)->dof_index(dependency->m_dof[0]);
+				const uint32_t d2 = dependency->node(1)->dof_index(dependency->m_dof[1]);
+				dd.push_back(
+					std::find(dk.begin(), dk.end(), d1) != dk.end() ? d2 :
+					std::find(dk.begin(), dk.end(), d2) != dk.end() ? d1 : std::max(d1, d2)
+				);
 			}
 			//nodes
 			m_dof_know = (uint32_t) dk.size();
@@ -110,7 +115,10 @@ namespace fea
 					std::vector<uint32_t>::iterator pk = std::find(dk.begin(), dk.end(), dof_index);
 					if(pd != dd.end() ? ++cd : false)
 					{
-						dof_index = dependencies[std::distance(dd.begin(), pd)]->dof_index(false);
+						const uint32_t i = std::distance(dd.begin(), pd);
+						const uint32_t d1 = dependencies[i]->node(0)->dof_index(dependencies[i]->m_dof[0]);
+						const uint32_t d2 = dependencies[i]->node(1)->dof_index(dependencies[i]->m_dof[1]);
+						dof_index = dof_index == d1 ? d2 : d1;
 					}
 					else if(pk != dk.end() ? ++ck : false)
 					{

@@ -100,11 +100,11 @@ void test::beam2D::elastic::diamond_frame(void)
 		((fea::mesh::elements::Beam2D*) element)->material(&material);
 	}
 	//supports
-	model.boundary()->create_support(0, dof::Translation_1);
+	model.boundary()->create_support(1, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	model.boundary()->create_support(3, dof::Translation_2);
 
-	model.boundary()->create_support(6, dof::Translation_1);
+	model.boundary()->create_support(7, dof::Translation_1);
 	model.boundary()->create_support(6, dof::Translation_2);
 	model.boundary()->create_support(9, dof::Translation_2);
 	//loads
