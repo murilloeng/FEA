@@ -18,6 +18,12 @@ namespace fea
 				//destructor
 				~Beam2D(void);
 
+			public:
+				//data
+				static uint32_t draw_mesh(void);
+				static uint32_t draw_mesh(uint32_t);
+
+			private:
 				//data
 				uint32_t dof_set(uint32_t) const override;
 

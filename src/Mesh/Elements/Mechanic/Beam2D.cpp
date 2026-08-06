@@ -36,6 +36,16 @@ namespace fea
 			}
 
 			//data
+			uint32_t Beam2D::draw_mesh(void)
+			{
+				return m_draw_mesh;
+			}
+			uint32_t Beam2D::draw_mesh(uint32_t draw_mesh)
+			{
+				return m_draw_mesh = draw_mesh;
+			}
+
+			//data
 			uint32_t Beam2D::dof_set(uint32_t) const
 			{
 				return
