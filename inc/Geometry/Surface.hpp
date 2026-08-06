@@ -60,6 +60,9 @@ namespace fea
 			uint32_t index(void) const;
 
 		protected:
+			//analysis
+			void check(void) const;
+
 			//mesh
 			void mesh(void) const;
 

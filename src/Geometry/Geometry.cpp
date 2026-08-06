@@ -193,6 +193,7 @@ namespace fea
 		void Geometry::generate_mesh(void) const
 		{
 			//setup
+			check();
 			gmsh::initialize();
 			gmsh::option::setNumber("General.Verbosity", 0);
 			//points
@@ -225,6 +226,14 @@ namespace fea
 			generate_mesh_elements();
 			//finalize
 			gmsh::finalize();
+		}
+
+		//analysis
+		void Geometry::check(void) const
+		{
+			for(const Point* point : m_points) point->check();
+			for(const Curve* curve : m_curves) curve->check();
+			for(const Surface* surface : m_surfaces) surface->check();
 		}
 
 		//mesh

@@ -28,7 +28,7 @@ namespace fea
 		//draw
 		uint32_t Incremental::draw_steps(void) const
 		{
-			return m_step;
+			return m_status ? m_step : 1;
 		}
 		void Incremental::draw_positions(float* positions_data, float scale) const
 		{
@@ -44,13 +44,20 @@ namespace fea
 				//position
 				for(uint32_t i = 0; i < 3; i++)
 				{
-					for(uint32_t step = 0; step < m_step; step++)
+					if(!m_status)
 					{
-						positions_data[3 * nn * step + 3 * index + i] = float(z[i]);
-						if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i)))
+						positions_data[3 * index + i] = float(z[i]);
+					}
+					else
+					{
+						for(uint32_t step = 0; step < m_step; step++)
 						{
-							const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i));
-							if(dof_index < nu) positions_data[3 * nn * step + 3 * index + i] += scale * float(m_x_data[nu * step + dof_index]);
+							positions_data[3 * nn * step + 3 * index + i] = float(z[i]);
+							if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i)))
+							{
+								const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i));
+								if(dof_index < nu) positions_data[3 * nn * step + 3 * index + i] += scale * float(m_x_data[nu * step + dof_index]);
+							}
 						}
 					}
 				}
@@ -69,13 +76,20 @@ namespace fea
 				//position
 				for(uint32_t i = 0; i < 3; i++)
 				{
-					for(uint32_t step = 0; step < m_step; step++)
+					if(!m_status)
 					{
-						rotations_data[3 * nn * step + 3 * index + i] = 0;
-						if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i + 3)))
+						rotations_data[3 * index + i] = 0;
+					}
+					else
+					{
+						for(uint32_t step = 0; step < m_step; step++)
 						{
-							const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i + 3));
-							rotations_data[3 * nn * step + 3 * index + i] = scale * float(m_x_data[nu * step + dof_index]);
+							rotations_data[3 * nn * step + 3 * index + i] = 0;
+							if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i + 3)))
+							{
+								const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i + 3));
+								rotations_data[3 * nn * step + 3 * index + i] = scale * float(m_x_data[nu * step + dof_index]);
+							}
 						}
 					}
 				}

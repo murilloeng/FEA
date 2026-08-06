@@ -65,6 +65,9 @@ namespace fea
 			void generate_mesh(void) const;
 
 		protected:
+			//analysis
+			void check(void) const;
+
 			//generate
 			void generate_mesh_nodes(void) const;
 			void generate_mesh_elements(void) const;

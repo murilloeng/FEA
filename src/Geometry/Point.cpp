@@ -1,6 +1,7 @@
 //std
 #include <cstring>
 #include <climits>
+#include <stdexcept>
 
 //gmsh
 #include <gmsh.h>
@@ -88,6 +89,15 @@ namespace fea
 		uint32_t Point::index(void) const
 		{
 			return m_index;
+		}
+
+		//analysis
+		void Point::check(void) const
+		{
+			if(m_size < 0)
+			{
+				throw std::runtime_error("Error: Point with negative size!");
+			}
 		}
 
 		//mesh

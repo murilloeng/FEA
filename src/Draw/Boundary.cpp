@@ -30,8 +30,7 @@ namespace fea
 	namespace draw
 	{
 		//constructor
-		Boundary::Boundary(const Draw* draw, const boundary::Boundary* boundary) : 
-			m_load_case{0}, m_shader{"Model3D"}, m_draw{draw}, m_boundary{boundary}
+		Boundary::Boundary(const Draw* draw, const boundary::Boundary* boundary) : m_shader{"Model3D"}, m_draw{draw}, m_boundary{boundary}
 		{
 			//vbo setup
 			m_vbo.vertex_size(sizeof(canvas::vertices::Model3D));
@@ -44,6 +43,8 @@ namespace fea
 			m_vao.attribute_format(0, 3, GL_FLOAT, 0 * sizeof(float));
 			m_vao.attribute_format(1, 4, GL_FLOAT, 3 * sizeof(float));
 			m_vao.vertex_buffer(0, m_vbo.id(), 0, sizeof(canvas::vertices::Model3D));
+			//load case
+			m_load_case = boundary->load_cases().empty() ? UINT32_MAX : 0;
 		}
 		
 		//destructor
@@ -113,10 +114,13 @@ namespace fea
 				mesh::nodes::DOF::Translation_1, mesh::nodes::DOF::Translation_2, mesh::nodes::DOF::Translation_3
 			};
 			//setup
-			for(const boundary::loads::Node* load : m_boundary->load_case(m_load_case)->loads_nodes())
+			if(m_load_case != UINT32_MAX)
 			{
-				if(std::find(dp, dp + 3, load->dof()) != dp + 3) setup_load_force();
-				if(std::find(dr, dr + 3, load->dof()) != dr + 3) setup_load_moment();
+				for(const boundary::loads::Node* load : m_boundary->load_case(m_load_case)->loads_nodes())
+				{
+					if(std::find(dp, dp + 3, load->dof()) != dp + 3) setup_load_force();
+					if(std::find(dr, dr + 3, load->dof()) != dr + 3) setup_load_moment();
+				}
 			}
 		}
 		void Boundary::setup_supports(void)
@@ -171,10 +175,13 @@ namespace fea
 				mesh::nodes::DOF::Translation_1, mesh::nodes::DOF::Translation_2, mesh::nodes::DOF::Translation_3
 			};
 			//update
-			for(const boundary::loads::Node* load : m_boundary->load_case(0)->loads_nodes())
+			if(m_load_case != UINT32_MAX)
 			{
-				if(std::find(dp, dp + 3, load->dof()) != dp + 3) update_load_force(load);
-				if(std::find(dr, dr + 3, load->dof()) != dr + 3) update_load_moment(load);
+				for(const boundary::loads::Node* load : m_boundary->load_case(m_load_case)->loads_nodes())
+				{
+					if(std::find(dp, dp + 3, load->dof()) != dp + 3) update_load_force(load);
+					if(std::find(dr, dr + 3, load->dof()) != dr + 3) update_load_moment(load);
+				}
 			}
 		}
 		void Boundary::update_supports(void)

@@ -48,6 +48,7 @@ namespace fea
 			void print_fps(float&, float);
 
 			//update
+			static void update_nodes(GLFWwindow*);
 			static void update_playing(GLFWwindow*);
 			static void update_step(GLFWwindow*, bool);
 			static void update_framerate(GLFWwindow*, bool);

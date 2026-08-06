@@ -6,6 +6,7 @@
 
 //FEA
 #include "FEA/inc/Geometry/Surface.hpp"
+#include "FEA/inc/Geometry/Geometry.hpp"
 
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 
@@ -89,6 +90,21 @@ namespace fea
 		uint32_t Surface::index(void) const
 		{
 			return m_index;
+		}
+
+		//analysis
+		void Surface::check(void) const
+		{
+			for(const Loop& loop : m_loops)
+			{
+				for(const Item& item : loop.items())
+				{
+					if(item.index() >= m_geometry->curves().size())
+					{
+						throw std::runtime_error("Error: Surface with out of range curve!");
+					}
+				}
+			}
 		}
 
 		//mesh

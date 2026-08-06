@@ -1,5 +1,6 @@
 //std
 #include <cstring>
+#include <stdexcept>
 
 //FEA
 #include "FEA/inc/Geometry/Curve.hpp"
@@ -99,6 +100,18 @@ namespace fea
 		uint32_t Curve::index(void) const
 		{
 			return m_index;
+		}
+
+		//analysis
+		void Curve::check(void) const
+		{
+			for(uint32_t point : m_points)
+			{
+				if(point >= m_geometry->points().size())
+				{
+					throw std::runtime_error("Error: Curve with out of range point!");
+				}
+			}
 		}
 
 		//static
