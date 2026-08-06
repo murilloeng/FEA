@@ -12,4 +12,4 @@ plot\
 	'Test/data/Beam 2D/Diamond Frame/data-tension.txt' using ($4) : ($3) with lines linestyle 3 title '{/Symbol q} (rad) - Numeric',\
 	'Test/data/Beam 2D/Diamond Frame/reference-tension.dat' using ($1) : ($3) with points linestyle 1 pointtype 7 title 'u (m) - Analytic',\
 	'Test/data/Beam 2D/Diamond Frame/reference-tension.dat' using ($1) : ($2) with points linestyle 2 pointtype 7 title 'v (m) - Analytic',\
-	'Test/data/Beam 2D/Diamond Frame/reference-tension.dat' using ($1) : ($4) with points linestyle 3 pointtype 7 title '{/Symbol q} (rad) - Analytic'
+	'Test/data/Beam 2D/Diamond Frame/reference-tension.dat' using ($1) : ($4 - pi / 4) with points linestyle 3 pointtype 7 title '{/Symbol q} (rad) - Analytic'
