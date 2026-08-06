@@ -44,16 +44,10 @@ namespace fea
 			//setup
 			void setup_nodes(void);
 			void setup_elements(void);
-			void setup_element_1D(const mesh::elements::Element*);
-			void setup_element_2D(const mesh::elements::Element*);
-			void setup_element_3D(const mesh::elements::Element*);
 
 			//update
 			void update_nodes(void);
 			void update_elements(void);
-			void update_element_1D(const mesh::elements::Element*);
-			void update_element_2D(const mesh::elements::Element*);
-			void update_element_3D(const mesh::elements::Element*);
 
 			//data
 			const Draw* m_draw;

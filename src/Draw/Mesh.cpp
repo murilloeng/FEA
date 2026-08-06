@@ -1,4 +1,5 @@
 //FEA
+#include "FEA/inc/Draw/Data.hpp"
 #include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Mesh.hpp"
 
@@ -89,25 +90,18 @@ namespace fea
 		}
 		void Mesh::setup_elements(void)
 		{
+			//data
+			Data data = {
+				m_draw->m_step, m_draw->m_colors,
+				m_index_dots, m_index_edges, m_index_faces, m_index_vertices,
+				m_counter_dots, m_counter_edges, m_counter_faces, m_counter_vertices,
+				m_ibo, m_vbo, m_draw->m_positions_data, m_draw->m_rotations_data
+			};
+			//setup
 			for(const mesh::elements::Element* element : m_mesh->elements())
 			{
-				if(element->dimension() == 1) setup_element_1D(element);
-				if(element->dimension() == 2) setup_element_2D(element);
-				if(element->dimension() == 3) setup_element_3D(element);
+				element->draw_setup(data);
 			}
-		}
-		void Mesh::setup_element_1D(const mesh::elements::Element* element)
-		{
-			m_counter_edges += 2;
-			m_counter_vertices += 2;
-		}
-		void Mesh::setup_element_2D(const mesh::elements::Element* element)
-		{
-			return;
-		}
-		void Mesh::setup_element_3D(const mesh::elements::Element* element)
-		{
-			return;
 		}
 
 		//update
@@ -130,37 +124,18 @@ namespace fea
 		}
 		void Mesh::update_elements(void)
 		{
+			//data
+			Data data = {
+				m_draw->m_step, m_draw->m_colors,
+				m_index_dots, m_index_edges, m_index_faces, m_index_vertices,
+				m_counter_dots, m_counter_edges, m_counter_faces, m_counter_vertices,
+				m_ibo, m_vbo, m_draw->m_positions_data, m_draw->m_rotations_data
+			};
+			//update
 			for(const mesh::elements::Element* element : m_mesh->elements())
 			{
-				if(element->dimension() == 1) update_element_1D(element);
-				if(element->dimension() == 2) update_element_2D(element);
-				if(element->dimension() == 3) update_element_3D(element);
+				element->draw_update(data);
 			}
-		}
-		void Mesh::update_element_1D(const mesh::elements::Element* element)
-		{
-			//data
-			const uint32_t nn = m_mesh->nodes().size();
-			uint32_t* ibo_ptr = m_ibo.data() + m_counter_dots + m_index_edges;
-			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
-			//ibo data
-			ibo_ptr[0] = m_index_vertices + 0;
-			ibo_ptr[1] = m_index_vertices + 1;
-			//vbo data
-			vbo_ptr[0].m_color = vbo_ptr[1].m_color = m_draw->m_colors.elements();
-			vbo_ptr[0].m_position = m_draw->m_positions_data + 3 * nn * m_draw->m_step + 3 * element->index_node(0);
-			vbo_ptr[1].m_position = m_draw->m_positions_data + 3 * nn * m_draw->m_step + 3 * element->index_node(1);
-			//update
-			m_index_edges += 2;
-			m_index_vertices += 2;
-		}
-		void Mesh::update_element_2D(const mesh::elements::Element* element)
-		{
-			return;
-		}
-		void Mesh::update_element_3D(const mesh::elements::Element* element)
-		{
-			return;
 		}
 	}
 }

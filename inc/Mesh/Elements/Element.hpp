@@ -7,6 +7,11 @@
 
 namespace fea
 {
+	namespace draw
+	{
+		class Data;
+		class Mesh;
+	}
 	namespace mesh
 	{
 		class Mesh;
@@ -66,6 +71,10 @@ namespace fea
 				virtual void restore(void);
 				virtual void compute(void) = 0;
 
+				//draw
+				virtual void draw_setup(draw::Data&) const;
+				virtual void draw_update(draw::Data&) const;
+
 				//data
 				uint32_t m_index;
 				static Mesh* m_mesh;
@@ -73,6 +82,7 @@ namespace fea
 				std::vector<uint32_t> m_dof_indexes;
 
 				//friends
+				friend class fea::draw::Mesh;
 				friend class fea::mesh::Mesh;
 				friend class fea::analysis::Assembler;
 			};

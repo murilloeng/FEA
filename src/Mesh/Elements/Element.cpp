@@ -93,6 +93,16 @@ namespace fea
 				return;
 			}
 
+			//draw
+			void Element::draw_setup(draw::Data&) const
+			{
+				return;
+			}
+			void Element::draw_update(draw::Data&) const
+			{
+				return;
+			}
+
 			//static
 			Mesh* Element::m_mesh = nullptr;
 		}

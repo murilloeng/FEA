@@ -33,6 +33,10 @@ namespace fea
 				void check(void) override;
 				void setup(void) override;
 
+				//draw
+				void draw_setup(draw::Data&) const override;
+				void draw_update(draw::Data&) const override;
+
 				//data
 				double m_Lr;
 				const sections::Section* m_section;
