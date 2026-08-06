@@ -5,6 +5,9 @@
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
+#include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Supports/Support.hpp"
+
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Incremental.hpp"
@@ -56,7 +59,9 @@ namespace fea
 							if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i)))
 							{
 								const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i));
-								if(dof_index < nu) positions_data[3 * nn * step + 3 * index + i] += scale * float(m_x_data[nu * step + dof_index]);
+								positions_data[3 * nn * step + 3 * index + i] += dof_index < nu ? 
+									scale * float(m_x_data[nu * step + dof_index]) : 
+									m_analysis->model()->boundary()->support(dof_index - nu)->state(m_t_min + step * m_dt);
 							}
 						}
 					}
@@ -88,7 +93,9 @@ namespace fea
 							if(node->dof_set() & 1 << uint32_t(fea::mesh::nodes::DOF(i + 3)))
 							{
 								const uint32_t dof_index = node->dof_index(fea::mesh::nodes::DOF(i + 3));
-								rotations_data[3 * nn * step + 3 * index + i] = scale * float(m_x_data[nu * step + dof_index]);
+								rotations_data[3 * nn * step + 3 * index + i] = dof_index < nu ? 
+									scale * float(m_x_data[nu * step + dof_index]) : 
+									m_analysis->model()->boundary()->support(dof_index - nu)->state(m_t_min + step * m_dt);
 							}
 						}
 					}
