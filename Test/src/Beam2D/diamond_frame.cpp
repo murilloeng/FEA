@@ -65,7 +65,6 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.geometry()->create_point(+L * cos(M_PI_4), 0, 0);
 	model.geometry()->create_point(0, +L * sin(M_PI_4), 0);
 	model.geometry()->create_point(0, +L * sin(M_PI_4), 0);
-
 	model.geometry()->create_point(-L * cos(M_PI_4), 0, 0);
 	model.geometry()->create_point(0, -L * sin(M_PI_4), 0);
 	model.geometry()->create_point(0, -L * sin(M_PI_4), 0);
@@ -77,7 +76,6 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.geometry()->create_line( 2,  3);
 	model.geometry()->create_line( 3,  4);
 	model.geometry()->create_line( 5,  0);
-
 	model.geometry()->create_line( 6,  7);
 	model.geometry()->create_line( 8,  9);
 	model.geometry()->create_line( 9, 10);
@@ -103,7 +101,6 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.boundary()->create_support(1, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	model.boundary()->create_support(3, dof::Translation_2);
-
 	model.boundary()->create_support(7, dof::Translation_1);
 	model.boundary()->create_support(6, dof::Translation_2);
 	model.boundary()->create_support(9, dof::Translation_2);
@@ -112,7 +109,6 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->load_case(0)->create_load_node( 1, dof::Translation_2, -2 * E * I / L / L);
 	model.boundary()->load_case(0)->create_load_node( 4, dof::Translation_2, +2 * E * I / L / L);
-
 	model.boundary()->load_case(0)->create_load_node( 7, dof::Translation_2, +2 * E * I / L / L);
 	model.boundary()->load_case(0)->create_load_node(10, dof::Translation_2, -2 * E * I / L / L);
 	//dependencies
@@ -120,14 +116,13 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.boundary()->create_dependency( 1, dof::Translation_2,  2, dof::Translation_2);
 	model.boundary()->create_dependency( 4, dof::Translation_1,  5, dof::Translation_1);
 	model.boundary()->create_dependency( 4, dof::Translation_2,  5, dof::Translation_2);
-
 	model.boundary()->create_dependency( 7, dof::Translation_1,  8, dof::Translation_1);
 	model.boundary()->create_dependency( 7, dof::Translation_2,  8, dof::Translation_2);
 	model.boundary()->create_dependency(10, dof::Translation_1, 11, dof::Translation_1);
 	model.boundary()->create_dependency(10, dof::Translation_2, 11, dof::Translation_2);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(4);
@@ -145,17 +140,17 @@ void test::beam2D::elastic::diamond_frame(void)
 		{6, dof::Translation_1}, {10, dof::Translation_2}, {11, dof::Rotation_3}
 	});
 	//validator
-	// validator.create_item();
-	// validator.create_item();
-	// validator.create_item();
-	// validator.item(0)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 0);
-	// validator.item(1)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 1);
-	// validator.item(2)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 2);
-	// validator.item(0)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 2);
-	// validator.item(1)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 1);
-	// validator.item(2)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 3);
+	validator.create_item();
+	validator.create_item();
+	validator.create_item();
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 0);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 1);
+	validator.item(2)->load_numeric("Test/data/Beam 2D/Diamond Frame/data-tension.txt", 3, 2);
+	validator.item(0)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 2);
+	validator.item(1)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 1);
+	validator.item(2)->load_reference("Test/data/Beam 2D/Diamond Frame/reference-tension.dat", 0, 3);
 	//validate
-	// validator.validate();
+	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
 }
