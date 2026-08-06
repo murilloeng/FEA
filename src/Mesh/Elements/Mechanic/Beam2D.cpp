@@ -4,7 +4,15 @@
 //Math
 #include "Math/inc/Linear/Vec3.hpp"
 
+//Canvas
+#include "Canvas/inc/Math/vec2.hpp"
+#include "Canvas/inc/Math/mat2.hpp"
+#include "Canvas/inc/Vertices/Model3D.hpp"
+
 //FEA
+#include "FEA/inc/Draw/Data.hpp"
+
+#include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
@@ -207,6 +215,48 @@ namespace fea
 			{
 				return;
 			}
+
+			//draw
+			void Beam2D::draw_setup(draw::Data& data) const
+			{
+				data.m_counter_edges += 2 * m_draw_mesh;
+				data.m_counter_vertices += m_draw_mesh + 1;
+			}
+			void Beam2D::draw_update(draw::Data& data) const
+			{
+				//data
+				const uint32_t nn = m_mesh->nodes().size();
+				uint32_t* ibo_ptr = data.m_ibo.data() + data.m_counter_dots + data.m_index_edges;
+				const float t1 = data.m_rotations_data[3 * nn * data.m_step + 3 * m_nodes[0] + 2];
+				const float t2 = data.m_rotations_data[3 * nn * data.m_step + 3 * m_nodes[1] + 2];
+				const canvas::vec2 x1 = data.m_positions_data + 3 * nn * data.m_step + 3 * m_nodes[0];
+				const canvas::vec2 x2 = data.m_positions_data + 3 * nn * data.m_step + 3 * m_nodes[1];
+				canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) data.m_vbo.data() + data.m_index_vertices;
+				//ibo data
+				for(uint32_t i = 0; i < m_draw_mesh; i++)
+				{
+					ibo_ptr[2 * i + 0] = data.m_index_vertices + i + 0;
+					ibo_ptr[2 * i + 1] = data.m_index_vertices + i + 1;
+				}
+				//vbo data
+				const float tr = t2 - t1;
+				for(uint32_t i = 0; i <= m_draw_mesh; i++)
+				{
+					//data
+					const float s = float(i) / m_draw_mesh;
+					const float fc = tr ? (cos((1 - s) * tr) - cos(s * tr)) / (1 - cos(tr)) : 2 * s - 1;
+					const float fs = tr ? (sin(tr) - sin((1 - s) * tr) - sin(s * tr)) / (1 - cos(tr)) : 0;
+					//vbo data
+					vbo_ptr[i].m_color = data.m_colors.elements();
+					vbo_ptr[i].m_position = (x1 + x2) / 2 + canvas::mat2{fc, fs, -fs, fc} * (x2 - x1) / 2;
+				}
+				//update
+				data.m_index_edges += 2 * m_draw_mesh;
+				data.m_index_vertices += m_draw_mesh + 1;
+			}
+
+			//static
+			uint32_t Beam2D::m_draw_mesh = 20;
 		}
 	}
 }

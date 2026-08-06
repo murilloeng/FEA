@@ -53,9 +53,16 @@ namespace fea
 				void compute_CR_elastic(void);
 				void compute_CR_plastic(void);
 
+				//draw
+				void draw_setup(draw::Data&) const override;
+				void draw_update(draw::Data&) const override;
+
 				//data
 				double m_tr_old, m_tr_new;
 				double m_dl[3], m_fl[3], m_Kl[9];
+
+				//static
+				static uint32_t m_draw_mesh;
 
 				//friends
 				friend class fea::mesh::Mesh;
