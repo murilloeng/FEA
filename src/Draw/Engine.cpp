@@ -45,8 +45,7 @@ namespace fea
 				//play
 				if(m_playing)
 				{
-					update_step(m_window, true);
-					m_scene->update();
+					update_step_increase(m_window);
 					const uint32_t t = uint32_t(1000 / m_framerate);
 					std::this_thread::sleep_for(std::chrono::milliseconds(t));
 				}
@@ -141,8 +140,7 @@ namespace fea
 		void Engine::print_fps(float &t1, float t2)
 		{
 			t1 = t2;
-			if(m_show_fps)
-				printf("FPS: %d\n", uint32_t(1 / (t2 - t1)));
+			if(m_show_fps) printf("FPS: %d\n", uint32_t(1 / (t2 - t1)));
 		}
 
 		//update
@@ -156,6 +154,16 @@ namespace fea
 			engine->m_scene->setup();
 			engine->m_scene->update();
 		}
+		void Engine::update_loads(GLFWwindow *window)
+		{
+			//data
+			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			//loads
+			engine->m_draw->what().loads(!engine->m_draw->what().loads());
+			//update
+			engine->m_scene->setup();
+			engine->m_scene->update();
+		}
 		void Engine::update_playing(GLFWwindow *window)
 		{
 			//data
@@ -163,27 +171,86 @@ namespace fea
 			//playing
 			engine->m_playing = !engine->m_playing;
 		}
-		void Engine::update_step(GLFWwindow *window, bool increase)
+		void Engine::update_elements(GLFWwindow *window)
+		{
+			//data
+			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			//elements
+			engine->m_draw->what().elements(!engine->m_draw->what().elements());
+			//update
+			engine->m_scene->setup();
+			engine->m_scene->update();
+		}
+		void Engine::update_supports(GLFWwindow *window)
+		{
+			//data
+			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			//supports
+			engine->m_draw->what().supports(!engine->m_draw->what().supports());
+			//update
+			engine->m_scene->setup();
+			engine->m_scene->update();
+		}
+		void Engine::update_step_last(GLFWwindow *window)
+		{
+			//data
+			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
+			//draw
+			engine->m_draw->step(ns - 1);
+			if(!engine->m_show_fps) printf("step: %d\n", ns - 1);
+			//update
+			engine->m_scene->update();
+		}
+		void Engine::update_step_first(GLFWwindow *window)
+		{
+			//data
+			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			//draw
+			engine->m_draw->step(0);
+			if(!engine->m_show_fps) printf("step: %d\n", 0);
+			//update
+			engine->m_scene->update();
+		}
+		void Engine::update_step_increase(GLFWwindow *window)
 		{
 			//data
 			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
 			//step
 			const uint32_t is = engine->m_draw->m_step;
 			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
-			const uint32_t js = increase ? (is + 1) % ns : is != 0 ? is - 1 : ns - 1;
 			//draw
-			engine->m_draw->step(js);
-			if(!engine->m_show_fps) printf("step: %d\n", js);
+			engine->m_draw->step((is + 1) % ns);
+			if(!engine->m_show_fps) printf("step: %d\n", (is + 1) % ns);
 			//update
 			engine->m_scene->update();
 		}
-		void Engine::update_framerate(GLFWwindow *window, bool increase)
+		void Engine::update_step_decrease(GLFWwindow *window)
 		{
 			//data
-			const double factor = 1.10;
+			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			//step
+			const uint32_t is = engine->m_draw->m_step;
+			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
+			//draw
+			engine->m_draw->step(is != 0 ? is - 1 : ns - 1);
+			if(!engine->m_show_fps) printf("step: %d\n", is != 0 ? is - 1 : ns - 1);
+			//update
+			engine->m_scene->update();
+		}
+		void Engine::update_framerate_increase(GLFWwindow *window)
+		{
+			//data
 			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
 			//framerate
-			engine->m_framerate *= increase ? factor : 1 / factor;
+			engine->m_framerate *= 1.10;
+		}
+		void Engine::update_framerate_decrease(GLFWwindow *window)
+		{
+			//data
+			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			//framerate
+			engine->m_framerate /= 1.10;
 		}
 
 		//canvas
@@ -262,38 +329,30 @@ namespace fea
 		void Engine::callback_keyboard(GLFWwindow *window, int32_t key, int32_t scancode, int32_t action, int32_t mods)
 		{
 			//data
-			if(action == GLFW_RELEASE)
-				return;
+			if(action == GLFW_RELEASE) return;
 			const bool shift = mods & GLFW_MOD_SHIFT;
 			const bool control = mods & GLFW_MOD_CONTROL;
 			const char *key_name = glfwGetKeyName(key, 0);
 			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
 			//play
-			if(shift && key == GLFW_KEY_P)
-				update_playing(window);
-			//nodes
-			else if(shift && key == GLFW_KEY_N)
-				update_nodes(window);
+			if(shift && key == GLFW_KEY_P) update_playing(window);
+			//what
+			else if(shift && key == GLFW_KEY_N) update_nodes(window);
+			else if(shift && key == GLFW_KEY_L) update_loads(window);
+			else if(shift && key == GLFW_KEY_E) update_elements(window);
+			else if(shift && key == GLFW_KEY_S) update_supports(window);
 			//step
-			else if(shift && key == GLFW_KEY_LEFT)
-				update_step(window, false);
-			else if(shift && key == GLFW_KEY_RIGHT)
-				update_step(window, true);
+			else if(control && shift && key == GLFW_KEY_LEFT) update_step_first(window);
+			else if(control && shift && key == GLFW_KEY_RIGHT) update_step_last(window);
+			else if(!control && shift && key == GLFW_KEY_LEFT) update_step_decrease(window);
+			else if(!control && shift && key == GLFW_KEY_RIGHT) update_step_increase(window);
 			//framerate
-			else if(shift && key == GLFW_KEY_S)
-				update_framerate(window, true);
-			else if(control && key == GLFW_KEY_S)
-				update_framerate(window, false);
-			//glfw
-			else if(key == GLFW_KEY_ESCAPE)
-				glfwSetWindowShouldClose(window, true);
+			else if(!control && shift && key == GLFW_KEY_UP) update_framerate_increase(window);
+			else if(!control && shift && key == GLFW_KEY_DOWN) update_framerate_decrease(window);
 			//camera
-			else if(key_name)
-				engine->m_scene->camera().callback_key(*key_name);
-			else if(key == GLFW_KEY_MINUS)
-				engine->m_scene->camera().callback_wheel(true);
-			else if(shift && key == GLFW_KEY_EQUAL)
-				engine->m_scene->camera().callback_wheel(false);
+			else if(key_name) engine->m_scene->camera().callback_key(*key_name);
+			//close
+			else if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, true);
 		}
 	}
 }

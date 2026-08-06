@@ -49,9 +49,16 @@ namespace fea
 
 			//update
 			static void update_nodes(GLFWwindow*);
+			static void update_loads(GLFWwindow*);
 			static void update_playing(GLFWwindow*);
-			static void update_step(GLFWwindow*, bool);
-			static void update_framerate(GLFWwindow*, bool);
+			static void update_elements(GLFWwindow*);
+			static void update_supports(GLFWwindow*);
+			static void update_step_last(GLFWwindow*);
+			static void update_step_first(GLFWwindow*);
+			static void update_step_increase(GLFWwindow*);
+			static void update_step_decrease(GLFWwindow*);
+			static void update_framerate_increase(GLFWwindow*);
+			static void update_framerate_decrease(GLFWwindow*);
 
 			//canvas
 			static uint32_t canvas_modifiers(int32_t);

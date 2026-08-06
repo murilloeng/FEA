@@ -34,8 +34,8 @@
 
 //data
 static const uint32_t ne = 5;
-static const uint32_t n1 = 11;
-static const uint32_t n2 = 11;
+static const uint32_t n1 = 21;
+static const uint32_t n2 = 21;
 static const double a = 1.00e-01;
 static const double t = 1.00e-03;
 static const double v = 3.00e-01;
@@ -139,14 +139,14 @@ void test::beam2D::elastic::honeycomb_grid(void)
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
-	model.analysis()->solver_static_nonlinear()->step_max(500);
+	model.analysis()->solver_static_nonlinear()->step_max(240);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(1.00e+01);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node((2 * n1 + 1) * (n2 + 1) - 1);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
 	//solve
-	model.solve();
+	// model.solve();
 	//draw
 	fea::draw::Engine(&model).start();
 }
