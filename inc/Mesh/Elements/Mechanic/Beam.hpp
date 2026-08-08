@@ -1,5 +1,8 @@
 #pragma once
 
+//Math
+#include "Math/inc/Quadrature/Quadrature.hpp"
+
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Frame.hpp"
 
@@ -25,10 +28,13 @@ namespace fea
 				static bool mixed(bool);
 				static bool mixed(void);
 
+				math::quadrature::Quadrature& quadrature(void);
+
 			protected:
 				//data
 				static bool m_shear;
 				static bool m_mixed;
+				math::quadrature::Quadrature m_quadrature;
 			};
 		}
 	}

@@ -1,14 +1,8 @@
-//std
-#include <cmath>
-
 //Sections
-#include "Sections/inc/Generic.hpp"
+#include "Sections/inc/Rectangle.hpp"
 
 //Materials
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
-
-//Math
-#include "Math/inc/Validation/Validator.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -35,38 +29,23 @@
 #include "FEA/Test/inc/Beam2D.hpp"
 
 //data
+static const uint32_t nw = 1;
+static const uint32_t nh = 40;
 static const uint32_t ne = 10;
-static const double b = 1.00e-01;
-static const double h = 1.00e-01;
-static const double L = 1.00e+00;
+static const double w = 2.00e-01;
+static const double h = 4.00e-01;
+static const double L = 3.00e+00;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
+static const double K = 0.00e+00;
+static const double sy = 2.50e+08;
 
-static const double A = b * h;
-static const double I = b * h * h * h / 12;
-
-static double function_t3(double t)
-{
-	return 2 * M_PI * t;
-}
-static double function_u1(double t)
-{
-	t *= 2 * M_PI;
-	return t == 0 ? 0 : L * (sin(t) / t - 1);
-}
-static double function_u2(double t)
-{
-	t *= 2 * M_PI;
-	return t == 0 ? 0 : L * (1 - cos(t)) / t;
-}
-
-void test::beam2D::elastic::cantilever_bending(void)
+void test::beam2D::inelastic::cantilever_bending(void)
 {
 	//data
 	fea::Model model;
-	sections::Generic section;
+	sections::Rectangle section;
 	materials::Uniaxial material;
-	math::validation::Validator validator;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
@@ -80,6 +59,15 @@ void test::beam2D::elastic::cantilever_bending(void)
 	//generate
 	model.geometry()->generate_mesh();
 	//elements
+	section.width(w);
+	section.height(h);
+	section.fibers_width(nw);
+	section.fibers_height(nh);
+	material.yield_stress(sy);
+	material.poisson_ratio(v);
+	material.elastic_modulus(E);
+	material.plastic_modulus(K);
+	materials::Mechanic::inelastic(true);
 	for(fea::mesh::elements::Element* element : model.mesh()->elements())
 	{
 		((fea::mesh::elements::Beam2D*) element)->section(&section);
@@ -91,15 +79,13 @@ void test::beam2D::elastic::cantilever_bending(void)
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	//loads
-	section.area(A);
-	section.inertia(1, I);
-	material.poisson_ratio(v);
-	material.elastic_modulus(E);
+	section.compute();
+	const double W = section.plastic_modulus(1);
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(1, dof::Rotation_3, 2 * M_PI * E * I /  L);
+	model.boundary()->create_load_case(1, dof::Rotation_3, sy * W);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(true);
+	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
@@ -107,22 +93,10 @@ void test::beam2D::elastic::cantilever_bending(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/Cantilever Bending");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Cantilever Bending/data.txt", {
+	model.save_results("Test/data/Beam 2D/Inelastic/Cantilever Bending");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/Cantilever Bending/data.txt", {
 		{1, dof::Translation_1}, {1, dof::Translation_2}, {1, dof::Rotation_3}
 	});
-	//validator
-	validator.create_item();
-	validator.create_item();
-	validator.create_item();
-	validator.item(0)->function(function_u1);
-	validator.item(1)->function(function_u2);
-	validator.item(2)->function(function_t3);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/Cantilever Bending/data.txt", 3, 0);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/Cantilever Bending/data.txt", 3, 1);
-	validator.item(2)->load_numeric("Test/data/Beam 2D/Cantilever Bending/data.txt", 3, 2);
-	//validate
-	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
 }

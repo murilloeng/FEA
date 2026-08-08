@@ -46,6 +46,7 @@ namespace fea
 				void internal_force(double*) const override;
 
 				//analysis
+				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
 
@@ -58,6 +59,8 @@ namespace fea
 				void compute_CR_state(void);
 				void compute_CR_elastic(void);
 				void compute_CR_plastic(void);
+				void compute_CR_plastic_section(double*, double);
+				void compute_CR_plastic_kinematic(double*, double);
 
 				//draw
 				void draw_setup(draw::Data&) const override;

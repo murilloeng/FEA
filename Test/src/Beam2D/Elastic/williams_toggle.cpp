@@ -117,13 +117,13 @@ void test::beam2D::elastic::williams_toggle(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/Williams Toggle");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Williams Toggle/data.txt", {{0, dof::Translation_2}});
+	model.save_results("Test/data/Beam 2D/Elastic/Williams Toggle");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Elastic/Williams Toggle/data.txt", {{0, dof::Translation_2}});
 	//validator
 	validator.create_item();
 	validator.item(0)->function(function);
 	validator.item(0)->tolerance(1.15e-02);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/Williams Toggle/data.txt", 0, 1);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Elastic/Williams Toggle/data.txt", 0, 1);
 	//validate
 	validator.validate();
 	//draw

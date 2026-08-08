@@ -68,7 +68,7 @@ namespace fea
 			void Truss::setup(void)
 			{
 				Frame::setup();
-				m_point.prepare(uint32_t(materials::Stress::type::s11));
+				m_point.prepare(uint32_t(materials::Stress::Type::s11));
 			}
 			void Truss::compute(void)
 			{

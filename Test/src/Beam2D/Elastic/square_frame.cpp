@@ -136,23 +136,23 @@ void test::beam2D::elastic::square_frame(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/Square Frame");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Square Frame/data-tension.txt", {
+	model.save_results("Test/data/Beam 2D/Elastic/Square Frame");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Elastic/Square Frame/data-tension.txt", {
 		{ 7, dof::Translation_1}, { 5, dof::Translation_2}, { 6, dof::Rotation_3}
 	});
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Square Frame/data-compression.txt", {
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Elastic/Square Frame/data-compression.txt", {
 		{15, dof::Translation_1}, {13, dof::Translation_2}, {14, dof::Rotation_3}
 	});
 	//validator
 	validator.create_item();
 	validator.create_item();
 	validator.create_item();
-	validator.item(0)->load_numeric("Test/data/Beam 2D/Square Frame/data-tension.txt", 3, 0);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/Square Frame/data-tension.txt", 3, 1);
-	validator.item(2)->load_numeric("Test/data/Beam 2D/Square Frame/data-tension.txt", 3, 2);
-	validator.item(0)->load_reference("Test/data/Beam 2D/Square Frame/reference-tension.dat", 0, 2);
-	validator.item(1)->load_reference("Test/data/Beam 2D/Square Frame/reference-tension.dat", 0, 1);
-	validator.item(2)->load_reference("Test/data/Beam 2D/Square Frame/reference-tension.dat", 0, 3);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Elastic/Square Frame/data-tension.txt", 3, 0);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/Elastic/Square Frame/data-tension.txt", 3, 1);
+	validator.item(2)->load_numeric("Test/data/Beam 2D/Elastic/Square Frame/data-tension.txt", 3, 2);
+	validator.item(0)->load_reference("Test/data/Beam 2D/Elastic/Square Frame/reference-tension.dat", 0, 2);
+	validator.item(1)->load_reference("Test/data/Beam 2D/Elastic/Square Frame/reference-tension.dat", 0, 1);
+	validator.item(2)->load_reference("Test/data/Beam 2D/Elastic/Square Frame/reference-tension.dat", 0, 3);
 	//validate
 	validator.validate();
 	//draw

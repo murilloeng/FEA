@@ -8,7 +8,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Beam::Beam(void)
+			Beam::Beam(void) : m_quadrature{2}
 			{
 				return;
 			}
@@ -36,6 +36,11 @@ namespace fea
 			bool Beam::mixed(bool mixed)
 			{
 				return m_mixed;
+			}
+
+			math::quadrature::Quadrature& Beam::quadrature(void)
+			{
+				return m_quadrature;
 			}
 
 			//static

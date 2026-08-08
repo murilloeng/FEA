@@ -93,8 +93,8 @@ void test::beam2D::elastic::lee_frame(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/Lee Frame");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Lee Frame/data.txt", {
+	model.save_results("Test/data/Beam 2D/Elastic/Lee Frame");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Elastic/Lee Frame/data.txt", {
 		{12, dof::Translation_1}, {12, dof::Translation_2}, {12, dof::Rotation_3}
 	});
 	//validator
@@ -102,10 +102,10 @@ void test::beam2D::elastic::lee_frame(void)
 	validator.create_item();
 	validator.item(0)->tolerance(1.20e-01);
 	validator.item(1)->tolerance(1.20e-01);
-	validator.item(0)->load_numeric("Test/data/Beam 2D/Lee Frame/data.txt", 0, 3);
-	validator.item(1)->load_numeric("Test/data/Beam 2D/Lee Frame/data.txt", 1, 3);
-	validator.item(0)->load_reference("Test/data/Beam 2D/Lee Frame/reference-u.dat", 0, 1);
-	validator.item(1)->load_reference("Test/data/Beam 2D/Lee Frame/reference-v.dat", 0, 1);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Elastic/Lee Frame/data.txt", 0, 3);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/Elastic/Lee Frame/data.txt", 1, 3);
+	validator.item(0)->load_reference("Test/data/Beam 2D/Elastic/Lee Frame/reference-u.dat", 0, 1);
+	validator.item(1)->load_reference("Test/data/Beam 2D/Elastic/Lee Frame/reference-v.dat", 0, 1);
 	//validate
 	validator.validate();
 	//draw

@@ -9,6 +9,9 @@
 #include "Canvas/inc/Math/mat2.hpp"
 #include "Canvas/inc/Vertices/Model3D.hpp"
 
+//Materials
+#include "Materials/inc/Mechanic/Stress.hpp"
+
 //FEA
 #include "FEA/inc/Draw/Data.hpp"
 
@@ -139,15 +142,46 @@ namespace fea
 			}
 
 			//analysis
+			void Beam2D::setup(void)
+			{
+				//data
+				const uint32_t stress_types = m_shear ? 
+					1 << uint32_t(materials::Stress::Type::s11):
+					1 << uint32_t(materials::Stress::Type::s11)|
+					1 << uint32_t(materials::Stress::Type::s12);
+				//setup
+				Beam::setup();
+				if(materials::Mechanic::inelastic())
+				{
+					for(sections::fibers::Fiber* fiber : m_section->fibers())
+					{
+						fiber->material_point().prepare(stress_types);
+					}
+				}
+			}
 			void Beam2D::update(void)
 			{
 				Beam::update();
 				m_tr_old = m_tr_new;
+				if(materials::Mechanic::inelastic())
+				{
+					for(sections::fibers::Fiber* fiber : m_section->fibers())
+					{
+						fiber->material_point().update();
+					}
+				}
 			}
 			void Beam2D::restore(void)
 			{
 				Beam::restore();
 				m_tr_new = m_tr_old;
+				if(materials::Mechanic::inelastic())
+				{
+					for(sections::fibers::Fiber* fiber : m_section->fibers())
+					{
+						fiber->material_point().restore();
+					}
+				}
 			}
 
 			//analysis
@@ -223,7 +257,63 @@ namespace fea
 			}
 			void Beam2D::compute_CR_plastic(void)
 			{
-				return;
+				//data
+				const math::Vector dl(m_dl, 3);
+				const uint32_t np = m_shear ? 2 : 1;
+				const uint32_t ns = m_shear ? 3 : 2;
+				math::Vector fl(m_fl, 3), ep(np), sp(np), es(ns), ss(ns);
+				math::Matrix Kl(m_Kl, 3, 3), B(ns, 3), H(np, ns), Kp(np, np), Ks(ns, ns);
+				//compute
+				fl.zeros();
+				Kl.zeros();
+				for(uint32_t i = 0; i < m_quadrature.order(); i++)
+				{
+					//quadrature
+					const double s = m_quadrature.point(i);
+					const double w = m_quadrature.weight(i);
+					compute_CR_plastic_kinematic(B.data(), s);
+					//fibers
+					ss.zeros();
+					Ks.zeros();
+					es = B * dl;
+					for(sections::fibers::Fiber* fiber : m_section->fibers())
+					{
+						//fiber
+						const double A = fiber->area();
+						const double x2 = fiber->position(0);
+						compute_CR_plastic_section(H.data(), x2);
+						//material
+						ep = H * es;
+						m_material->return_mapping(sp.data(), Kp.data(), ep.data(), fiber->material_point());
+						//contribution
+						ss += A * H.transpose() * sp;
+						Ks += A * H.transpose() * Kp * H;
+					}
+					//contribution
+					fl += w * m_Lr / 2 * B.transpose() * ss;
+					Kl += w * m_Lr / 2 * B.transpose() * Ks * B;
+				}
+			}
+			void Beam2D::compute_CR_plastic_section(double* H, double x2)
+			{
+				if(!m_shear)
+				{
+					H[0 + 1 * 0] = 1;
+					H[0 + 1 * 1] = -x2;
+				}
+			}
+			void Beam2D::compute_CR_plastic_kinematic(double* B, double s)
+			{
+				//data
+				const double a = (1 + s) / 2;
+				//kinematics
+				if(!m_shear)
+				{
+					B[0 + 2 * 0] = 1 / m_Lr;
+					B[1 + 2 * 1] = (6 * a - 4) / m_Lr;
+					B[1 + 2 * 2] = (6 * a - 2) / m_Lr;
+					B[1 + 2 * 0] = B[0 + 2 * 1] = B[0 + 2 * 2] = 0;
+				}
 			}
 
 			//draw

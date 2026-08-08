@@ -14,5 +14,10 @@ namespace test
 			void cantilever_force(void);
 			void cantilever_bending(void);
 		}
+		namespace inelastic
+		{
+			void cantilever_force(void);
+			void cantilever_bending(void);
+		}
 	}
 }
