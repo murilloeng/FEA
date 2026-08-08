@@ -32,6 +32,8 @@ namespace fea
 			void start(void);
 
 			//data
+			Draw* draw(void);
+
 			bool show_fps(bool);
 			bool show_fps(void) const;
 

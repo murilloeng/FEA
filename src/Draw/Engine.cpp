@@ -62,6 +62,11 @@ namespace fea
 		}
 
 		//data
+		Draw* Engine::draw(void)
+		{
+			return m_draw;
+		}
+
 		bool Engine::show_fps(void) const
 		{
 			return m_show_fps;
