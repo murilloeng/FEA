@@ -16,6 +16,8 @@ namespace test
 		}
 		namespace inelastic
 		{
+			void pinned_force(void);
+			void pinned_bending(void);
 			void cantilever_force(void);
 			void cantilever_bending(void);
 		}
