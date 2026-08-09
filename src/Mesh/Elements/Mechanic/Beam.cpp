@@ -43,6 +43,53 @@ namespace fea
 				return m_quadrature;
 			}
 
+			//analysis
+			void Beam::setup(void)
+			{
+				Frame::setup();
+				if(materials::Mechanic::inelastic())
+				{
+					m_sections.reserve(m_quadrature.order());
+					const uint32_t stresses = this->stress_set();
+					for(uint32_t i = 0; i < m_quadrature.order(); i++)
+					{
+						m_sections.push_back(Section(m_section));
+						for(Fiber& fiber : m_sections[i].fibers())
+						{
+							fiber.material_point().prepare(stresses);
+						}
+					}
+				}
+			}
+			void Beam::update(void)
+			{
+				Frame::update();
+				if(materials::Mechanic::inelastic())
+				{
+					for(Section& section : m_sections)
+					{
+						for(Fiber& fiber : section.fibers())
+						{
+							fiber.material_point().update();
+						}
+					}
+				}
+			}
+			void Beam::restore(void)
+			{
+				Frame::restore();
+				if(materials::Mechanic::inelastic())
+				{
+					for(Section& section  : m_sections)
+					{
+						for(Fiber& fiber : section.fibers())
+						{
+							fiber.material_point().restore();
+						}
+					}
+				}
+			}
+
 			//static
 			bool Beam::m_shear = false;
 			bool Beam::m_mixed = false;

@@ -29,6 +29,8 @@ namespace fea
 				};
 
 				//data
+				virtual uint32_t stress_set(void) const;
+
 				static Formulation formulation(void);
 				static Formulation formulation(Formulation);
 

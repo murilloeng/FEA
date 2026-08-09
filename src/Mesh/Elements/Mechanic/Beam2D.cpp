@@ -48,6 +48,14 @@ namespace fea
 				return m_draw_mesh = draw_mesh;
 			}
 
+			uint32_t Beam2D::stress_set(void) const
+			{
+				return m_shear ?
+					1 << uint32_t(materials::Stress::Type::s11):
+					1 << uint32_t(materials::Stress::Type::s11)|
+					1 << uint32_t(materials::Stress::Type::s12);
+			}
+
 			//data
 			uint32_t Beam2D::dof_set(uint32_t) const
 			{
@@ -142,46 +150,15 @@ namespace fea
 			}
 
 			//analysis
-			void Beam2D::setup(void)
-			{
-				//data
-				const uint32_t stress_types = m_shear ? 
-					1 << uint32_t(materials::Stress::Type::s11):
-					1 << uint32_t(materials::Stress::Type::s11)|
-					1 << uint32_t(materials::Stress::Type::s12);
-				//setup
-				Beam::setup();
-				if(materials::Mechanic::inelastic())
-				{
-					for(sections::fibers::Fiber* fiber : m_section->fibers())
-					{
-						fiber->material_point().prepare(stress_types);
-					}
-				}
-			}
 			void Beam2D::update(void)
 			{
 				Beam::update();
 				m_tr_old = m_tr_new;
-				if(materials::Mechanic::inelastic())
-				{
-					for(sections::fibers::Fiber* fiber : m_section->fibers())
-					{
-						fiber->material_point().update();
-					}
-				}
 			}
 			void Beam2D::restore(void)
 			{
 				Beam::restore();
 				m_tr_new = m_tr_old;
-				if(materials::Mechanic::inelastic())
-				{
-					for(sections::fibers::Fiber* fiber : m_section->fibers())
-					{
-						fiber->material_point().restore();
-					}
-				}
 			}
 
 			//analysis
@@ -276,15 +253,15 @@ namespace fea
 					ss.zeros();
 					Ks.zeros();
 					es = B * dl;
-					for(sections::fibers::Fiber* fiber : m_section->fibers())
+					for(Fiber& fiber : m_sections[i].fibers())
 					{
 						//fiber
-						const double A = fiber->area();
-						const double x2 = fiber->position(0);
+						const double A = fiber.area();
+						const double x2 = fiber.position(0);
 						compute_CR_plastic_section(H.data(), x2);
 						//material
 						ep = H * es;
-						m_material->return_mapping(sp.data(), Kp.data(), ep.data(), fiber->material_point());
+						m_material->return_mapping(sp.data(), Kp.data(), ep.data(), fiber.material_point());
 						//contribution
 						ss += A * H.transpose() * sp;
 						Ks += A * H.transpose() * Kp * H;

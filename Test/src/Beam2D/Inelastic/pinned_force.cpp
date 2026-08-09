@@ -9,6 +9,7 @@
 //FEA
 #include "FEA/inc/Model.hpp"
 
+#include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Engine.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
@@ -32,7 +33,7 @@
 #include "FEA/Test/inc/Beam2D.hpp"
 
 //data
-static const uint32_t ne = 1;
+static const uint32_t ne = 5;
 static const uint32_t nw = 1;
 static const uint32_t nh = 40;
 static const double w = 2.00e-01;
@@ -56,10 +57,6 @@ void test::beam2D::inelastic::pinned_force(void)
 	model.geometry()->create_point(0, 0, 0);
 	model.geometry()->create_point(L, 0, 0);
 	model.geometry()->create_point(L / 2, 0, 0);
-
-	model.geometry()->create_point(0, 1, 0);
-	model.geometry()->create_point(L, 1, 0);
-	model.geometry()->create_point(L / 2, 1, 0);
 	//curves
 	model.geometry()->create_line(0, 2);
 	model.geometry()->create_line(1, 2);
@@ -67,13 +64,6 @@ void test::beam2D::inelastic::pinned_force(void)
 	model.geometry()->curve(1)->structured(ne);
 	model.geometry()->curve(0)->element_type(fea::mesh::elements::Type::Beam2D);
 	model.geometry()->curve(1)->element_type(fea::mesh::elements::Type::Beam2D);
-
-	model.geometry()->create_line(3, 5);
-	model.geometry()->create_line(5, 4);
-	model.geometry()->curve(2)->structured(ne);
-	model.geometry()->curve(3)->structured(ne);
-	model.geometry()->curve(2)->element_type(fea::mesh::elements::Type::Beam2D);
-	model.geometry()->curve(3)->element_type(fea::mesh::elements::Type::Beam2D);
 	//generate
 	model.geometry()->generate_mesh();
 	//elements
@@ -96,19 +86,11 @@ void test::beam2D::inelastic::pinned_force(void)
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	model.boundary()->create_support(1, dof::Translation_2);
-
-	model.boundary()->create_support(3, dof::Translation_1);
-	model.boundary()->create_support(3, dof::Translation_2);
-	model.boundary()->create_support(4, dof::Translation_2);
 	//loads
 	section.compute();
 	const double W = section.plastic_modulus(1);
 	model.boundary()->create_load_combination(0, false, 1);
-	// model.boundary()->create_load_case(2, dof::Translation_2, -4 * sy * W / L);
-	
-	model.boundary()->create_load_case();
-	model.boundary()->load_case(0)->create_load_node(2, dof::Translation_2, -4 * sy * W / L);
-	model.boundary()->load_case(0)->create_load_node(5, dof::Translation_2, -4 * sy * W / L);
+	model.boundary()->create_load_case(2, dof::Translation_2, -4 * sy * W / L);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
@@ -119,11 +101,12 @@ void test::beam2D::inelastic::pinned_force(void)
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
 	//solve
 	model.solve();
+	printf("Node 2: %+.2e\n", model.mesh()->node(2)->state(dof::Translation_2));
 	//save
 	model.save_results("Test/data/Beam 2D/Inelastic/Pinned Force");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/Pinned Force/data.txt", {
-		{2, dof::Translation_1}, {2, dof::Translation_2}, {1, dof::Rotation_3}
-	});
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/Pinned Force/data.txt", {{2, dof::Translation_2}});
 	//draw
-	fea::draw::Engine(&model).start();
+	fea::draw::Engine engine(&model);
+	engine.draw()->scale(10);
+	engine.start();
 }

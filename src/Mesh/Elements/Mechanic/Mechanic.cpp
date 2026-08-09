@@ -23,6 +23,11 @@ namespace fea
 			}
 
 			//data
+			uint32_t Mechanic::stress_set(void) const
+			{
+				return 0;
+			}
+
 			Mechanic::Formulation Mechanic::formulation(void)
 			{
 				return m_formulation;

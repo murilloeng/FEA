@@ -2,6 +2,7 @@
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
+#include "FEA/inc/Mesh/Elements/Mechanic/Fiber.hpp"
 
 namespace fea
 {
@@ -25,6 +26,7 @@ namespace fea
 
 			private:
 				//data
+				uint32_t stress_set(void) const override;
 				uint32_t dof_set(uint32_t) const override;
 
 				//tangents
@@ -46,7 +48,6 @@ namespace fea
 				void internal_force(double*) const override;
 
 				//analysis
-				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
 
