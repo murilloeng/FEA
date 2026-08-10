@@ -40,6 +40,29 @@ namespace fea
 			//serialization
 			void save(FILE*) const;
 
+			//types
+			typedef std::function<void(double*, const double*)> Hessian;
+			typedef std::function<void(double*, const double*)> Gradient;
+			typedef std::function<void(double&, const double*)> Function;
+
+		public:
+			//data
+			Hessian hessian(Hessian);
+			Hessian hessian(void) const;
+
+			Gradient gradient(Gradient);
+			Gradient gradient(void) const;
+
+			Function function(Function);
+			Function function(void) const;
+
+			const std::vector<uint32_t>& nodes(void) const;
+			const std::vector<mesh::nodes::DOF>& dof(void) const;
+
+			//index
+			uint32_t index(void) const;
+
+		private:
 			//analysis
 			void check(void);
 			void setup(void);
@@ -47,14 +70,14 @@ namespace fea
 
 			//data
 			uint32_t m_index;
+			Hessian m_hessian;
+			Gradient m_gradient;
+			Function m_function;
 			uint32_t m_dof_index;
 			static Boundary* m_boundary;
 			std::vector<uint32_t> m_nodes;
 			std::vector<uint32_t> m_dof_indexes;
 			std::vector<mesh::nodes::DOF> m_dof;
-			std::function<void(double*, const double*)> m_hessian;
-			std::function<void(double*, const double*)> m_function;
-			std::function<void(double&, const double*)> m_gradient;
 
 			//friends
 			friend class fea::boundary::Boundary;

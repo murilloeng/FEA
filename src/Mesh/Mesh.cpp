@@ -179,6 +179,7 @@ namespace fea
 		}
 		void Mesh::check(void)
 		{
+			for(joints::Joint* joint : m_joints) joint->check();
 			for(elements::Element* element : m_elements) element->check();
 		}
 		void Mesh::setup(void)

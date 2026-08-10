@@ -185,6 +185,19 @@ namespace fea
 			m_load_cases.push_back(load_case);
 		}
 
+		void Boundary::create_constraint(std::vector<uint32_t> nodes, std::vector<mesh::nodes::DOF> dof)
+		{
+			//data
+			Constraint* constraint = new Constraint;
+			const uint32_t nc = m_constraints.size();
+			//setup
+			constraint->m_dof = dof;
+			constraint->m_index = nc;
+			constraint->m_nodes = nodes;
+			//append
+			m_constraints.push_back(constraint);
+		}
+
 		void Boundary::create_dependency(uint32_t node_1, mesh::nodes::DOF dof_1, uint32_t node_2, mesh::nodes::DOF dof_2)
 		{
 			//data

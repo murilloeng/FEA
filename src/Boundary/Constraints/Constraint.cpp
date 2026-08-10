@@ -40,6 +40,49 @@ namespace fea
 
 		}
 
+		//data
+		Constraint::Hessian Constraint::hessian(void) const
+		{
+			return m_hessian;
+		}
+		Constraint::Hessian Constraint::hessian(Hessian hessian)
+		{
+			return m_hessian = hessian;
+		}
+
+		Constraint::Gradient Constraint::gradient(void) const
+		{
+			return m_gradient;
+		}
+		Constraint::Gradient Constraint::gradient(Gradient gradient)
+		{
+			return m_gradient = gradient;
+		}
+
+		Constraint::Function Constraint::function(void) const
+		{
+			return m_function;
+		}
+		Constraint::Function Constraint::function(Function function)
+		{
+			return m_function = function;
+		}
+
+		const std::vector<uint32_t>& Constraint::nodes(void) const
+		{
+			return m_nodes;
+		}
+		const std::vector<mesh::nodes::DOF>& Constraint::dof(void) const
+		{
+			return m_dof;
+		}
+
+		//index
+		uint32_t Constraint::index(void) const
+		{
+			return m_index;
+		}
+
 		//analysis
 		void Constraint::check(void)
 		{
@@ -53,6 +96,10 @@ namespace fea
 			if(m_nodes.size() != m_dof.size())
 			{
 				throw std::runtime_error("Error: Constraint's nodes and dofs lists are incompatible!");
+			}
+			if(!m_function || !m_gradient || !m_hessian)
+			{
+				throw std::runtime_error("Error: Constraint's functions are unset!");
 			}
 		}
 		void Constraint::setup(void)

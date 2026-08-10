@@ -73,6 +73,8 @@ namespace fea
 			void create_load_case(void);
 			void create_load_case(uint32_t, mesh::nodes::DOF, double);
 
+			void create_constraint(std::vector<uint32_t>, std::vector<mesh::nodes::DOF>);
+
 			void create_dependency(uint32_t, mesh::nodes::DOF, uint32_t, mesh::nodes::DOF);
 
 		private:

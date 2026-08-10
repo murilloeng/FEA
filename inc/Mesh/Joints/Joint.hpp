@@ -38,6 +38,7 @@ namespace fea
 
 			protected:
 				//analysis
+				virtual void check(void);
 				virtual void setup(void);
 				virtual void create_constraints(void) const = 0;
 				virtual void create_dependencies(void) const = 0;

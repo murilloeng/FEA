@@ -22,7 +22,7 @@ namespace fea
 			//analysis
 			void Rigid2D::create_constraints(void) const
 			{
-				return;
+				
 			}
 			void Rigid2D::create_dependencies(void) const
 			{
