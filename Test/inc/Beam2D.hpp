@@ -21,6 +21,9 @@ namespace test
 			void honeycomb_grid(void);
 			void cantilever_force(void);
 			void cantilever_bending(void);
+			void morpho_plastic_unit(void);
+			void morpho_plastic_line(void);
+			void morpho_plastic_grid(void);
 		}
 	}
 }
