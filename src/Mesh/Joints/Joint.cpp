@@ -26,6 +26,13 @@ namespace fea
 				for(uint32_t node : m_nodes) fprintf(file, "%d ", node);
 			}
 
+			//analysis
+			void Joint::setup(void)
+			{
+				create_constraints();
+				create_dependencies();
+			}
+
 			//static
 			Mesh* Joint::m_mesh = nullptr;
 		}

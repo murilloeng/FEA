@@ -3,8 +3,16 @@
 
 //FEA
 #include "FEA/inc/Mesh/Mesh.hpp"
+
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+
+#include "FEA/inc/Mesh/Joints/Type.hpp"
 #include "FEA/inc/Mesh/Joints/Joint.hpp"
+#include "FEA/inc/Mesh/Joints/Rigid2D.hpp"
+#include "FEA/inc/Mesh/Joints/Rigid3D.hpp"
+#include "FEA/inc/Mesh/Joints/Revolute2D.hpp"
+#include "FEA/inc/Mesh/Joints/Revolute3D.hpp"
+
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
@@ -101,6 +109,33 @@ namespace fea
 			//append
 			node->m_index = nn;
 			m_nodes.push_back(node);
+		}
+
+		void Mesh::append_joint(joints::Joint* joint)
+		{
+			//data
+			const uint32_t nj = m_joints.size();
+			//append
+			joint->m_index = nj;
+			m_joints.push_back(joint);
+		}
+		void Mesh::create_joint(joints::Type type, std::vector<uint32_t> nodes)
+		{
+			//data
+			joints::Joint* joint;
+			const uint32_t nj = m_joints.size();
+			std::function<void(joints::Joint*&)> fabric[] = {
+				[](joints::Joint*& joint){ joint = new joints::Rigid2D; },
+				[](joints::Joint*& joint){ joint = new joints::Rigid3D; },
+				[](joints::Joint*& joint){ joint = new joints::Revolute2D; },
+				[](joints::Joint*& joint){ joint = new joints::Revolute3D; }
+			};
+			//create
+			fabric[uint32_t(type)](joint);
+			//append
+			joint->m_index = nj;
+			joint->m_nodes = nodes;
+			m_joints.push_back(joint);
 		}
 
 		void Mesh::append_element(elements::Element* element)

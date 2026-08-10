@@ -17,6 +17,7 @@ namespace fea
 		namespace joints
 		{
 			class Joint;
+			enum class Type : uint32_t;
 		}
 		namespace elements
 		{
@@ -61,6 +62,9 @@ namespace fea
 			//create
 			void create_node(const double*);
 			void create_node(double, double, double);
+
+			void append_joint(joints::Joint*);
+			void create_joint(joints::Type, std::vector<uint32_t>);
 
 			void append_element(elements::Element*);
 			void create_element(elements::Type, std::vector<uint32_t>);
