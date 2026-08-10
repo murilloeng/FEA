@@ -101,7 +101,6 @@ void test::beam2D::inelastic::pinned_force(void)
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
 	//solve
 	model.solve();
-	printf("Node 2: %+.2e\n", model.mesh()->node(2)->state(dof::Translation_2));
 	//save
 	model.save_results("Test/data/Beam 2D/Inelastic/Pinned Force");
 	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/Pinned Force/data.txt", {{2, dof::Translation_2}});

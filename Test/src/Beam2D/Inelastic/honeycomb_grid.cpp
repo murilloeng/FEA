@@ -38,6 +38,8 @@
 
 //data
 static const uint32_t ne = 5;
+static const uint32_t nw = 1;
+static const uint32_t nh = 40;
 static const uint32_t n1 = 11;
 static const uint32_t n2 = 11;
 static const double P = 2.00e+01;
@@ -45,7 +47,8 @@ static const double a = 1.00e-01;
 static const double t = 1.00e-03;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
-
+static const double K = 2.10e+11;
+static const double sy = 4.00e+08;
 //reference: doi.org/10.1002/nme.6820
 
 static double time_function(double t)
@@ -53,7 +56,7 @@ static double time_function(double t)
 	return t < 0.5 ? 2 * t : 2 * (1 - t);
 }
 
-void test::beam2D::elastic::honeycomb_grid(void)
+void test::beam2D::inelastic::honeycomb_grid(void)
 {
 	//data
 	fea::Model model;
@@ -122,14 +125,20 @@ void test::beam2D::elastic::honeycomb_grid(void)
 	//elements
 	section.width(t);
 	section.height(t);
-	section.compute();
+	section.fibers_width(nw);
+	section.fibers_height(nh);
+	material.yield_stress(sy);
 	material.poisson_ratio(v);
 	material.elastic_modulus(E);
+	material.plastic_modulus(K);
+	materials::Mechanic::inelastic(true);
+	materials::Mechanic::hardening(true);
 	for(fea::mesh::elements::Element* element : model.mesh()->elements())
 	{
 		((fea::mesh::elements::Beam2D*) element)->section(&section);
 		((fea::mesh::elements::Beam2D*) element)->material(&material);
 	}
+	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	for(uint32_t i = 0; i < n1; i++)
 	{
@@ -145,6 +154,7 @@ void test::beam2D::elastic::honeycomb_grid(void)
 		model.boundary()->load_case(0)->load_node(i)->time_function(time_function);
 	}
 	//setup
+	section.compute();
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);

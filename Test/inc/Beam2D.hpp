@@ -18,6 +18,7 @@ namespace test
 		{
 			void pinned_force(void);
 			void pinned_bending(void);
+			void honeycomb_grid(void);
 			void cantilever_force(void);
 			void cantilever_bending(void);
 		}

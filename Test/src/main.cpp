@@ -12,7 +12,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::honeycomb_grid();
+		test::beam2D::inelastic::honeycomb_grid();
 	}
 	catch(const std::exception& exception)
 	{
