@@ -55,6 +55,7 @@ namespace fea
 			static void update_playing(GLFWwindow*);
 			static void update_elements(GLFWwindow*);
 			static void update_supports(GLFWwindow*);
+			static void update_recording(GLFWwindow*);
 			static void update_step_last(GLFWwindow*);
 			static void update_step_first(GLFWwindow*);
 			static void update_step_increase(GLFWwindow*);

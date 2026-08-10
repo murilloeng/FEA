@@ -1,6 +1,9 @@
 //std
 #include <cmath>
 
+//Math
+#include "Math/inc/Miscellaneous/util.hpp"
+
 //Sections
 #include "Sections/inc/Rectangle.hpp"
 
@@ -34,13 +37,13 @@
 
 //data
 static const uint32_t ne = 5;
-static const uint32_t n1 = 11;
-static const uint32_t n2 = 11;
+static const uint32_t n1 = 3;
+static const uint32_t n2 = 3;
 static const double a = 1.00e-01;
 static const double t = 1.00e-03;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
-static const double u = 8.00e-02 * n2;
+static const double P = 5.00e+00;
 
 //reference: doi.org/10.1002/nme.6820
 
@@ -55,13 +58,16 @@ void test::beam2D::elastic::honeycomb_grid(void)
 	typedef fea::analysis::Type solver;
 	//points
 	double x2 = 0;
+	srand(time(nullptr));
 	for(uint32_t i = 0; i < 2 * (n2 + 1); i++)
 	{
 		double x1 = (i % 4 == 0 || i % 4 == 3) * a * cos(M_PI / 6);
 		for(uint32_t j = 0; j < n1 + 1; j++)
 		{
+			const double a1 = 1e-5 * a * math::randu(-1, 1);
+			const double a2 = 1e-5 * a * math::randu(-1, 1);
 			if((i % 4 == 0 || i % 4 == 3) && j == n1) continue;
-			model.geometry()->create_point(x1, x2, 0);
+			model.geometry()->create_point(x1 + a1, x2 + a2, 0);
 			x1 += 2 * a * cos(M_PI / 6);
 		}
 		x2 += i % 2 == 0 ? a * sin(M_PI / 6) : a;
@@ -125,20 +131,25 @@ void test::beam2D::elastic::honeycomb_grid(void)
 	for(uint32_t i = 0; i < n1; i++)
 	{
 		model.boundary()->create_support(i, dof::Translation_2);
-		model.boundary()->create_support((2 * n1 + 1) * (n2 + 1) - n1 + i, dof::Translation_2);
-		model.boundary()->support(2 * i + 1)->state([](double t){ return u * t; });
 	}
 	model.boundary()->create_support(0, dof::Translation_1);
+	//loads
+	model.boundary()->create_load_case();
+	model.boundary()->create_load_combination(0, false, 1);
+	for(uint32_t i = 0; i < n1; i++)
+	{
+		model.boundary()->load_case(0)->create_load_node((2 * n1 + 1) * (n2 + 1) - n1 + i, dof::Translation_2, P);
+	}
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
-	model.analysis()->solver_static_nonlinear()->step_max(1000);
+	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->iteration_max(30);
+	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->convergence().tolerance(1.00e-05);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node((2 * n1 + 1) * (n2 + 1) - 1);
-	model.analysis()->solver_static_nonlinear()->convergence().type(math::solvers::Convergence::Type::Fixed);
-	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::LoadControl);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node((2 * n1 + 1) * (n2 + 1) - n1);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
 	//solve
 	model.solve();

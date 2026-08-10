@@ -41,7 +41,7 @@ namespace fea
 			while (!glfwWindowShouldClose(m_window))
 			{
 				//time
-				t2 = (float)glfwGetTime();
+				t2 = (float) glfwGetTime();
 				//play
 				if(m_playing)
 				{
@@ -149,57 +149,96 @@ namespace fea
 		}
 
 		//update
-		void Engine::update_nodes(GLFWwindow *window)
+		void Engine::update_nodes(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//nodes
 			engine->m_draw->what().nodes(!engine->m_draw->what().nodes());
 			//update
 			engine->m_scene->setup();
 			engine->m_scene->update();
 		}
-		void Engine::update_loads(GLFWwindow *window)
+		void Engine::update_loads(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//loads
 			engine->m_draw->what().loads(!engine->m_draw->what().loads());
 			//update
 			engine->m_scene->setup();
 			engine->m_scene->update();
 		}
-		void Engine::update_playing(GLFWwindow *window)
+		void Engine::update_playing(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//playing
 			engine->m_playing = !engine->m_playing;
 		}
-		void Engine::update_elements(GLFWwindow *window)
+		void Engine::update_elements(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//elements
 			engine->m_draw->what().elements(!engine->m_draw->what().elements());
 			//update
 			engine->m_scene->setup();
 			engine->m_scene->update();
 		}
-		void Engine::update_supports(GLFWwindow *window)
+		void Engine::update_supports(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//supports
 			engine->m_draw->what().supports(!engine->m_draw->what().supports());
 			//update
 			engine->m_scene->setup();
 			engine->m_scene->update();
 		}
-		void Engine::update_step_last(GLFWwindow *window)
+		void Engine::update_recording(GLFWwindow* window)
 		{
 			//data
-			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			int32_t width, height;
+			glfwGetFramebufferSize(window, &width, &height);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
+			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
+			//stream
+			const std::string command =
+				"ffmpeg -y "
+				"-f rawvideo "
+				"-loglevel error "
+				"-pixel_format rgba "
+				"-video_size " + std::to_string(width) + "x" + std::to_string(height) + " "
+				"-framerate 60 "
+				"-i - "
+				"-vf vflip "
+				"-c:v libx264 "
+				"-preset medium "
+				"-crf 18 "
+				"-pix_fmt yuv444p "
+				"video.mp4";
+			FILE* stream = popen(command.c_str(), "w");
+			uint8_t* pixels = new uint8_t[4 * width * height];
+			//steps
+			engine->m_playing = false;
+			for(uint32_t i = 0; i < ns; i++)
+			{
+				engine->m_draw->step(i);
+				engine->m_scene->update();
+				engine->m_scene->draw();
+				glfwSwapBuffers(window);
+				glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+				fwrite(pixels, sizeof(uint8_t), 4 * width * height, stream);
+			}
+			//close
+			pclose(stream);
+			delete[] pixels;
+		}
+		void Engine::update_step_last(GLFWwindow* window)
+		{
+			//data
+			const Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
 			//draw
 			engine->m_draw->step(ns - 1);
@@ -207,20 +246,20 @@ namespace fea
 			//update
 			engine->m_scene->update();
 		}
-		void Engine::update_step_first(GLFWwindow *window)
+		void Engine::update_step_first(GLFWwindow* window)
 		{
 			//data
-			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			const Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//draw
 			engine->m_draw->step(0);
 			if(!engine->m_show_fps) printf("step: %d\n", 0);
 			//update
 			engine->m_scene->update();
 		}
-		void Engine::update_step_increase(GLFWwindow *window)
+		void Engine::update_step_increase(GLFWwindow* window)
 		{
 			//data
-			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			const Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//step
 			const uint32_t is = engine->m_draw->m_step;
 			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
@@ -230,10 +269,10 @@ namespace fea
 			//update
 			engine->m_scene->update();
 		}
-		void Engine::update_step_decrease(GLFWwindow *window)
+		void Engine::update_step_decrease(GLFWwindow* window)
 		{
 			//data
-			const Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			const Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//step
 			const uint32_t is = engine->m_draw->m_step;
 			const uint32_t ns = engine->m_model->analysis()->solver()->draw_steps();
@@ -243,17 +282,17 @@ namespace fea
 			//update
 			engine->m_scene->update();
 		}
-		void Engine::update_framerate_increase(GLFWwindow *window)
+		void Engine::update_framerate_increase(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//framerate
 			engine->m_framerate *= 1.10;
 		}
-		void Engine::update_framerate_decrease(GLFWwindow *window)
+		void Engine::update_framerate_decrease(GLFWwindow* window)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//framerate
 			engine->m_framerate /= 1.10;
 		}
@@ -298,47 +337,47 @@ namespace fea
 		}
 
 		//callbacks
-		void Engine::callback_wheel(GLFWwindow *window, double dx1, double dx2)
+		void Engine::callback_wheel(GLFWwindow* window, double dx1, double dx2)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//camera
 			engine->m_scene->camera().callback_wheel(dx2 < 0);
 			//update
 			glfwSwapBuffers(window);
 		}
-		void Engine::callback_button(GLFWwindow *window, int32_t button, int32_t action, int32_t modifiers)
+		void Engine::callback_button(GLFWwindow* window, int32_t button, int32_t action, int32_t modifiers)
 		{
 			//data
 			double x1, x2;
 			glfwGetCursorPos(window, &x1, &x2);
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//callback
 			engine->m_scene->camera().callback_mouse(canvas_button(button), action == GLFW_PRESS, int32_t(x1), int32_t(x2), canvas_modifiers(modifiers));
 			//update
 			glfwSwapBuffers(window);
 		}
-		void Engine::callback_resize(GLFWwindow *window, int32_t width, int32_t height)
+		void Engine::callback_resize(GLFWwindow* window, int32_t width, int32_t height)
 		{
 			//data
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//camera
 			engine->m_scene->camera().callback_reshape(width, height);
 		}
-		void Engine::callback_position(GLFWwindow *window, double x1, double x2)
+		void Engine::callback_position(GLFWwindow* window, double x1, double x2)
 		{
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			engine->m_scene->camera().callback_motion(int32_t(x1), int32_t(x2));
 			glfwSwapBuffers(window);
 		}
-		void Engine::callback_keyboard(GLFWwindow *window, int32_t key, int32_t scancode, int32_t action, int32_t mods)
+		void Engine::callback_keyboard(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods)
 		{
 			//data
 			if(action == GLFW_RELEASE) return;
 			const bool shift = mods & GLFW_MOD_SHIFT;
 			const bool control = mods & GLFW_MOD_CONTROL;
 			const char *key_name = glfwGetKeyName(key, 0);
-			Engine *engine = (Engine *)glfwGetWindowUserPointer(window);
+			Engine *engine = (Engine*) glfwGetWindowUserPointer(window);
 			//play
 			if(shift && key == GLFW_KEY_P) update_playing(window);
 			//what
@@ -346,6 +385,8 @@ namespace fea
 			else if(shift && key == GLFW_KEY_L) update_loads(window);
 			else if(shift && key == GLFW_KEY_E) update_elements(window);
 			else if(shift && key == GLFW_KEY_S) update_supports(window);
+			//recording
+			else if(shift && key == GLFW_KEY_R) update_recording(window);
 			//step
 			else if(control && shift && key == GLFW_KEY_LEFT) update_step_first(window);
 			else if(control && shift && key == GLFW_KEY_RIGHT) update_step_last(window);
