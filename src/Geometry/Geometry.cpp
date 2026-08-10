@@ -10,6 +10,7 @@
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 
+#include "FEA/inc/Geometry/Arc.hpp"
 #include "FEA/inc/Geometry/Line.hpp"
 #include "FEA/inc/Geometry/Point.hpp"
 #include "FEA/inc/Geometry/Curve.hpp"
@@ -164,6 +165,17 @@ namespace fea
 			m_curves.push_back(line);
 			//return
 			return line;
+		}
+		Curve* Geometry::create_arc(uint32_t p1, uint32_t p2, uint32_t p3)
+		{
+			//data
+			Arc* arc = new Arc(p1, p2, p3);
+			const uint32_t nc = m_curves.size();
+			//list
+			arc->m_index = nc;
+			m_curves.push_back(arc);
+			//return
+			return arc;
 		}
 
 		Point* Geometry::create_point(const double* p, double s)
