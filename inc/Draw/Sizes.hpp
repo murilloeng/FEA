@@ -9,10 +9,10 @@ namespace fea
 		public:
 			//constructors
 			Sizes(void);
-	
+
 			//destructor
 			~Sizes(void);
-	
+
 			//data
 			float loads(float);
 			float joints(float);
@@ -20,14 +20,14 @@ namespace fea
 			float graphs(float);
 			float elements(float);
 			float supports(float);
-	
+
 			float loads(void) const;
 			float joints(void) const;
 			float curves(void) const;
 			float graphs(void) const;
 			float elements(void) const;
 			float supports(void) const;
-	
+
 		private:
 			//data
 			float m_loads;

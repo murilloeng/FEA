@@ -12,10 +12,10 @@ namespace fea
 		public:
 			//constructors
 			What(void);
-	
+
 			//destructor
 			~What(void);
-	
+
 			//data
 			bool nodes(bool);
 			bool nodes(void) const;
@@ -50,7 +50,7 @@ namespace fea
 			bool deformed(bool);
 			bool deformed(void) const;
 
-			uint32_t load_case(uint32_t);	
+			uint32_t load_case(uint32_t);
 			uint32_t load_case(void) const;
 
 		private:

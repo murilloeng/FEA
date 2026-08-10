@@ -11,13 +11,13 @@ namespace fea
 		{
 			return;
 		}
-	
+
 		//destructor
 		Sizes::~Sizes(void)
 		{
 			return;
 		}
-	
+
 		//data
 		float Sizes::loads(float loads)
 		{
@@ -43,7 +43,7 @@ namespace fea
 		{
 			return m_supports = supports;
 		}
-	
+
 		float Sizes::loads(void) const
 		{
 			return m_loads;

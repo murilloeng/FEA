@@ -12,7 +12,7 @@ namespace fea
 		{
 			return;
 		}
-	
+
 		//destructor
 		What::~What(void)
 		{
@@ -122,7 +122,7 @@ namespace fea
 		uint32_t What::load_case(void) const
 		{
 			return m_load_case;
-		
+
 		}
 		uint32_t What::load_case(uint32_t group)
 		{

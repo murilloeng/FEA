@@ -16,7 +16,7 @@ namespace fea
 					m_fibers.push_back(Fiber(section->fiber(i)));
 				}
 			}
-			
+
 			//destructor
 			Section::~Section(void)
 			{

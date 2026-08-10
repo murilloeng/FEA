@@ -44,15 +44,15 @@ namespace fea
 
 			uint32_t structured(uint32_t);
 			uint32_t structured(void) const;
-			
+
 			Point* point(uint32_t) const;
 			Point* point(uint32_t, uint32_t);
 			const std::vector<uint32_t>& points(void) const;
-			
+
 			const double* major_axis(void) const;
 			const double* major_axis(const double*);
 			const double* major_axis(double, double, double);
-			
+
 			const std::vector<uint32_t>& nodes(void) const;
 			const std::vector<uint32_t>& elements(void) const;
 

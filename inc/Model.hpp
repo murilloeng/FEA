@@ -45,7 +45,7 @@ namespace fea
 		//solve
 		void clear(void);
 		void solve(void);
-		
+
 		protected:
 		//analysis
 		virtual void check(void);

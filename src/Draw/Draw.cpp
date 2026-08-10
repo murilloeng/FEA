@@ -27,7 +27,7 @@ namespace fea
 			model->analysis()->solver()->draw_positions(m_positions_data, m_scale);
 			model->analysis()->solver()->draw_rotations(m_rotations_data, m_scale);
 		}
-		
+
 		//destructor
 		Draw::~Draw(void)
 		{

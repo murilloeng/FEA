@@ -4,6 +4,7 @@
 //FEA
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Mesh/Joints/Joint.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
@@ -19,6 +20,7 @@ namespace fea
 		Mesh::Mesh(void)
 		{
 			nodes::Node::m_mesh = this;
+			joints::Joint::m_mesh = this;
 			elements::Element::m_mesh = this;
 		}
 
@@ -26,6 +28,7 @@ namespace fea
 		Mesh::~Mesh(void)
 		{
 			for(const nodes::Node* node : m_nodes) delete node;
+			for(const joints::Joint* joint : m_joints) delete joint;
 			for(const elements::Element* element : m_elements) delete element;
 		}
 
@@ -38,6 +41,10 @@ namespace fea
 			fprintf(file, "\n");
 			fprintf(file, "## Nodes: %zd\n", m_nodes.size());
 			for(const nodes::Node* node : m_nodes) node->save(file), fprintf(file, "\n");
+			//joints
+			fprintf(file, "\n");
+			fprintf(file, "## Joints: %zd\n", m_joints.size());
+			for(const joints::Joint* joint : m_joints) joint->save(file), fprintf(file, "\n");
 			//elements
 			fprintf(file, "\n");
 			fprintf(file, "## Elements: %zd\n", m_elements.size());
@@ -54,6 +61,10 @@ namespace fea
 		{
 			return m_nodes[index];
 		}
+		joints::Joint* Mesh::joint(uint32_t index) const
+		{
+			return m_joints[index];
+		}
 		elements::Element* Mesh::element(uint32_t index) const
 		{
 			return m_elements[index];
@@ -62,6 +73,10 @@ namespace fea
 		const std::vector<nodes::Node*>& Mesh::nodes(void) const
 		{
 			return m_nodes;
+		}
+		const std::vector<joints::Joint*>& Mesh::joints(void) const
+		{
+			return m_joints;
 		}
 		const std::vector<elements::Element*>& Mesh::elements(void) const
 		{
@@ -120,9 +135,11 @@ namespace fea
 		{
 			//delete
 			for(const nodes::Node* node : m_nodes) delete node;
+			for(const joints::Joint* joint : m_joints) delete joint;
 			for(const elements::Element* element : m_elements) delete element;
 			//clear
 			m_nodes.clear();
+			m_joints.clear();
 			m_elements.clear();
 		}
 		void Mesh::check(void)

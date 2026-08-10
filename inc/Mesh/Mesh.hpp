@@ -14,6 +14,10 @@ namespace fea
 		{
 			class Node;
 		}
+		namespace joints
+		{
+			class Joint;
+		}
 		namespace elements
 		{
 			class Element;
@@ -47,9 +51,11 @@ namespace fea
 			static Model* model(void);
 
 			nodes::Node* node(uint32_t) const;
+			joints::Joint* joint(uint32_t) const;
 			elements::Element* element(uint32_t) const;
 
 			const std::vector<nodes::Node*>& nodes(void) const;
+			const std::vector<joints::Joint*>& joints(void) const;
 			const std::vector<elements::Element*>& elements(void) const;
 
 			//create
@@ -58,7 +64,7 @@ namespace fea
 
 			void append_element(elements::Element*);
 			void create_element(elements::Type, std::vector<uint32_t>);
-			
+
 			private:
 			//analysis
 			void clear(void);
@@ -73,6 +79,7 @@ namespace fea
 			//data
 			static Model* m_model;
 			std::vector<nodes::Node*> m_nodes;
+			std::vector<joints::Joint*> m_joints;
 			std::vector<elements::Element*> m_elements;
 
 			//friends

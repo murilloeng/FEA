@@ -46,7 +46,7 @@ namespace fea
 			//load case
 			m_load_case = boundary->load_cases().empty() ? UINT32_MAX : 0;
 		}
-		
+
 		//destructor
 		Boundary::~Boundary(void)
 		{

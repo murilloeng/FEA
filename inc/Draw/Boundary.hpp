@@ -84,7 +84,7 @@ namespace fea
 			uint32_t m_index_edges;
 			uint32_t m_index_faces;
 			uint32_t m_index_vertices;
-			
+
 			uint32_t m_counter_edges;
 			uint32_t m_counter_faces;
 			uint32_t m_counter_vertices;

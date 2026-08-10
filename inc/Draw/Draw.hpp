@@ -54,7 +54,7 @@ namespace fea
 			void draw(void) override;
 			void setup(void) override;
 			void update(void) override;
-			
+
 			//compute
 			void compute_bounding_box(void);
 
@@ -66,11 +66,11 @@ namespace fea
 			What m_what;
 			Sizes m_sizes;
 			Colors m_colors;
-			
+
 			Mesh* m_mesh;
 			Boundary* m_boundary;
 			const Model* m_model;
-			
+
 			float m_scale;
 			uint32_t m_step;
 			float* m_positions_data;

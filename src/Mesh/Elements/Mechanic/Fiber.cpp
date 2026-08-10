@@ -15,7 +15,7 @@ namespace fea
 			{
 				return;
 			}
-			
+
 			//destructor
 			Fiber::~Fiber(void)
 			{

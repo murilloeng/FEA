@@ -48,7 +48,7 @@ namespace fea
 		{
 			return m_structured = structured;
 		}
-		
+
 		Point* Curve::point(uint32_t index) const
 		{
 			return m_geometry->point(m_points[index]);

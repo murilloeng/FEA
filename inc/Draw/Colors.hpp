@@ -66,7 +66,7 @@ namespace fea
 			canvas::Color m_nodes;
 			canvas::Color m_joints;
 			canvas::Color m_elements;
-			
+
 			canvas::Color m_paths;
 			canvas::Color m_loads;
 			canvas::Color m_supports;
@@ -74,7 +74,7 @@ namespace fea
 			canvas::Color m_points;
 			canvas::Color m_curves;
 			canvas::Color m_surfaces;
-			
+
 			canvas::Color m_text;
 			canvas::Color m_background;
 		};

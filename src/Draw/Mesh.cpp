@@ -30,7 +30,7 @@ namespace fea
 			m_vao.attribute_format(1, 4, GL_FLOAT, 3 * sizeof(float));
 			m_vao.vertex_buffer(0, m_vbo.id(), 0, sizeof(canvas::vertices::Model3D));
 		}
-		
+
 		//destructor
 		Mesh::~Mesh(void)
 		{

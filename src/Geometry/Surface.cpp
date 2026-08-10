@@ -48,7 +48,7 @@ namespace fea
 		{
 			return m_structured = structured;
 		}
-		
+
 		const std::vector<uint32_t>& Surface::nodes(void) const
 		{
 			return m_nodes;
