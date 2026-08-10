@@ -31,13 +31,17 @@ namespace fea
 				//serialization
 				virtual void save(FILE*) const;
 
+				//types
+				typedef std::function<double(double)> Function;
+
 			public:
 				//data
 				double value(double);
 				double value(void) const;
 
-				std::function<double(double)> function(void) const;
-				std::function<double(double)> function(std::function<double(double)>);
+				Function time_function(Function);
+				Function time_function(void) const;
+				double time_function(double) const;
 
 			protected:
 				//analysis
@@ -46,8 +50,8 @@ namespace fea
 
 				//data
 				double m_value;
+				Function m_time_function;
 				static Boundary* m_boundary;
-				std::function<double(double)> m_function;
 
 				//friends
 				friend class fea::boundary::Boundary;

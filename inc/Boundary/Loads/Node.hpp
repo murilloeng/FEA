@@ -40,8 +40,9 @@ namespace fea
 
 			public:
 				//data
+				
 				uint32_t index_node(void) const;
-
+				
 				mesh::nodes::Node* node(uint32_t);
 				mesh::nodes::Node* node(void) const;
 

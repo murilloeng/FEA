@@ -37,13 +37,13 @@
 
 //data
 static const uint32_t ne = 5;
-static const uint32_t n1 = 3;
-static const uint32_t n2 = 3;
+static const uint32_t n1 = 11;
+static const uint32_t n2 = 11;
 static const double a = 1.00e-01;
 static const double t = 1.00e-03;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
-static const double P = 5.00e+00;
+static const double P = 1.00e+01;
 
 //reference: doi.org/10.1002/nme.6820
 

@@ -286,6 +286,7 @@ namespace fea
 			if(cleanup) memset(fd, 0, m_dof_unknow * sizeof(double));
 			if(m_analysis->solver()->load_combination() == UINT32_MAX) return;
 			//data
+			const double t = m_analysis->solver()->time_new();
 			const uint32_t index = m_analysis->solver()->load_combination();
 			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
 			//load cases
@@ -295,7 +296,7 @@ namespace fea
 				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fd[load->m_dof_index] += s * item->value() * load->value();
+					fd[load->m_dof_index] += s * item->value() * load->value() * load->time_function(t);
 				}
 			}
 		}

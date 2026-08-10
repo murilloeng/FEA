@@ -50,7 +50,6 @@ namespace fea
 				return m_boundary->model()->mesh()->node(m_node = node);
 			}
 
-
 			mesh::nodes::DOF Node::dof(void) const
 			{
 				return m_dof;

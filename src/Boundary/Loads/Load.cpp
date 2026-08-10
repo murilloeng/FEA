@@ -35,13 +35,17 @@ namespace fea
 				return m_value = value;
 			}
 
-			std::function<double(double)> Load::function(void) const
+			double Load::time_function(double t) const
 			{
-				return m_function;
+				return m_time_function ? m_time_function(t) : 1;
 			}
-			std::function<double(double)> Load::function(std::function<double(double)> function)
+			Load::Function Load::time_function(void) const
 			{
-				return m_function = function;
+				return m_time_function;
+			}
+			Load::Function Load::time_function(Load::Function time_function)
+			{
+				return m_time_function = time_function;
 			}
 
 			//analysis
