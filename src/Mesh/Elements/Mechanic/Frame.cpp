@@ -33,11 +33,6 @@ namespace fea
 			}
 
 			//data
-			uint32_t Frame::dimension(void) const
-			{
-				return 1;
-			}
-
 			const sections::Section* Frame::section(void) const
 			{
 				return m_section;
