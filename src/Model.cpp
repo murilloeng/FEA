@@ -97,6 +97,7 @@ namespace fea
 	//analysis
 	void Model::check(void)
 	{
+		m_mesh->merge();
 		m_mesh->check();
 		m_boundary->check();
 		m_analysis->check();

@@ -18,8 +18,9 @@
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Mesh/Joints/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
-#include "FEA/inc/Mesh/Elements/Mechanic/Truss2D.hpp"
+#include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
 
 #include "FEA/inc/Geometry/Curve.hpp"
 #include "FEA/inc/Geometry/Geometry.hpp"
@@ -45,53 +46,29 @@ void test::beam2D::inelastic::morpho_plastic_line(void)
 {
 	//data
 	fea::Model model;
-	sections::Rectangle section;
-	materials::Uniaxial material;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
-	//points
-	model.geometry()->create_point(0, 0, 0);
-	model.geometry()->create_point(1, 0, 0);
-	//curves
-	model.geometry()->create_line(0, 1);
-	model.geometry()->curve(0)->structured(1);
-	model.geometry()->curve(0)->element_type(fea::mesh::elements::Type::Truss2D);
-	//generate
-	model.geometry()->generate_mesh();
+	//nodes
+	model.mesh()->create_node(0, 0, 0);
+	model.mesh()->create_node(1, 0, 0);
+	//joints
+	model.mesh()->create_joint(fea::mesh::joints::Type::Rigid2D, {0, 1});
 	//elements
-	section.width(0.1);
-	section.height(0.1);
-	section.compute();
-	material.poisson_ratio(3.00e-01);
-	material.elastic_modulus(2.10e+11);
-	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->section(&section);
-	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->material(&material);
+	model.mesh()->create_element(fea::mesh::elements::Type::Nodal, { 0 });
+	((fea::mesh::elements::Nodal*) model.mesh()->element(0))->stiffness(1e3);
+	((fea::mesh::elements::Nodal*) model.mesh()->element(0))->dof(dof::Rotation_3);
 	//supports
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
-	//constraints
-	model.boundary()->create_constraint({ 1, 1 }, { dof::Translation_1, dof::Translation_2 });
-	model.boundary()->constraint(0)->function([](double& f, const double* d){
-		f = d[1] - d[0] * d[0];
-	});
-	model.boundary()->constraint(0)->gradient([](double* g, const double* d){
-		g[0] = -2 * d[0];
-		g[1] = +1;
-	});
-	model.boundary()->constraint(0)->hessian([](double* H, const double* d){
-		H[0 + 2 * 0] = -2;
-		H[1 + 2 * 0] = 0;
-		H[0 + 2 * 1] = 0;
-		H[1 + 2 * 1] = 0;
-	});
 	//loads
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(1, dof::Translation_1, 1e8);
+	model.boundary()->create_load_case(0, dof::Rotation_3, 1e3);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(1000);
+	model.analysis()->solver_static_nonlinear()->attempt_max(1);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_1);

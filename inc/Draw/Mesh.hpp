@@ -43,10 +43,12 @@ namespace fea
 
 			//setup
 			void setup_nodes(void);
+			void setup_joints(void);
 			void setup_elements(void);
 
 			//update
 			void update_nodes(void);
+			void update_joints(void);
 			void update_elements(void);
 
 			//data

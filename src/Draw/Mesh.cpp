@@ -5,6 +5,7 @@
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Mesh/Joints/Joint.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 
 //Canvas
@@ -62,6 +63,7 @@ namespace fea
 			m_counter_vertices = 0;
 			//setup
 			if(m_draw->what().nodes()) setup_nodes();
+			if(m_draw->what().joints()) setup_joints();
 			if(m_draw->what().elements()) setup_elements();
 			//allocate
 			m_vbo.allocate(m_counter_vertices);
@@ -76,6 +78,7 @@ namespace fea
 			m_index_vertices = 0;
 			//update
 			if(m_draw->what().nodes()) update_nodes();
+			if(m_draw->what().joints()) update_joints();
 			if(m_draw->what().elements()) update_elements();
 			//transfers
 			m_vbo.transfer();
@@ -87,6 +90,21 @@ namespace fea
 		{
 			m_counter_dots += m_mesh->nodes().size();
 			m_counter_vertices += m_mesh->nodes().size();
+		}
+		void Mesh::setup_joints(void)
+		{
+			//data
+			Data data = {
+				m_draw->m_step, m_draw->m_colors,
+				m_index_dots, m_index_edges, m_index_faces, m_index_vertices,
+				m_counter_dots, m_counter_edges, m_counter_faces, m_counter_vertices,
+				m_ibo, m_vbo, m_draw->m_positions_data, m_draw->m_rotations_data
+			};
+			//setup
+			for(const mesh::joints::Joint* joint : m_mesh->joints())
+			{
+				joint->draw_setup(data);
+			}
 		}
 		void Mesh::setup_elements(void)
 		{
@@ -121,6 +139,21 @@ namespace fea
 			//update
 			m_index_dots += nn;
 			m_index_vertices += nn;
+		}
+		void Mesh::update_joints(void)
+		{
+			//data
+			Data data = {
+				m_draw->m_step, m_draw->m_colors,
+				m_index_dots, m_index_edges, m_index_faces, m_index_vertices,
+				m_counter_dots, m_counter_edges, m_counter_faces, m_counter_vertices,
+				m_ibo, m_vbo, m_draw->m_positions_data, m_draw->m_rotations_data
+			};
+			//update
+			for(const mesh::joints::Joint* joint : m_mesh->joints())
+			{
+				joint->draw_update(data);
+			}
 		}
 		void Mesh::update_elements(void)
 		{

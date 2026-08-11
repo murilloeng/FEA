@@ -2,6 +2,8 @@
 #include <functional>
 
 //FEA
+#include "FEA/inc/Model.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
 
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
@@ -20,6 +22,8 @@
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam3D.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss2D.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss3D.hpp"
+
+#include "FEA/inc/Boundary/Boundary.hpp"
 
 namespace fea
 {
@@ -187,7 +191,16 @@ namespace fea
 		void Mesh::setup(void)
 		{
 			for(nodes::Node* node : m_nodes) node->setup();
+			for(joints::Joint* joint : m_joints) joint->setup();
 			for(elements::Element* element : m_elements) element->setup();
+		}
+		void Mesh::merge(void)
+		{
+			for(const joints::Joint* joint : m_joints)
+			{
+				joint->create_constraints();
+				joint->create_dependencies();
+			}
 		}
 		void Mesh::update(void)
 		{

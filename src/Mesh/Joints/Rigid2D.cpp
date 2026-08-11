@@ -55,35 +55,36 @@ namespace fea
 					{nodes::DOF::Translation_2, nodes::DOF::Translation_2, nodes::DOF::Rotation_3}
 				);
 				//functions
-				m_mesh->model()->boundary()->constraint(nc + 0)->function([z0, z1](double& f, const double* x){
-					f = x[0] - x[1] - cos(x[2]) * (z1[0] - z0[0]) + sin(x[2]) * (z1[1] - z0[1]);
+				const double dz[] = {z1[0] - z0[0], z1[1] - z0[1]};
+				m_mesh->model()->boundary()->constraint(nc + 0)->function([dz](double& f, const double* x){
+					f = x[0] - x[1] + (1 - cos(x[2])) * dz[0] + sin(x[2]) * dz[1];
 				});
-				m_mesh->model()->boundary()->constraint(nc + 1)->function([z0, z1](double& f, const double* x){
-					f = x[0] - x[1] - sin(x[2]) * (z1[0] - z0[0]) - cos(x[2]) * (z1[1] - z0[1]);
+				m_mesh->model()->boundary()->constraint(nc + 1)->function([dz](double& f, const double* x){
+					f = x[0] - x[1] + (1 - cos(x[2])) * dz[1] - sin(x[2]) * dz[0];
 				});
 				//gradients
-				m_mesh->model()->boundary()->constraint(nc + 0)->gradient([z0, z1](double* g, const double* x){
+				m_mesh->model()->boundary()->constraint(nc + 0)->gradient([dz](double* g, const double* x){
 					g[0] = +1;
 					g[1] = -1;
-					g[2] = sin(x[2]) * (z1[0] - z0[0]) + cos(x[2]) * (z1[1] - z0[1]);
+					g[2] = sin(x[2]) * dz[0] + cos(x[2]) * dz[1];
 				});
-				m_mesh->model()->boundary()->constraint(nc + 1)->gradient([z0, z1](double* g, const double* x){
+				m_mesh->model()->boundary()->constraint(nc + 1)->gradient([dz](double* g, const double* x){
 					g[0] = +1;
 					g[1] = -1;
-					g[2] = sin(x[2]) * (z1[1] - z0[1]) - cos(x[2]) * (z1[0] - z0[0]);
+					g[2] = sin(x[2]) * dz[1] - cos(x[2]) * dz[0];
 				});
 				//hessians
-				m_mesh->model()->boundary()->constraint(nc + 0)->hessian([z0, z1](double* H, const double* x){
+				m_mesh->model()->boundary()->constraint(nc + 0)->hessian([dz](double* H, const double* x){
 					H[0 + 3 * 2] = H[1 + 3 * 2] = 0;
 					H[0 + 3 * 0] = H[1 + 3 * 0] = H[2 + 3 * 0] = 0;
 					H[0 + 3 * 1] = H[1 + 3 * 1] = H[2 + 3 * 1] = 0;
-					H[2 + 3 * 2] = cos(x[2]) * (z1[0] - z0[0]) - sin(x[2]) * (z1[1] - z0[1]);
+					H[2 + 3 * 2] = cos(x[2]) * dz[0] - sin(x[2]) * dz[1];
 				});
-				m_mesh->model()->boundary()->constraint(nc + 1)->hessian([z0, z1](double* H, const double* x){
+				m_mesh->model()->boundary()->constraint(nc + 1)->hessian([dz](double* H, const double* x){
 					H[0 + 3 * 2] = H[1 + 3 * 2] = 0;
 					H[0 + 3 * 0] = H[1 + 3 * 0] = H[2 + 3 * 0] = 0;
 					H[0 + 3 * 1] = H[1 + 3 * 1] = H[2 + 3 * 1] = 0;
-					H[2 + 3 * 2] = cos(x[2]) * (z1[1] - z0[1]) + sin(x[2]) * (z1[0] - z0[0]);
+					H[2 + 3 * 2] = cos(x[2]) * dz[1] + sin(x[2]) * dz[0];
 				});
 			}
 			void Rigid2D::create_dependencies(void) const

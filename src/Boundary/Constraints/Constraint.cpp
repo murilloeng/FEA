@@ -124,7 +124,7 @@ namespace fea
 			//state
 			for(uint32_t i = 0; i < m_dof_indexes.size(); i++)
 			{
-				xc[i] = m_dof_indexes[i] < nu ? x[m_dof_indexes[i]] : m_boundary->support(nu - m_dof_indexes[i])->state(t);
+				xc[i] = m_dof_indexes[i] < nu ? x[m_dof_indexes[i]] : m_boundary->support(m_dof_indexes[i] - nu)->state(t);
 			}
 		}
 		void Constraint::dof_setup(uint32_t& dof_counter)

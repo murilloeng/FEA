@@ -69,11 +69,12 @@ namespace fea
 			void append_element(elements::Element*);
 			void create_element(elements::Type, std::vector<uint32_t>);
 
-			private:
+		private:
 			//analysis
 			void clear(void);
 			void check(void);
 			void setup(void);
+			void merge(void);
 			void update(void);
 			void restore(void);
 			void compute(void);
