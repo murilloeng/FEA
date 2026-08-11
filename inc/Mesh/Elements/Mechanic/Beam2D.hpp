@@ -2,7 +2,6 @@
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
-#include "FEA/inc/Mesh/Elements/Mechanic/Fiber.hpp"
 
 namespace fea
 {

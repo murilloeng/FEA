@@ -1,11 +1,11 @@
 //FEA
-#include "FEA/inc/Mesh/Elements/Mechanic/Section.hpp"
+#include "FEA/inc/Mesh/Points/Section.hpp"
 
 namespace fea
 {
 	namespace mesh
 	{
-		namespace elements
+		namespace points
 		{
 			//constructor
 			Section::Section(const sections::Section* section)

@@ -4,8 +4,8 @@
 #include "Math/inc/Quadrature/Quadrature.hpp"
 
 //FEA
+#include "FEA/inc/Mesh/Points/Section.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Frame.hpp"
-#include "FEA/inc/Mesh/Elements/Mechanic/Section.hpp"
 
 namespace fea
 {
@@ -40,7 +40,7 @@ namespace fea
 				//data
 				static bool m_shear;
 				static bool m_mixed;
-				std::vector<Section> m_sections;
+				std::vector<points::Section> m_points;
 				math::quadrature::Quadrature m_quadrature;
 			};
 		}

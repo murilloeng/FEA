@@ -49,12 +49,12 @@ namespace fea
 				Frame::setup();
 				if(materials::Mechanic::inelastic())
 				{
-					m_sections.reserve(m_quadrature.order());
+					m_points.reserve(m_quadrature.order());
 					const uint32_t stresses = this->stress_set();
 					for(uint32_t i = 0; i < m_quadrature.order(); i++)
 					{
-						m_sections.push_back(Section(m_section));
-						for(Fiber& fiber : m_sections[i].fibers())
+						m_points.push_back(points::Section(m_section));
+						for(points::Fiber& fiber : m_points[i].fibers())
 						{
 							fiber.material_point().prepare(stresses);
 						}
@@ -66,9 +66,9 @@ namespace fea
 				Frame::update();
 				if(materials::Mechanic::inelastic())
 				{
-					for(Section& section : m_sections)
+					for(points::Section& section : m_points)
 					{
-						for(Fiber& fiber : section.fibers())
+						for(points::Fiber& fiber : section.fibers())
 						{
 							fiber.material_point().update();
 						}
@@ -80,9 +80,9 @@ namespace fea
 				Frame::restore();
 				if(materials::Mechanic::inelastic())
 				{
-					for(Section& section  : m_sections)
+					for(points::Section& section  : m_points)
 					{
-						for(Fiber& fiber : section.fibers())
+						for(points::Fiber& fiber : section.fibers())
 						{
 							fiber.material_point().restore();
 						}

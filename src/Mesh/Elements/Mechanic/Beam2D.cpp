@@ -253,7 +253,7 @@ namespace fea
 					ss.zeros();
 					Ks.zeros();
 					es = B * dl;
-					for(Fiber& fiber : m_sections[i].fibers())
+					for(points::Fiber& fiber : m_points[i].fibers())
 					{
 						//fiber
 						const double A = fiber.area();

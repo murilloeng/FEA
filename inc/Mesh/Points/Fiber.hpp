@@ -10,7 +10,7 @@ namespace fea
 {
 	namespace mesh
 	{
-		namespace elements
+		namespace points
 		{
 			class Fiber
 			{

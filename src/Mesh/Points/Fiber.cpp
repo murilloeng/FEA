@@ -2,13 +2,13 @@
 #include <cstring>
 
 //FEA
-#include "FEA/inc/Mesh/Elements/Mechanic/Fiber.hpp"
+#include "FEA/inc/Mesh/Points/Fiber.hpp"
 
 namespace fea
 {
 	namespace mesh
 	{
-		namespace elements
+		namespace points
 		{
 			//constructor
 			Fiber::Fiber(const sections::fibers::Fiber* fiber) : m_fiber{fiber}
