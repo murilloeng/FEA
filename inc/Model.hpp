@@ -18,6 +18,7 @@ namespace fea
 	{
 		class Solver;
 		class Analysis;
+		class Assembler;
 	}
 }
 
@@ -62,5 +63,6 @@ namespace fea
 
 		//friends
 		friend class fea::analysis::Solver;
+		friend class fea::analysis::Assembler;
 	};
 }

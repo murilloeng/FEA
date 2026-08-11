@@ -66,6 +66,7 @@ namespace fea
 			//analysis
 			void check(void);
 			void setup(void);
+			void state(double*) const;
 			void dof_setup(uint32_t&);
 
 			//data

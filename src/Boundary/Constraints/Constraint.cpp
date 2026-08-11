@@ -8,7 +8,12 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Supports/Support.hpp"
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
+
+#include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Assembler.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 namespace fea
 {
@@ -90,16 +95,16 @@ namespace fea
 			{
 				if(node >= m_boundary->model()->mesh()->nodes().size())
 				{
-					throw std::runtime_error("Error: Constraint's node is out of range!");
+					throw std::runtime_error("Error: Constraint " + std::to_string(m_index) + " has an out of range node!");
 				}
 			}
 			if(m_nodes.size() != m_dof.size())
 			{
-				throw std::runtime_error("Error: Constraint's nodes and dofs lists are incompatible!");
+				throw std::runtime_error("Error: Constraint " + std::to_string(m_index) + " nodes and dofs lists are incompatible!");
 			}
 			if(!m_function || !m_gradient || !m_hessian)
 			{
-				throw std::runtime_error("Error: Constraint's functions are unset!");
+				throw std::runtime_error("Error: Constraint " + std::to_string(m_index) + " functions are unset!");
 			}
 		}
 		void Constraint::setup(void)
@@ -109,7 +114,18 @@ namespace fea
 			{
 				m_dof_indexes.push_back(m_boundary->model()->mesh()->node(m_nodes[i])->dof_index(m_dof[i]));
 			}
-
+		}
+		void Constraint::state(double* xc) const
+		{
+			//data
+			const double t = m_boundary->model()->analysis()->solver()->time_new();
+			const double* x = m_boundary->model()->analysis()->solver()->state_new();
+			const uint32_t nu = m_boundary->model()->analysis()->assembler()->dof_unknow();
+			//state
+			for(uint32_t i = 0; i < m_dof_indexes.size(); i++)
+			{
+				xc[i] = m_dof_indexes[i] < nu ? x[m_dof_indexes[i]] : m_boundary->support(nu - m_dof_indexes[i])->state(t);
+			}
 		}
 		void Constraint::dof_setup(uint32_t& dof_counter)
 		{

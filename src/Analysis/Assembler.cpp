@@ -1,6 +1,7 @@
 //std
 #include <cstring>
 #include <algorithm>
+#include <stdexcept>
 
 //SuiteSparse
 #include <suitesparse/umfpack.h>
@@ -33,9 +34,8 @@ namespace fea
 	{
 		//constructor
 		Assembler::Assembler(void) : 
-			m_fe{nullptr}, m_Ae{nullptr},
-			m_rows_map{nullptr}, m_cols_map{nullptr}, 
-			m_rows_triplet{nullptr}, m_cols_triplet{nullptr},
+			m_local_state{nullptr}, m_local_vector{nullptr}, m_local_matrix{nullptr},
+			m_rows_map{nullptr}, m_cols_map{nullptr}, m_rows_triplet{nullptr}, m_cols_triplet{nullptr},
 			m_dof_know{0}, m_dof_local{0}, m_dof_total{0}, m_dof_unknow{0}, m_dof_triplet{0}, m_dof_dependent{0}
 		{
 			return;
@@ -44,10 +44,11 @@ namespace fea
 		//destructor
 		Assembler::~Assembler(void)
 		{
-			delete[] m_fe;
-			delete[] m_Ae;
 			delete[] m_rows_map;
 			delete[] m_cols_map;
+			delete[] m_local_state;
+			delete[] m_local_vector;
+			delete[] m_local_matrix;
 			delete[] m_rows_triplet;
 			delete[] m_cols_triplet;
 		}
@@ -79,7 +80,10 @@ namespace fea
 			dof_triplet_apply();
 			const uint32_t nu = m_dof_unknow;
 			const uint32_t nz = m_dof_triplet;
-			umfpack_di_triplet_to_col(nu, nu, nz, rt, ct, nullptr, cm, rm, nullptr, nullptr);
+			if(umfpack_di_triplet_to_col(nu, nu, nz, rt, ct, nullptr, cm, rm, nullptr, nullptr) != UMFPACK_OK)
+			{
+				throw std::runtime_error("Error: Assembler sparse matrix mapping failed!\n");
+			}
 		}
 		void Assembler::dof_sort(void)
 		{
@@ -88,13 +92,13 @@ namespace fea
 			dof_setup();
 			uint32_t cd = 0, ck = 0;
 			std::vector<uint32_t> dd, dk;
-			const std::vector<boundary::Dependency*> dependencies = m_analysis->m_model->boundary()->m_dependencies;
+			const std::vector<boundary::Dependency*> dependencies = m_analysis->m_model->m_boundary->m_dependencies;
 			//lists
-			for(const boundary::Support* support : m_analysis->m_model->boundary()->m_supports)
+			for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
 			{
 				dk.push_back(support->node()->dof_index(support->dof()));
 			}
-			for(const boundary::Dependency* dependency : m_analysis->m_model->boundary()->m_dependencies)
+			for(const boundary::Dependency* dependency : m_analysis->m_model->m_boundary->m_dependencies)
 			{
 				const uint32_t d1 = dependency->node(0)->dof_index(dependency->m_dof[0]);
 				const uint32_t d2 = dependency->node(1)->dof_index(dependency->m_dof[1]);
@@ -107,7 +111,7 @@ namespace fea
 			m_dof_know = (uint32_t) dk.size();
 			m_dof_dependent = (uint32_t) dd.size();
 			m_dof_unknow = m_dof_total - m_dof_know - m_dof_dependent;
-			for(mesh::nodes::Node* node : m_analysis->m_model->mesh()->m_nodes)
+			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
 			{
 				for(uint32_t& dof_index : node->m_dof_indexes)
 				{
@@ -131,7 +135,7 @@ namespace fea
 				}
 			}
 			//constraintes
-			for(boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
+			for(boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
 				constraint->m_dof_index -= m_dof_know + m_dof_dependent;
 			}
@@ -139,59 +143,61 @@ namespace fea
 		void Assembler::dof_apply(void)
 		{
 			//clear
-			for(mesh::nodes::Node* node : m_analysis->m_model->mesh()->m_nodes)
+			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
 			{
 				node->m_dof_set = 0;
 			}
 			//apply
 			m_analysis->dof_apply();
-			m_analysis->m_model->mesh()->dof_apply();
-			m_analysis->m_model->boundary()->dof_apply();
+			m_analysis->m_model->m_mesh->dof_apply();
+			m_analysis->m_model->m_boundary->dof_apply();
 		}
 		void Assembler::dof_setup(void)
 		{
 			m_dof_total = 0;
-			m_analysis->m_model->mesh()->dof_setup(m_dof_total);
-			m_analysis->m_model->boundary()->dof_setup(m_dof_total);
+			m_analysis->m_model->m_mesh->dof_setup(m_dof_total);
+			m_analysis->m_model->m_boundary->dof_setup(m_dof_total);
 		}
 		void Assembler::dof_local(void)
 		{
 			//count
 			m_dof_local = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
 				m_dof_local = std::max(std::size_t(m_dof_local), element->m_dof_indexes.size());
 			}
-			for(const boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
 				m_dof_local = std::max(std::size_t(m_dof_local), constraint->m_dof_indexes.size());
 			}
 			//allocate
-			delete[] m_fe;
-			delete[] m_Ae;
-			m_fe = new double[m_dof_local];
-			m_Ae = new double[m_dof_local * m_dof_local];
+			delete[] m_local_state;
+			delete[] m_local_vector;
+			delete[] m_local_matrix;
+			m_local_state = new double[m_dof_local];
+			m_local_vector = new double[m_dof_local];
+			m_local_matrix = new double[m_dof_local * m_dof_local];
 		}
 
 		void Assembler::dof_triplet_count(void)
 		{
 			m_dof_triplet = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
 				const uint32_t nd = element->m_dof_indexes.size();
 				m_dof_triplet += nd * nd;
 			}
-			for(const boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
 				const uint32_t nd = constraint->m_dof_indexes.size();
-				m_dof_triplet += (nd + 1) * (nd + 1);
+				m_dof_triplet += nd * (nd + 2);
 			}
 		}
 		void Assembler::dof_triplet_apply(void)
 		{
 			//elements
 			uint32_t counter = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
 				for(uint32_t dof_index_1 : element->m_dof_indexes)
 				{
@@ -204,7 +210,7 @@ namespace fea
 				}
 			}
 			//constraints
-			for(const boundary::Constraint* constraint : m_analysis->m_model->boundary()->m_constraints)
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
 				for(uint32_t dof_index : constraint->m_dof_indexes)
 				{
@@ -251,10 +257,10 @@ namespace fea
 			//setup
 			memset(M, 0, m_cols_map[m_dof_unknow] * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->inertia(m_Ae);
-				assemble_matrix(M, m_Ae, element->m_dof_indexes);
+				element->inertia(m_local_matrix);
+				assemble_matrix(M, m_local_matrix, element->m_dof_indexes);
 			}
 		}
 		void Assembler::assemble_damping(double* C) const
@@ -262,10 +268,10 @@ namespace fea
 			//setup
 			memset(C, 0, m_cols_map[m_dof_unknow] * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->damping(m_Ae);
-				assemble_matrix(C, m_Ae, element->m_dof_indexes);
+				element->damping(m_local_matrix);
+				assemble_matrix(C, m_local_matrix, element->m_dof_indexes);
 			}
 		}
 		void Assembler::assemble_stiffness(double* K) const
@@ -273,10 +279,20 @@ namespace fea
 			//setup
 			memset(K, 0, m_cols_map[m_dof_unknow] * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->stiffness(m_Ae);
-				assemble_matrix(K, m_Ae, element->m_dof_indexes);
+				element->stiffness(m_local_matrix);
+				assemble_matrix(K, m_local_matrix, element->m_dof_indexes);
+			}
+			//constraints
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			{
+				constraint->state(m_local_state);
+				constraint->m_hessian(m_local_matrix, m_local_state);
+				constraint->m_gradient(m_local_vector, m_local_state);
+				assemble_matrix(K, m_local_vector, constraint->m_dof_indexes, constraint->m_dof_index);
+				assemble_matrix(K, m_local_vector, constraint->m_dof_index, constraint->m_dof_indexes);
+				assemble_matrix(K, m_local_matrix, constraint->m_dof_indexes, m_analysis->solver()->state_new(constraint->m_dof_index));
 			}
 		}
 
@@ -288,12 +304,12 @@ namespace fea
 			//data
 			const double t = m_analysis->solver()->time_new();
 			const uint32_t index = m_analysis->solver()->load_combination();
-			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
+			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
 			//load cases
 			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
 				if(!item->fixed()) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
 					fd[load->m_dof_index] += s * item->value() * load->value() * load->time_function(t);
@@ -309,10 +325,18 @@ namespace fea
 			//setup
 			if(cleanup) memset(fi, 0, m_dof_unknow * sizeof(double));
 			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->mesh()->m_elements)
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->internal_force(m_fe);
-				assemble_vector(fi, m_fe, element->m_dof_indexes, s);
+				element->internal_force(m_local_vector);
+				assemble_vector(fi, m_local_vector, element->m_dof_indexes, s);
+			}
+			//constraints
+			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
+			{
+				constraint->state(m_local_state);
+				constraint->m_gradient(m_local_vector, m_local_state);
+				constraint->m_function(fi[constraint->m_dof_index], m_local_state);
+				assemble_vector(fi, m_local_vector, constraint->m_dof_indexes, m_analysis->solver()->state_new(constraint->m_dof_index));
 			}
 		}
 		void Assembler::assemble_reference_force(double* fr, bool cleanup, double s) const
@@ -322,12 +346,12 @@ namespace fea
 			if(m_analysis->solver()->load_combination() == UINT32_MAX) return;
 			//data
 			const uint32_t index = m_analysis->solver()->load_combination();
-			const boundary::LoadCombination* load_combination = m_analysis->m_model->boundary()->m_load_combinations[index];
+			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
 			//load cases
 			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
 				if(item->fixed()) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->boundary()->m_load_cases[item->load_case()];
+				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
 					fr[load->m_dof_index] += s * item->value() * load->value();
@@ -346,7 +370,7 @@ namespace fea
 			}
 		}
 
-		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes, double s) const
+		void Assembler::assemble_matrix(double* A, const double* Ae, const std::vector<uint32_t>& dof_indexes, double s) const
 		{
 			//data
 			const uint32_t ne = dof_indexes.size();
@@ -363,7 +387,7 @@ namespace fea
 				}
 			}
 		}
-		void Assembler::assemble_matrix(double* A, double* Ae, const std::vector<uint32_t>& dof_indexes, uint32_t dof_index, double s) const
+		void Assembler::assemble_matrix(double* A, const double* Ae, const std::vector<uint32_t>& dof_indexes, uint32_t dof_index, double s) const
 		{
 			//data
 			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);
@@ -376,7 +400,7 @@ namespace fea
 				}
 			}
 		}
-		void Assembler::assemble_matrix(double* A, double* Ae, uint32_t dof_index, const std::vector<uint32_t>& dof_indexes, double s) const
+		void Assembler::assemble_matrix(double* A, const double* Ae, uint32_t dof_index, const std::vector<uint32_t>& dof_indexes, double s) const
 		{
 			//data
 			math::Sparse S(A, m_rows_map, m_cols_map, m_dof_unknow, m_dof_unknow);

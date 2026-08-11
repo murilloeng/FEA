@@ -212,9 +212,8 @@ namespace fea
 				m_dof_indexes.resize(ndof);
 				for(uint32_t i = 0; i < ndof; i++)
 				{
-					m_dof_indexes[i] = dof_counter + i;
+					m_dof_indexes[i] = dof_counter++;
 				}
-				dof_counter += ndof;
 			}
 
 			//static

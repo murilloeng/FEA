@@ -44,9 +44,9 @@ namespace fea
 
 			void assemble_vector(double*, double*, const std::vector<uint32_t>&, double = 1) const;
 
-			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, double = 1) const;
-			void assemble_matrix(double*, double*, const std::vector<uint32_t>&, uint32_t, double = 1) const;
-			void assemble_matrix(double*, double*, uint32_t, const std::vector<uint32_t>&, double = 1) const;
+			void assemble_matrix(double*, const double*, const std::vector<uint32_t>&, double = 1) const;
+			void assemble_matrix(double*, const double*, const std::vector<uint32_t>&, uint32_t, double = 1) const;
+			void assemble_matrix(double*, const double*, uint32_t, const std::vector<uint32_t>&, double = 1) const;
 
 		private:
 			//dof
@@ -63,8 +63,9 @@ namespace fea
 			void setup(void);
 
 			//data
-			double* m_fe;
-			double* m_Ae;
+			double* m_local_state;
+			double* m_local_vector;
+			double* m_local_matrix;
 
 			int32_t* m_rows_map;
 			int32_t* m_cols_map;
