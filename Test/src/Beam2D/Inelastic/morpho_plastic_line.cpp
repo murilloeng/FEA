@@ -62,7 +62,8 @@ void test::beam2D::inelastic::morpho_plastic_line(void)
 	//elements
 	section.width(0.1);
 	section.height(0.1);
-	material.poisson_ratio(0.3);
+	section.compute();
+	material.poisson_ratio(3.00e-01);
 	material.elastic_modulus(2.10e+11);
 	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->section(&section);
 	((fea::mesh::elements::Truss2D*) model.mesh()->element(0))->material(&material);
@@ -70,23 +71,38 @@ void test::beam2D::inelastic::morpho_plastic_line(void)
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	//constraints
-	model.boundary()->create_constraint({ 1 }, { dof::Translation_2 });
-	model.boundary()->constraint(0)->function([](double& f, const double* d){ f = d[0]; });
-	model.boundary()->constraint(0)->gradient([](double* g, const double* d){ g[0] = 1; });
-	model.boundary()->constraint(0)->hessian([](double* H, const double* d){ H[0 + 1 * 0] = 0; });
+	model.boundary()->create_constraint({ 1, 1 }, { dof::Translation_1, dof::Translation_2 });
+	model.boundary()->constraint(0)->function([](double& f, const double* d){
+		f = d[1] - d[0] * d[0];
+	});
+	model.boundary()->constraint(0)->gradient([](double* g, const double* d){
+		g[0] = -2 * d[0];
+		g[1] = +1;
+	});
+	model.boundary()->constraint(0)->hessian([](double* H, const double* d){
+		H[0 + 2 * 0] = -2;
+		H[1 + 2 * 0] = 0;
+		H[0 + 2 * 1] = 0;
+		H[1 + 2 * 1] = 0;
+	});
 	//loads
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(1, dof::Translation_1, 1e8);
 	//setup
-	section.compute();
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
-	model.analysis()->solver_static_nonlinear()->step_max(400);
+	model.analysis()->solver_static_nonlinear()->step_max(1000);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_1);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::LoadControl);
 	//solve
 	model.solve();
+	//save
+	model.save_results("Test/data/Beam 2D/Inelastic/MorphoPlastic Line");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/MorphoPlastic Line/data.txt", {
+		{1, dof::Translation_1}, {1, dof::Translation_2}
+	});
 	//draw
 	fea::draw::Engine(&model).start();
 }
