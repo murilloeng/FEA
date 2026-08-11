@@ -15,6 +15,7 @@
 
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
+#include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam3D.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss2D.hpp"
@@ -152,6 +153,7 @@ namespace fea
 			elements::Element* element;
 			const uint32_t ne = m_elements.size();
 			std::function<void(elements::Element*&)> fabric[] = {
+				[](elements::Element*& element){ element = new elements::Nodal; },
 				[](elements::Element*& element){ element = new elements::Beam2D; },
 				[](elements::Element*& element){ element = new elements::Beam3D; },
 				[](elements::Element*& element){ element = new elements::Truss2D; },

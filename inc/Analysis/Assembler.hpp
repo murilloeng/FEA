@@ -42,7 +42,7 @@ namespace fea
 			void assemble_internal_force(double*, bool = true, double = 1) const;
 			void assemble_reference_force(double*, bool = true, double = 1) const;
 
-			void assemble_vector(double*, double*, const std::vector<uint32_t>&, double = 1) const;
+			void assemble_vector(double*, const double*, const std::vector<uint32_t>&, double = 1) const;
 
 			void assemble_matrix(double*, const double*, const std::vector<uint32_t>&, double = 1) const;
 			void assemble_matrix(double*, const double*, const std::vector<uint32_t>&, uint32_t, double = 1) const;

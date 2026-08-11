@@ -337,6 +337,7 @@ namespace fea
 				constraint->m_gradient(m_local_vector, m_local_state);
 				constraint->m_function(fi[constraint->m_dof_index], m_local_state);
 				assemble_vector(fi, m_local_vector, constraint->m_dof_indexes, s * m_analysis->solver()->state_new(constraint->m_dof_index));
+				fi[constraint->m_dof_index] *= s;
 			}
 		}
 		void Assembler::assemble_reference_force(double* fr, bool cleanup, double s) const
@@ -359,7 +360,7 @@ namespace fea
 			}
 		}
 
-		void Assembler::assemble_vector(double* f, double* fe, const std::vector<uint32_t>& dof_indexes, double s) const
+		void Assembler::assemble_vector(double* f, const double* fe, const std::vector<uint32_t>& dof_indexes, double s) const
 		{
 			for(uint32_t i = 0; i < dof_indexes.size(); i++)
 			{

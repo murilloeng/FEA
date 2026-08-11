@@ -10,14 +10,14 @@ namespace fea
 	{
 		namespace elements
 		{
-			class Spring : public Element
+			class Nodal : public Element
 			{
 			private:
 				//constructor
-				Spring(void);
+				Nodal(void);
 
 				//destructor
-				~Spring(void);
+				~Nodal(void);
 
 			public:
 				//data
@@ -53,6 +53,9 @@ namespace fea
 				double m_inertia;
 				double m_damping;
 				double m_stiffness;
+
+				//friends
+				friend class fea::mesh::Mesh;
 			};
 		}
 		
