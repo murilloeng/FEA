@@ -43,8 +43,7 @@ namespace fea
 			}
 			void Joint::setup(void)
 			{
-				create_constraints();
-				create_dependencies();
+				return;
 			}
 
 			//static
