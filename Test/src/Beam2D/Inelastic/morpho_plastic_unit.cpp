@@ -59,87 +59,14 @@ static const double K = E * Ep / (E - Ep);
 
 //reference: doi.org/10.48550/arXiv.2412.06022
 
-static double time_function(double t)
-{
-	return t < 0.5 ? 2 * t : 2 * (1 - t);
-}
-
 void test::beam2D::inelastic::morpho_plastic_unit(void)
 {
 	//data
 	fea::Model model;
-	sections::Rectangle section;
-	materials::Uniaxial material;
-	//types
-	typedef fea::mesh::nodes::DOF dof;
-	typedef fea::analysis::Type solver;
 	//points
-	model.geometry()->create_point(0, -2 * R0, 0);
-	model.geometry()->create_point(+a, -2 * R0, 0);
-	model.geometry()->create_point(+a + R0, -2 * R0, 0);
-	model.geometry()->create_point(+a + R0, -R0, 0);
-	model.geometry()->create_point(+a + L2 + R0, -R0, 0);
-	model.geometry()->create_point(+a + L2 + 2 * R0, 0, 0);
-	model.geometry()->create_point(+a + L2 + R0, +R0, 0);
-	model.geometry()->create_point(+a + L2 + R0, 0, 0);
-	model.geometry()->create_point(+a + R0, +R0, 0);
-	model.geometry()->create_point(+a + R0, +2 * R0, 0);
-	model.geometry()->create_point(+a, +2 * R0, 0);
-	//curves
-	// model.geometry()->create_line(2, 3);
-	// model.geometry()->create_line(5, 7);
-	// model.geometry()->create_arc(0, 1, 2);
-	// model.geometry()->create_arc(3, 6, 4);
-	// model.geometry()->create_arc(4, 6, 5);
-	// model.geometry()->create_arc(7, 8, 9);
-	for(fea::geometry::Curve* curve : model.geometry()->curves())
-	{
-		curve->element_type(fea::mesh::elements::Type::Beam2D);
-		if(dynamic_cast<fea::geometry::Arc*>(curve)) curve->structured(na);
-		if(dynamic_cast<fea::geometry::Line*>(curve)) curve->structured(nl);
-	}
+	model.geometry()->create_point(1, 0, 0);
 	//generate
 	model.geometry()->generate_mesh();
-	//elements
-	section.width(t);
-	section.height(t);
-	section.fibers_width(nw);
-	section.fibers_height(nh);
-	material.yield_stress(sy);
-	material.poisson_ratio(v);
-	material.elastic_modulus(E);
-	material.plastic_modulus(K);
-	materials::Mechanic::inelastic(true);
-	materials::Mechanic::hardening(true);
-	for(fea::mesh::elements::Element* element : model.mesh()->elements())
-	{
-		((fea::mesh::elements::Beam2D*) element)->section(&section);
-		((fea::mesh::elements::Beam2D*) element)->material(&material);
-	}
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
-	//supports
-	model.boundary()->create_support(0, dof::Translation_1);
-	model.boundary()->create_support(0, dof::Translation_2);
-	model.boundary()->create_support(9, dof::Translation_1);
-	//loads
-	model.boundary()->create_load_combination(0, true, 1);
-	model.boundary()->create_load_case(9, dof::Translation_2, P);
-	model.boundary()->load_case(0)->load_node(0)->time_function(time_function);
-	//setup
-	section.compute();
-	model.analysis()->type(solver::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(false);
-	model.analysis()->solver_static_nonlinear()->step_max(400);
-	model.analysis()->solver_static_nonlinear()->attempt_max(1);
-	model.analysis()->solver_static_nonlinear()->iteration_max(30);
-	model.analysis()->solver_static_nonlinear()->load_combination(0);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node(9);
-	model.analysis()->solver_static_nonlinear()->convergence().tolerance(1.00e-05);
-	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
-	model.analysis()->solver_static_nonlinear()->convergence().type(math::solvers::Convergence::Type::Fixed);
-	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::LoadControl);
-	//solve
-	// model.solve();
 	//draw
 	fea::draw::Engine(&model).start();
 }

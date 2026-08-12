@@ -116,6 +116,7 @@ namespace fea
 					m_bounding_box.insert_vertex(m_positions_data + 3 * nn * i + 3 * j);
 				}
 			}
+			m_bounding_box.repair();
 		}
 
 		//data

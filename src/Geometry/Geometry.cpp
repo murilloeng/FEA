@@ -4,6 +4,10 @@
 //gmsh
 #include <gmsh.h>
 
+//Math
+#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Quat.hpp"
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -204,99 +208,104 @@ namespace fea
 		//transformations
 		void Geometry::move_point(uint32_t index, const double* u, bool copy)
 		{
-			//data
-			const double s = m_points[index]->m_size;
-			const double* z = m_points[index]->m_position;
-			//position
-			double x[3];
-			for(uint32_t i = 0; i < 3; i++) x[i] = z[i] + u[i];
-			//transform
-			if(copy) create_point(x, s); else m_points[index]->position(x);
+			move_point(index, u[0], u[1], u[2], copy);
 		}
 		void Geometry::move_curve(uint32_t index, const double* u, bool copy)
 		{
-			return;
+			move_curve(index, u[0], u[1], u[2], copy);
 		}
 		void Geometry::move_surface(uint32_t index, const double* u, bool copy)
 		{
-			return;
+			move_surface(index, u[0], u[1], u[2], copy);
 		}
 
 		void Geometry::move_point(uint32_t index, double u1, double u2, double u3, bool copy)
 		{
+			//data
+			double x[3];
 			const double u[] = {u1, u2, u3};
-			move_point(index, u, copy);
+			const double s = m_points[index]->m_size;
+			const double* z = m_points[index]->m_position;
+			//position
+			for(uint32_t i = 0; i < 3; i++) x[i] = z[i] + u[i];
+			//transform
+			if(copy) create_point(x, s); else m_points[index]->position(x);
 		}
 		void Geometry::move_curve(uint32_t index, double u1, double u2, double u3, bool copy)
 		{
-			const double u[] = {u1, u2, u3};
-			move_curve(index, u, copy);
+			return;
 		}
 		void Geometry::move_surface(uint32_t index, double u1, double u2, double u3, bool copy)
 		{
-			const double u[] = {u1, u2, u3};
-			move_surface(index, u, copy);
+			return;
 		}
 
 		void Geometry::scale_point(uint32_t index, const double* x, double s, bool copy)
 		{
-			return;
+			scale_point(index, x[0], x[1], x[2], s, copy);
 		}
 		void Geometry::scale_curve(uint32_t index, const double* x, double s, bool copy)
 		{
-			return;
+			scale_curve(index, x[0], x[1], x[2], s, copy);
 		}
 		void Geometry::scale_surface(uint32_t index, const double* x, double s, bool copy)
 		{
-			return;
+			scale_surface(index, x[0], x[1], x[2], s, copy);
 		}
 
-		void Geometry::scale_point(uint32_t index, double x1, double x2, double x3, double s, bool copy)
+		void Geometry::scale_point(uint32_t index, double c1, double c2, double c3, double a, bool copy)
 		{
-			const double x[] = {x1, x2, x3};
-			scale_point(index, x, s, copy);
+			//data
+			double x[3];
+			const double c[] = {c1, c2, c3};
+			const double s = m_points[index]->m_size;
+			const double* z = m_points[index]->m_position;
+			//position
+			for(uint32_t i = 0; i < 3; i++) x[i] = c[i] + a * (z[i] - c[i]);
+			//transform
+			if(copy) create_point(x, s); else m_points[index]->position(x);
 		}
 		void Geometry::scale_curve(uint32_t index, double x1, double x2, double x3, double s, bool copy)
 		{
-			const double x[] = {x1, x2, x3};
-			scale_curve(index, x, s, copy);
+			return;
 		}
 		void Geometry::scale_surface(uint32_t index, double x1, double x2, double x3, double s, bool copy)
 		{
-			const double x[] = {x1, x2, x3};
-			scale_surface(index, x, s, copy);
+			return;
 		}
 
 		void Geometry::rotate_point(uint32_t index, const double* x, const double* r, double t, bool copy)
 		{
-			return;
+			rotate_point(index, x[0], x[1], x[2], r[0], r[1], r[2], t, copy);
 		}
 		void Geometry::rotate_curve(uint32_t index, const double* x, const double* r, double t, bool copy)
 		{
-			return;
+			rotate_curve(index, x[0], x[1], x[2], r[0], r[1], r[2], t, copy);
 		}
 		void Geometry::rotate_surface(uint32_t index, const double* x, const double* r, double t, bool copy)
 		{
-			return;
+			rotate_surface(index, x[0], x[1], x[2], r[0], r[1], r[2], t, copy);
 		}
 
-		void Geometry::rotate_point(uint32_t index, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
+		void Geometry::rotate_point(uint32_t index, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
 		{
-			const double x[] = {x1, x2, x3};
-			const double r[] = {r1, r2, r3};
-			rotate_point(index, x, r, t, copy);
+			//data
+			const math::Vec3 c{c1, c2, c3};
+			const math::Vec3 r{r1, r2, r3};
+			const double s = m_points[index]->m_size;
+			const math::Vec3 z = m_points[index]->m_position;
+			//position
+			const math::Vec3 x = c + (t * r).rotate(z - c);
+			//transform
+			if(copy) create_point(x.data(), s); else m_points[index]->position(x.data());
 		}
 		void Geometry::rotate_curve(uint32_t index, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
 		{
-			const double x[] = {x1, x2, x3};
-			const double r[] = {r1, r2, r3};
-			rotate_curve(index, x, r, t, copy);
+			return;
 		}
 		void Geometry::rotate_surface(uint32_t index, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
 		{
-			const double x[] = {x1, x2, x3};
-			const double r[] = {r1, r2, r3};
-			rotate_surface(index, x, r, t, copy);
+			return;
 		}
 
 		void Geometry::move_points(std::vector<uint32_t> indexes, const double* u, bool copy)

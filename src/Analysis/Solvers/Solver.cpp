@@ -53,6 +53,30 @@ namespace fea
 			return m_eigen_gen;
 		}
 
+		//draw
+		uint32_t Solver::draw_steps(void) const
+		{
+			return 1;
+		}
+		void Solver::draw_positions(float* positions_data, float scale) const
+		{
+			for(const mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
+			{
+				//data
+				const uint32_t index = node->index();
+				const double* z = node->position_ref();
+				//position
+				for(uint32_t i = 0; i < 3; i++)
+				{
+					positions_data[3 * index + i] = float(z[i]);
+				}
+			}
+		}
+		void Solver::draw_rotations(float* rotations_data, float scale) const
+		{
+			memset(rotations_data, 0, 3 * m_analysis->model()->mesh()->nodes().size() * sizeof(double));
+		}
+
 		//analysis
 		void Solver::check(void)
 		{

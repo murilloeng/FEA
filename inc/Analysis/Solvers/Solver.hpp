@@ -44,9 +44,9 @@ namespace fea
 			math::eigen::SparseSymGen& eigen_gen(void);
 
 			//draw
-			virtual uint32_t draw_steps(void) const = 0;
-			virtual void draw_positions(float*, float) const = 0;
-			virtual void draw_rotations(float*, float) const = 0;
+			virtual uint32_t draw_steps(void) const;
+			virtual void draw_positions(float*, float) const;
+			virtual void draw_rotations(float*, float) const;
 
 		protected:
 			//analysis

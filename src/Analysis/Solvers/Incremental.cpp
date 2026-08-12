@@ -73,7 +73,7 @@ namespace fea
 			//data
 			const uint32_t nu = m_analysis->assembler()->dof_unknow();
 			const uint32_t nn = m_analysis->model()->mesh()->nodes().size();
-			//positions
+			//rotations
 			for(const mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
 			{
 				//data
