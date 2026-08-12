@@ -1,15 +1,6 @@
 //std
 #include <cmath>
 
-//Math
-#include "Math/inc/Miscellaneous/util.hpp"
-
-//Sections
-#include "Sections/inc/Rectangle.hpp"
-
-//Materials
-#include "Materials/inc/Mechanic/Uniaxial.hpp"
-
 //FEA
 #include "FEA/inc/Model.hpp"
 
