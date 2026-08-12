@@ -17,6 +17,7 @@ namespace fea
 		class Mesh;
 		class Engine;
 		class Boundary;
+		class Geometry;
 	}
 }
 
@@ -69,6 +70,7 @@ namespace fea
 
 			Mesh* m_mesh;
 			Boundary* m_boundary;
+			Geometry* m_geometry;
 			const Model* m_model;
 
 			float m_scale;

@@ -6,6 +6,7 @@
 #include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Mesh.hpp"
 #include "FEA/inc/Draw/Boundary.hpp"
+#include "FEA/inc/Draw/Geometry.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
@@ -16,7 +17,10 @@ namespace fea
 	{
 		//constructor
 		Draw::Draw(const Model* model) : 
-			m_mesh{new Mesh{this, model->mesh()}}, m_boundary{new Boundary{this, model->boundary()}}, m_model{model}, m_scale{1.0f}, m_step{0}
+			m_mesh{new Mesh{this, model->mesh()}}, 
+			m_boundary{new Boundary{this, model->boundary()}}, 
+			m_geometry{new Geometry{this, model->geometry()}},
+			m_model{model}, m_scale{1.0f}, m_step{0}
 		{
 			//data
 			const uint32_t nn = model->mesh()->nodes().size();
@@ -33,6 +37,7 @@ namespace fea
 		{
 			delete m_mesh;
 			delete m_boundary;
+			delete m_geometry;
 			delete[] m_positions_data;
 			delete[] m_rotations_data;
 		}

@@ -13,13 +13,6 @@ namespace fea
 	{
 		class Draw;
 	}
-	namespace mesh
-	{
-		namespace nodes
-		{
-			enum class DOF : uint32_t;
-		}
-	}
 	namespace boundary
 	{
 		class Support;
