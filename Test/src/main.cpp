@@ -13,7 +13,7 @@ int main(void)
 {
 	try
 	{
-		test::rigid2D::spring_buckling();
+		test::beam2D::inelastic::morpho_plastic_unit();
 	}
 	catch(const std::exception& exception)
 	{

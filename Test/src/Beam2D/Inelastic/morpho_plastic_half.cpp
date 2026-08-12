@@ -43,15 +43,13 @@ static const uint32_t na = 5;
 static const uint32_t nl = 5;
 static const uint32_t nw = 1;
 static const uint32_t nh = 40;
-static const double a = 2.00e-04;
 static const double P = 1.00e+00;
 static const double t = 5.10e-04;
 static const double v = 3.00e-01;
 static const double E = 1.57e+09;
+static const double L = 1.20e-02;
 static const double Ep = 3.08e+06;
 static const double ey = 2.85e-02;
-static const double L1 = 4.00e-03;
-static const double L2 = 1.20e-02;
 static const double R0 = 4.00e-04;
 
 static const double sy = E * ey;
@@ -64,7 +62,7 @@ static double time_function(double t)
 	return t < 0.5 ? 2 * t : 2 * (1 - t);
 }
 
-void test::beam2D::inelastic::morpho_plastic_unit(void)
+void test::beam2D::inelastic::morpho_plastic_half(void)
 {
 	//data
 	fea::Model model;
@@ -75,23 +73,22 @@ void test::beam2D::inelastic::morpho_plastic_unit(void)
 	typedef fea::analysis::Type solver;
 	//points
 	model.geometry()->create_point(0, -2 * R0, 0);
-	model.geometry()->create_point(+a, -2 * R0, 0);
-	model.geometry()->create_point(+a + R0, -2 * R0, 0);
-	model.geometry()->create_point(+a + R0, -R0, 0);
-	model.geometry()->create_point(+a + L2 + R0, -R0, 0);
-	model.geometry()->create_point(+a + L2 + 2 * R0, 0, 0);
-	model.geometry()->create_point(+a + L2 + R0, +R0, 0);
-	model.geometry()->create_point(+a + L2 + R0, 0, 0);
-	model.geometry()->create_point(+a + R0, +R0, 0);
-	model.geometry()->create_point(+a + R0, +2 * R0, 0);
-	model.geometry()->create_point(+a, +2 * R0, 0);
+	model.geometry()->create_point(R0, -2 * R0, 0);
+	model.geometry()->create_point(R0, -R0, 0);
+	model.geometry()->create_point(L + R0, -R0, 0);
+	model.geometry()->create_point(L + 2 * R0, 0, 0);
+	model.geometry()->create_point(L + R0, +R0, 0);
+	model.geometry()->create_point(L + R0, 0, 0);
+	model.geometry()->create_point(R0, +R0, 0);
+	model.geometry()->create_point(R0, +2 * R0, 0);
+	model.geometry()->create_point(0, +2 * R0, 0);
 	//curves
-	// model.geometry()->create_line(2, 3);
-	// model.geometry()->create_line(5, 7);
-	// model.geometry()->create_arc(0, 1, 2);
-	// model.geometry()->create_arc(3, 6, 4);
-	// model.geometry()->create_arc(4, 6, 5);
-	// model.geometry()->create_arc(7, 8, 9);
+	model.geometry()->create_line(2, 3);
+	model.geometry()->create_line(5, 7);
+	model.geometry()->create_arc(0, 1, 2);
+	model.geometry()->create_arc(3, 6, 4);
+	model.geometry()->create_arc(4, 6, 5);
+	model.geometry()->create_arc(7, 8, 9);
 	for(fea::geometry::Curve* curve : model.geometry()->curves())
 	{
 		curve->element_type(fea::mesh::elements::Type::Beam2D);
@@ -139,7 +136,7 @@ void test::beam2D::inelastic::morpho_plastic_unit(void)
 	model.analysis()->solver_static_nonlinear()->convergence().type(math::solvers::Convergence::Type::Fixed);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::LoadControl);
 	//solve
-	// model.solve();
+	model.solve();
 	//draw
 	fea::draw::Engine(&model).start();
 }
