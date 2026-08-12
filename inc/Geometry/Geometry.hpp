@@ -56,6 +56,7 @@ namespace fea
 			//create
 			Surface* create_surface(void);
 
+			Curve* append_curve(Curve*);
 			Curve* create_line(uint32_t, uint32_t);
 			Curve* create_arc(uint32_t, uint32_t, uint32_t);
 

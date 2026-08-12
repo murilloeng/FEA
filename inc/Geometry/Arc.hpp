@@ -25,6 +25,9 @@ namespace fea
 			//mesh
 			void mesh(void) const override;
 
+			//clone
+			Curve* clone(void) const override;
+
 			//friends
 			friend class fea::geometry::Geometry;
 		};

@@ -26,5 +26,11 @@ namespace fea
 		{
 			gmsh::model::geo::addLine(m_points[0] + 1, m_points[1] + 1);
 		}
+
+		//clone
+		Curve* Line::clone(void) const
+		{
+			return new Line(*this);
+		}
 	}
 }

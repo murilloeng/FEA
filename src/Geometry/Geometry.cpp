@@ -159,12 +159,22 @@ namespace fea
 			return surface;
 		}
 
+		Curve* Geometry::append_curve(Curve* curve)
+		{
+			//data
+			const uint32_t nc = m_curves.size();
+			//append
+			curve->m_index = nc;
+			m_curves.push_back(curve);
+			//return
+			return curve;
+		}
 		Curve* Geometry::create_line(uint32_t p1, uint32_t p2)
 		{
 			//data
 			Line* line = new Line(p1, p2);
 			const uint32_t nc = m_curves.size();
-			//list
+			//append
 			line->m_index = nc;
 			m_curves.push_back(line);
 			//return
@@ -175,7 +185,7 @@ namespace fea
 			//data
 			Arc* arc = new Arc(p1, p2, p3);
 			const uint32_t nc = m_curves.size();
-			//list
+			//append
 			arc->m_index = nc;
 			m_curves.push_back(arc);
 			//return
@@ -233,7 +243,17 @@ namespace fea
 		}
 		void Geometry::move_curve(uint32_t index, double u1, double u2, double u3, bool copy)
 		{
-			return;
+			//data
+			const uint32_t npt = m_points.size();
+			const uint32_t npc = m_curves[index]->m_points.size();
+			//move
+			move_points(m_curves[index]->m_points, u1, u2, u3, copy);
+			//copy
+			if(copy)
+			{
+				Curve* curve = append_curve(m_curves[index]->clone());
+				for(uint32_t i = 0; i < npc; i++) curve->m_points[i] = npt + i;
+			}
 		}
 		void Geometry::move_surface(uint32_t index, double u1, double u2, double u3, bool copy)
 		{

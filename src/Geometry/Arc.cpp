@@ -27,5 +27,11 @@ namespace fea
 		{
 			gmsh::model::geo::addCircleArc(m_points[0] + 1, m_points[1] + 1, m_points[2] + 1);
 		}
+
+		//clone
+		Curve* Arc::clone(void) const
+		{
+			return new Arc(*this);
+		}
 	}
 }

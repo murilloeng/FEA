@@ -61,13 +61,16 @@ namespace fea
 
 			//index
 			uint32_t index(void) const;
-
-		protected:
+			
+			protected:
 			//analysis
 			virtual void check(void) const;
-
+			
 			//mesh
 			virtual void mesh(void) const = 0;
+
+			//clone
+			virtual Curve* clone(void) const = 0;
 
 			//data
 			uint32_t m_index;
