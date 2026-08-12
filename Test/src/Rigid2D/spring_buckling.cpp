@@ -32,11 +32,12 @@
 #include "FEA/Test/inc/Rigid2D.hpp"
 
 //data
+static const double a = 1.00e-02;
 static const double L = 1.00e+00;
 static const double K = 1.00e+03;
 static const double P = 1.00e+03;
 
-void test::rigid2D::spring_bending(void)
+void test::rigid2D::spring_buckling(void)
 {
 	//data
 	fea::Model model;
@@ -47,7 +48,7 @@ void test::rigid2D::spring_bending(void)
 	typedef fea::mesh::elements::Type element;
 	//nodes
 	model.mesh()->create_node(0, 0, 0);
-	model.mesh()->create_node(L, 0, 0);
+	model.mesh()->create_node(L * cos(a), L * sin(a), 0);
 	//joints
 	model.mesh()->create_joint(joint::Rigid2D, {0, 1});
 	//elements
@@ -59,7 +60,7 @@ void test::rigid2D::spring_bending(void)
 	model.boundary()->create_support(0, dof::Translation_2);
 	//loads
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(1, dof::Translation_2, P);
+	model.boundary()->create_load_case(1, dof::Translation_1, -P);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
@@ -71,8 +72,8 @@ void test::rigid2D::spring_bending(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Rigid 2D/Spring Bending");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Rigid 2D/Spring Bending/data.txt", {
+	model.save_results("Test/data/Rigid 2D/Spring Buckling");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Rigid 2D/Spring Buckling/data.txt", {
 		{0, dof::Rotation_3}, {1, dof::Translation_1}, {1, dof::Translation_2}
 	});
 	//draw

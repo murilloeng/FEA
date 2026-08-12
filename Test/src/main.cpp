@@ -13,7 +13,7 @@ int main(void)
 {
 	try
 	{
-		test::rigid2D::spring_bending();
+		test::rigid2D::spring_buckling();
 	}
 	catch(const std::exception& exception)
 	{
