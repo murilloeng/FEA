@@ -41,11 +41,11 @@ namespace fea
 
 			static Geometry* geometry(void);
 
-			double coordinate(uint32_t) const;
-			const double* coordinates(void) const;
-			const double* coordinates(const double*);
-			const double* coordinates(double, uint32_t);
-			const double* coordinates(double, double, double);
+			double position(uint32_t) const;
+			const double* position(void) const;
+			const double* position(const double*);
+			const double* position(uint32_t, double);
+			const double* position(double, double, double);
 
 			//index
 			uint32_t index(void) const;
@@ -61,7 +61,7 @@ namespace fea
 			uint32_t m_node;
 			uint32_t m_index;
 			static Geometry* m_geometry;
-			double m_size, m_coordinates[3];
+			double m_size, m_position[3];
 
 			//friends
 			friend class fea::geometry::Geometry;

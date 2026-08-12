@@ -62,6 +62,55 @@ namespace fea
 			Point* create_point(const double*, double = 0);
 			Point* create_point(double, double, double, double = 0);
 
+			//transformations
+			void move_point(uint32_t, const double*, bool = false);
+			void move_curve(uint32_t, const double*, bool = false);
+			void move_surface(uint32_t, const double*, bool = false);
+			
+			void move_point(uint32_t, double, double, double, bool = false);
+			void move_curve(uint32_t, double, double, double, bool = false);
+			void move_surface(uint32_t, double, double, double, bool = false);
+
+			void scale_point(uint32_t, const double*, double, bool = false);
+			void scale_curve(uint32_t, const double*, double, bool = false);
+			void scale_surface(uint32_t, const double*, double, bool = false);
+
+			void scale_point(uint32_t, double, double, double, double, bool = false);
+			void scale_curve(uint32_t, double, double, double, double, bool = false);
+			void scale_surface(uint32_t, double, double, double, double, bool = false);
+
+			void rotate_point(uint32_t, const double*, const double*, double, bool = false);
+			void rotate_curve(uint32_t, const double*, const double*, double, bool = false);
+			void rotate_surface(uint32_t, const double*, const double*, double, bool = false);
+
+			void rotate_point(uint32_t, double, double, double, double, double, double, double, bool = false);
+			void rotate_curve(uint32_t, double, double, double, double, double, double, double, bool = false);
+			void rotate_surface(uint32_t, double, double, double, double, double, double, double, bool = false);
+
+			void move_points(std::vector<uint32_t>, const double*, bool = false);
+			void move_curves(std::vector<uint32_t>, const double*, bool = false);
+			void move_surfaces(std::vector<uint32_t>, const double*, bool = false);
+	
+			void move_points(std::vector<uint32_t>, double, double, double, bool = false);
+			void move_curves(std::vector<uint32_t>, double, double, double, bool = false);
+			void move_surfaces(std::vector<uint32_t>, double, double, double, bool = false);
+
+			void scale_points(std::vector<uint32_t>, const double*, double, bool = false);
+			void scale_curves(std::vector<uint32_t>, const double*, double, bool = false);
+			void scale_surfaces(std::vector<uint32_t>, const double*, double, bool = false);
+
+			void scale_points(std::vector<uint32_t>, double, double, double, double, bool = false);
+			void scale_curves(std::vector<uint32_t>, double, double, double, double, bool = false);
+			void scale_surfaces(std::vector<uint32_t>, double, double, double, double, bool = false);
+
+			void rotate_points(std::vector<uint32_t>, const double*, const double*, double, bool = false);
+			void rotate_curves(std::vector<uint32_t>, const double*, const double*, double, bool = false);
+			void rotate_surfaces(std::vector<uint32_t>, const double*, const double*, double, bool = false);
+
+			void rotate_points(std::vector<uint32_t>, double, double, double, double, double, double, double, bool = false);
+			void rotate_curves(std::vector<uint32_t>, double, double, double, double, double, double, double, bool = false);
+			void rotate_surfaces(std::vector<uint32_t>, double, double, double, double, double, double, double, bool = false);
+
 			//generate
 			void generate_mesh(void) const;
 

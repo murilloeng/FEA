@@ -13,7 +13,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::inelastic::morpho_plastic_unit();
+		test::beam2D::inelastic::morpho_plastic_half();
 	}
 	catch(const std::exception& exception)
 	{

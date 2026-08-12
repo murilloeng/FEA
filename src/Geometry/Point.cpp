@@ -14,15 +14,15 @@ namespace fea
 	namespace geometry
 	{
 		//constructors
-		Point::Point(void) : m_node{UINT_MAX}, m_size{0}, m_coordinates{0, 0, 0}
+		Point::Point(void) : m_node{UINT_MAX}, m_size{0}, m_position{0, 0, 0}
 		{
 			return;
 		}
-		Point::Point(const double* coordinates, double size) : m_node{UINT_MAX}, m_size{size}
+		Point::Point(const double* position, double size) : m_node{UINT_MAX}, m_size{size}
 		{
-			memcpy(m_coordinates, coordinates, 3 * sizeof(double));
+			memcpy(m_position, position, 3 * sizeof(double));
 		}
-		Point::Point(double x, double y, double z, double size) : m_node{UINT_MAX}, m_size{size}, m_coordinates{x, y, z}
+		Point::Point(double x1, double x2, double x3, double size) : m_node{UINT_MAX}, m_size{size}, m_position{x1, x2, x3}
 		{
 			return;
 		}
@@ -36,7 +36,7 @@ namespace fea
 		//serialization
 		void Point::save(FILE* file) const
 		{
-			fprintf(file, "%+.6e %+.6e %+.6e %+.6e %04d", m_coordinates[0], m_coordinates[1], m_coordinates[2], m_size, m_node);
+			fprintf(file, "%+.6e %+.6e %+.6e %+.6e %04d", m_position[0], m_position[1], m_position[2], m_size, m_node);
 		}
 
 		//data
@@ -59,29 +59,29 @@ namespace fea
 			return m_geometry;
 		}
 
-		double Point::coordinate(uint32_t index) const
+		double Point::position(uint32_t index) const
 		{
-			return m_coordinates[index];
+			return m_position[index];
 		}
-		const double* Point::coordinates(void) const
+		const double* Point::position(void) const
 		{
-			return m_coordinates;
+			return m_position;
 		}
-		const double* Point::coordinates(double v, uint32_t i)
+		const double* Point::position(uint32_t i, double x)
 		{
-			m_coordinates[i] = v;
-			return m_coordinates;
+			m_position[i] = x;
+			return m_position;
 		}
-		const double* Point::coordinates(const double* coordinates)
+		const double* Point::position(const double* position)
 		{
-			return (const double*) memcpy(m_coordinates, coordinates, 3 * sizeof(double));
+			return (const double*) memcpy(m_position, position, 3 * sizeof(double));
 		}
-		const double* Point::coordinates(double x, double y, double z)
+		const double* Point::position(double x1, double x2, double x3)
 		{
-			m_coordinates[0] = x;
-			m_coordinates[1] = y;
-			m_coordinates[2] = z;
-			return m_coordinates;
+			m_position[0] = x1;
+			m_position[1] = x2;
+			m_position[2] = x3;
+			return m_position;
 		}
 
 
@@ -103,7 +103,7 @@ namespace fea
 		//mesh
 		void Point::mesh(void) const
 		{
-			gmsh::model::geo::addPoint(m_coordinates[0], m_coordinates[1], m_coordinates[2], m_size);
+			gmsh::model::geo::addPoint(m_position[0], m_position[1], m_position[2], m_size);
 		}
 
 		//static

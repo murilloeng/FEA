@@ -144,13 +144,13 @@ namespace fea
 				return m_quaternion_new;
 			}
 
-			const double* Node::position_ref(void) const
-			{
-				return m_position_ref;
-			}
 			const double* Node::position_new(void) const
 			{
 				return m_position_new;
+			}
+			const double* Node::position_ref(void) const
+			{
+				return m_position_ref;
 			}
 			const double* Node::position(uint32_t step)
 			{
@@ -168,7 +168,7 @@ namespace fea
 				//return
 				return m_position_new;
 			}
-			const double* Node::position_ref(double* position_ref)
+			const double* Node::position_ref(const double* position_ref)
 			{
 				return (double*) memcpy(m_position_ref, position_ref, sizeof(m_position_ref));
 			}
