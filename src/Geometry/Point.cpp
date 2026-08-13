@@ -36,7 +36,7 @@ namespace fea
 		//serialization
 		void Point::save(FILE* file) const
 		{
-			fprintf(file, "%+.6e %+.6e %+.6e %+.6e %04d", m_position[0], m_position[1], m_position[2], m_size, m_node);
+			fprintf(file, "%4d %+.6e %+.6e %+.6e %+.6e %04d", m_index, m_position[0], m_position[1], m_position[2], m_size, m_node);
 		}
 
 		//data

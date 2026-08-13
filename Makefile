@@ -3,7 +3,7 @@ CXX = g++
 WARS = -Wall -Werror
 INCS = -I .. -I /usr/include/freetype2
 LIBS = -l openblas -l umfpack -l arpack -l quadrule -l fftw3 -l gmsh -l glfw
-CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
+CXXFLAGS = -std=c++23 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
 #mode
 ifneq ($(m), r)

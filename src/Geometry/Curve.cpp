@@ -101,6 +101,55 @@ namespace fea
 		{
 			return m_index;
 		}
+		uint32_t Curve::index_point(uint32_t index) const
+		{
+			return m_points[index];
+		}
+
+		//transformations
+		Curve* Curve::move(const double* u, bool copy)
+		{
+			m_geometry->move_curve(m_index, u, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+		Curve* Curve::move(double u1, double u2, double u3, bool copy)
+		{
+			m_geometry->move_curve(m_index, u1, u2, u3, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+
+		Curve* Curve::scale(const double* c, double a, bool copy)
+		{
+			m_geometry->scale_curve(m_index, c, a, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+		Curve* Curve::scale(double c1, double c2, double c3, double a, bool copy)
+		{
+			m_geometry->scale_curve(m_index, c1, c2, c3, a, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+
+		Curve* Curve::scale(const double* c, const double* a, bool copy)
+		{
+			m_geometry->scale_curve(m_index, c, a, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+		Curve* Curve::scale(double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
+		{
+			m_geometry->scale_curve(m_index, c1, c2, c3, a1, a2, a3, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+
+		Curve* Curve::rotate(const double* c, const double* r, double t, bool copy)
+		{
+			m_geometry->rotate_curve(m_index, c, r, t, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
+		Curve* Curve::rotate(double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
+		{
+			m_geometry->rotate_curve(m_index, c1, c2, c3, r1, r2, r3, t, copy);
+			return copy ? m_geometry->curves().back() : this;
+		}
 
 		//analysis
 		void Curve::check(void) const
@@ -112,6 +161,16 @@ namespace fea
 					throw std::runtime_error("Error: Curve with out of range point!");
 				}
 			}
+		}
+
+		//draw
+		void Curve::draw_setup(draw::Data&) const
+		{
+			return;
+		}
+		void Curve::draw_update(draw::Data&) const
+		{
+			return;
 		}
 
 		//static

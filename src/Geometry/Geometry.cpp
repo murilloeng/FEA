@@ -1,4 +1,5 @@
 //std
+#include <ranges>
 #include <stdexcept>
 
 //gmsh
@@ -6,7 +7,7 @@
 
 //Math
 #include "Math/inc/Linear/Vec3.hpp"
-#include "Math/inc/Linear/Quat.hpp"
+#include "Math/inc/Miscellaneous/BoundingBox.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -203,16 +204,94 @@ namespace fea
 			//return
 			return point;
 		}
-		Point* Geometry::create_point(double x, double y, double z, double s)
+		Point* Geometry::create_point(double x1, double x2, double x3, double s)
 		{
 			//data
 			const uint32_t np = m_points.size();
-			Point* point = new Point(x, y, z, s);
+			Point* point = new Point(x1, x2, x3, s);
 			//append
 			point->m_index = np;
 			m_points.push_back(point);
 			//return
 			return point;
+		}
+
+		//remove
+		void Geometry::remove_point(uint32_t index)
+		{
+			//remove curves
+			for(Curve* curve : m_curves | std::views::reverse)
+			{
+				if(std::find(curve->m_points.begin(), curve->m_points.end(), index) != curve->m_points.end())
+				{
+					remove_curve(curve->m_index);
+				}
+			}
+			//update curves
+			for(Curve* curve : m_curves)
+			{
+				for(uint32_t& point : curve->m_points)
+				{
+					if(point > index) point--;
+				}
+			}
+			//indexes
+			for(uint32_t i = index + 1; i < m_points.size(); i++)
+			{
+				m_points[i]->m_index--;
+			}
+			//remove point
+			delete m_points[index];
+			m_points.erase(m_points.begin() + index);
+		}
+		void Geometry::remove_curve(uint32_t index)
+		{
+			//remove surfaces
+			for(Surface* surface : m_surfaces | std::views::reverse)
+			{
+				bool test = false;
+				for(const Loop& loop : surface->m_loops)
+				{
+					for(const Item& item : loop.m_items)
+					{
+						test = test || item.m_index == index;
+					}
+				}
+				if(test)
+				{
+					remove_surface(surface->m_index);
+				}
+			}
+			//update surfaces
+			for(Surface* surface : m_surfaces)
+			{
+				for(Loop& loop : surface->m_loops)
+				{
+					for(Item& item : loop.m_items)
+					{
+						if(item.m_index > index) item.m_index--;
+					}
+				}
+			}
+			//indexes
+			for(uint32_t i = index + 1; i < m_curves.size(); i++)
+			{
+				m_curves[i]->m_index--;
+			}
+			//remove curve
+			delete m_curves[index];
+			m_curves.erase(m_curves.begin() + index);
+		}
+		void Geometry::remove_surface(uint32_t index)
+		{
+			//indexes
+			for(uint32_t i = index + 1; i < m_surfaces.size(); i++)
+			{
+				m_surfaces[i]->m_index--;
+			}
+			//remove surface
+			delete m_surfaces[index];
+			m_surfaces.erase(m_surfaces.begin() + index);
 		}
 
 		//transformations
@@ -260,17 +339,30 @@ namespace fea
 			return;
 		}
 
-		void Geometry::scale_point(uint32_t index, const double* x, double s, bool copy)
+		void Geometry::scale_point(uint32_t index, const double* x, double a, bool copy)
 		{
-			scale_point(index, x[0], x[1], x[2], s, copy);
+			scale_point(index, x[0], x[1], x[2], a, copy);
 		}
-		void Geometry::scale_curve(uint32_t index, const double* x, double s, bool copy)
+		void Geometry::scale_curve(uint32_t index, const double* x, double a, bool copy)
 		{
-			scale_curve(index, x[0], x[1], x[2], s, copy);
+			scale_curve(index, x[0], x[1], x[2], a, copy);
 		}
-		void Geometry::scale_surface(uint32_t index, const double* x, double s, bool copy)
+		void Geometry::scale_surface(uint32_t index, const double* x, double a, bool copy)
 		{
-			scale_surface(index, x[0], x[1], x[2], s, copy);
+			scale_surface(index, x[0], x[1], x[2], a, copy);
+		}
+
+		void Geometry::scale_point(uint32_t index, const double* c, const double* a, bool copy)
+		{
+			scale_point(index, c[0], c[1], c[2], a[0], a[1], a[2], copy);
+		}
+		void Geometry::scale_curve(uint32_t index, const double* c, const double* a, bool copy)
+		{
+			scale_curve(index, c[0], c[1], c[2], a[0], a[1], a[2], copy);
+		}
+		void Geometry::scale_surface(uint32_t index, const double* c, const double* a, bool copy)
+		{
+			scale_surface(index, c[0], c[1], c[2], a[0], a[1], a[2], copy);
 		}
 
 		void Geometry::scale_point(uint32_t index, double c1, double c2, double c3, double a, bool copy)
@@ -285,26 +377,68 @@ namespace fea
 			//transform
 			if(copy) create_point(x, s); else m_points[index]->position(x);
 		}
-		void Geometry::scale_curve(uint32_t index, double x1, double x2, double x3, double s, bool copy)
+		void Geometry::scale_curve(uint32_t index, double c1, double c2, double c3, double a, bool copy)
 		{
-			return;
+			//data
+			const uint32_t npt = m_points.size();
+			const uint32_t npc = m_curves[index]->m_points.size();
+			//move
+			scale_points(m_curves[index]->m_points, c1, c2, c3, a, copy);
+			//copy
+			if(copy)
+			{
+				Curve* curve = append_curve(m_curves[index]->clone());
+				for(uint32_t i = 0; i < npc; i++) curve->m_points[i] = npt + i;
+			}
 		}
-		void Geometry::scale_surface(uint32_t index, double x1, double x2, double x3, double s, bool copy)
+		void Geometry::scale_surface(uint32_t index, double c1, double c2, double c3, double a, bool copy)
 		{
 			return;
 		}
 
-		void Geometry::rotate_point(uint32_t index, const double* x, const double* r, double t, bool copy)
+		void Geometry::scale_point(uint32_t index, double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
 		{
-			rotate_point(index, x[0], x[1], x[2], r[0], r[1], r[2], t, copy);
+			//data
+			double x[3];
+			const double a[] = {a1, a2, a3};
+			const double c[] = {c1, c2, c3};
+			const double s = m_points[index]->m_size;
+			const double* z = m_points[index]->m_position;
+			//position
+			for(uint32_t i = 0; i < 3; i++) x[i] = c[i] + a[i] * (z[i] - c[i]);
+			//transform
+			if(copy) create_point(x, s); else m_points[index]->position(x);
 		}
-		void Geometry::rotate_curve(uint32_t index, const double* x, const double* r, double t, bool copy)
+		void Geometry::scale_curve(uint32_t index, double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
 		{
-			rotate_curve(index, x[0], x[1], x[2], r[0], r[1], r[2], t, copy);
+			//data
+			const uint32_t npt = m_points.size();
+			const uint32_t npc = m_curves[index]->m_points.size();
+			//move
+			scale_points(m_curves[index]->m_points, c1, c2, c3, a1, a2, a3, copy);
+			//copy
+			if(copy)
+			{
+				Curve* curve = append_curve(m_curves[index]->clone());
+				for(uint32_t i = 0; i < npc; i++) curve->m_points[i] = npt + i;
+			}
 		}
-		void Geometry::rotate_surface(uint32_t index, const double* x, const double* r, double t, bool copy)
+		void Geometry::scale_surface(uint32_t index, double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
 		{
-			rotate_surface(index, x[0], x[1], x[2], r[0], r[1], r[2], t, copy);
+			return;
+		}
+
+		void Geometry::rotate_point(uint32_t index, const double* c, const double* r, double t, bool copy)
+		{
+			rotate_point(index, c[0], c[1], c[2], r[0], r[1], r[2], t, copy);
+		}
+		void Geometry::rotate_curve(uint32_t index, const double* c, const double* r, double t, bool copy)
+		{
+			rotate_curve(index, c[0], c[1], c[2], r[0], r[1], r[2], t, copy);
+		}
+		void Geometry::rotate_surface(uint32_t index, const double* c, const double* r, double t, bool copy)
+		{
+			rotate_surface(index, c[0], c[1], c[2], r[0], r[1], r[2], t, copy);
 		}
 
 		void Geometry::rotate_point(uint32_t index, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
@@ -319,9 +453,19 @@ namespace fea
 			//transform
 			if(copy) create_point(x.data(), s); else m_points[index]->position(x.data());
 		}
-		void Geometry::rotate_curve(uint32_t index, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
+		void Geometry::rotate_curve(uint32_t index, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
 		{
-			return;
+			//data
+			const uint32_t npt = m_points.size();
+			const uint32_t npc = m_curves[index]->m_points.size();
+			//move
+			rotate_points(m_curves[index]->m_points, c1, c2, c3, r1, r2, r3, t, copy);
+			//copy
+			if(copy)
+			{
+				Curve* curve = append_curve(m_curves[index]->clone());
+				for(uint32_t i = 0; i < npc; i++) curve->m_points[i] = npt + i;
+			}
 		}
 		void Geometry::rotate_surface(uint32_t index, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
 		{
@@ -354,59 +498,122 @@ namespace fea
 			for(uint32_t index : indexes) move_surface(index, u1, u2, u3, copy);
 		}
 
-		void Geometry::scale_points(std::vector<uint32_t> indexes, const double* x, double s, bool copy)
+		void Geometry::scale_points(std::vector<uint32_t> indexes, const double* c, double a, bool copy)
 		{
-			for(uint32_t index : indexes) scale_point(index, x, s, copy);
+			for(uint32_t index : indexes) scale_point(index, c, a, copy);
 		}
-		void Geometry::scale_curves(std::vector<uint32_t> indexes, const double* x, double s, bool copy)
+		void Geometry::scale_curves(std::vector<uint32_t> indexes, const double* c, double a, bool copy)
 		{
-			for(uint32_t index : indexes) scale_curve(index, x, s, copy);
+			for(uint32_t index : indexes) scale_curve(index, c, a, copy);
 		}
-		void Geometry::scale_surfaces(std::vector<uint32_t> indexes, const double* x, double s, bool copy)
+		void Geometry::scale_surfaces(std::vector<uint32_t> indexes, const double* c, double a, bool copy)
 		{
-			for(uint32_t index : indexes) scale_surface(index, x, s, copy);
-		}
-
-		void Geometry::scale_points(std::vector<uint32_t> indexes, double x1, double x2, double x3, double s, bool copy)
-		{
-			for(uint32_t index : indexes) scale_point(index, x1, x2, x3, s, copy);
-		}
-		void Geometry::scale_curves(std::vector<uint32_t> indexes, double x1, double x2, double x3, double s, bool copy)
-		{
-			for(uint32_t index : indexes) scale_curve(index, x1, x2, x3, s, copy);
-		}
-		void Geometry::scale_surfaces(std::vector<uint32_t> indexes, double x1, double x2, double x3, double s, bool copy)
-		{
-			for(uint32_t index : indexes) scale_surface(index, x1, x2, x3, s, copy);
+			for(uint32_t index : indexes) scale_surface(index, c, a, copy);
 		}
 
-		void Geometry::rotate_points(std::vector<uint32_t> indexes, const double* x, const double* r, double t, bool copy)
+		void Geometry::scale_points(std::vector<uint32_t> indexes, const double* c, const double* a, bool copy)
 		{
-			for(uint32_t index : indexes) rotate_point(index, x, r, t, copy);
+			for(uint32_t index : indexes) scale_point(index, c, a, copy);
 		}
-		void Geometry::rotate_curves(std::vector<uint32_t> indexes, const double* x, const double* r, double t, bool copy)
+		void Geometry::scale_curves(std::vector<uint32_t> indexes, const double* c, const double* a, bool copy)
 		{
-			for(uint32_t index : indexes) rotate_curve(index, x, r, t, copy);
+			for(uint32_t index : indexes) scale_curve(index, c, a, copy);
 		}
-		void Geometry::rotate_surfaces(std::vector<uint32_t> indexes, const double* x, const double* r, double t, bool copy)
+		void Geometry::scale_surfaces(std::vector<uint32_t> indexes, const double* c, const double* a, bool copy)
 		{
-			for(uint32_t index : indexes) rotate_surface(index, x, r, t, copy);
+			for(uint32_t index : indexes) scale_surface(index, c, a, copy);
 		}
 
-		void Geometry::rotate_points(std::vector<uint32_t> indexes, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
+		void Geometry::scale_points(std::vector<uint32_t> indexes, double c1, double c2, double c3, double a, bool copy)
 		{
-			for(uint32_t index : indexes) rotate_point(index, x1, x2, x3, r1, r2, r3, t, copy);
+			for(uint32_t index : indexes) scale_point(index, c1, c2, c3, a, copy);
 		}
-		void Geometry::rotate_curves(std::vector<uint32_t> indexes, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
+		void Geometry::scale_curves(std::vector<uint32_t> indexes, double c1, double c2, double c3, double a, bool copy)
 		{
-			for(uint32_t index : indexes) rotate_curve(index, x1, x2, x3, r1, r2, r3, t, copy);
+			for(uint32_t index : indexes) scale_curve(index, c1, c2, c3, a, copy);
 		}
-		void Geometry::rotate_surfaces(std::vector<uint32_t> indexes, double x1, double x2, double x3, double r1, double r2, double r3, double t, bool copy)
+		void Geometry::scale_surfaces(std::vector<uint32_t> indexes, double c1, double c2, double c3, double a, bool copy)
 		{
-			for(uint32_t index : indexes) rotate_surface(index, x1, x2, x3, r1, r2, r3, t, copy);
+			for(uint32_t index : indexes) scale_surface(index, c1, c2, c3, a, copy);
+		}
+
+		void Geometry::scale_points(std::vector<uint32_t> indexes, double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
+		{
+			for(uint32_t index : indexes) scale_point(index, c1, c2, c3, a1, a2, a3, copy);
+		}
+		void Geometry::scale_curves(std::vector<uint32_t> indexes, double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
+		{
+			for(uint32_t index : indexes) scale_curve(index, c1, c2, c3, a1, a2, a3, copy);
+		}
+		void Geometry::scale_surfaces(std::vector<uint32_t> indexes, double c1, double c2, double c3, double a1, double a2, double a3, bool copy)
+		{
+			for(uint32_t index : indexes) scale_surface(index, c1, c2, c3, a1, a2, a3, copy);
+		}
+
+		void Geometry::rotate_points(std::vector<uint32_t> indexes, const double* c, const double* r, double t, bool copy)
+		{
+			for(uint32_t index : indexes) rotate_point(index, c, r, t, copy);
+		}
+		void Geometry::rotate_curves(std::vector<uint32_t> indexes, const double* c, const double* r, double t, bool copy)
+		{
+			for(uint32_t index : indexes) rotate_curve(index, c, r, t, copy);
+		}
+		void Geometry::rotate_surfaces(std::vector<uint32_t> indexes, const double* c, const double* r, double t, bool copy)
+		{
+			for(uint32_t index : indexes) rotate_surface(index, c, r, t, copy);
+		}
+
+		void Geometry::rotate_points(std::vector<uint32_t> indexes, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
+		{
+			for(uint32_t index : indexes) rotate_point(index, c1, c2, c3, r1, r2, r3, t, copy);
+		}
+		void Geometry::rotate_curves(std::vector<uint32_t> indexes, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
+		{
+			for(uint32_t index : indexes) rotate_curve(index, c1, c2, c3, r1, r2, r3, t, copy);
+		}
+		void Geometry::rotate_surfaces(std::vector<uint32_t> indexes, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
+		{
+			for(uint32_t index : indexes) rotate_surface(index, c1, c2, c3, r1, r2, r3, t, copy);
 		}
 
 		//mesh
+		void Geometry::merge(void)
+		{
+			//data
+			std::vector<uint32_t> l1, l2;
+			math::BoundingBox bounding_box;
+			//bounding box
+			for(const Point* point : m_points) bounding_box.insert_vertex(point->m_position);
+			//query
+			const double r = bounding_box.radius();
+			for(uint32_t i = 0; i < m_points.size(); i++)
+			{
+				for(uint32_t j = 0; j < i; j++)
+				{
+					const math::Vec3 xi = m_points[i]->m_position;
+					const math::Vec3 xj = m_points[j]->m_position;
+					if((xj - xi).norm() < 1e-5 * r)
+					{
+						l1.push_back(i);
+						l2.push_back(j);
+						break;
+					}
+				}
+			}
+			//replace
+			for(auto [i1, i2] : std::views::zip(l1, l2))
+			{
+				for(Curve* curve : m_curves)
+				{
+					std::replace(curve->m_points.begin(), curve->m_points.end(), i1, i2);
+				}
+			}
+			//remove
+			for(uint32_t index : l1 | std::views::reverse)
+			{
+				remove_point(index);
+			}
+		}
 		void Geometry::generate_mesh(void) const
 		{
 			//setup

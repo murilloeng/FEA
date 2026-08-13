@@ -8,6 +8,11 @@
 
 namespace fea
 {
+	namespace draw
+	{
+		class Data;
+		class Geometry;
+	}
 	namespace geometry
 	{
 		class Point;
@@ -61,8 +66,22 @@ namespace fea
 
 			//index
 			uint32_t index(void) const;
-			
-			protected:
+			uint32_t index_point(uint32_t) const;
+
+			//transformations
+			Curve* move(const double*, bool);
+			Curve* move(double, double, double, bool);
+
+			Curve* scale(const double*, double, bool);
+			Curve* scale(double, double, double, double, bool);
+
+			Curve* scale(const double*, const double*, bool);
+			Curve* scale(double, double, double, double, double, double, bool);
+
+			Curve* rotate(const double*, const double*, double, bool);
+			Curve* rotate(double, double, double, double, double, double, double, bool);
+
+		protected:
 			//analysis
 			virtual void check(void) const;
 			
@@ -71,6 +90,10 @@ namespace fea
 
 			//clone
 			virtual Curve* clone(void) const = 0;
+
+			//draw
+			virtual void draw_setup(draw::Data&) const;
+			virtual void draw_update(draw::Data&) const;
 
 			//data
 			uint32_t m_index;
@@ -85,6 +108,7 @@ namespace fea
 			mesh::elements::Type m_element_type;
 
 			//friends
+			friend class fea::draw::Geometry;
 			friend class fea::geometry::Geometry;
 		};
 	}

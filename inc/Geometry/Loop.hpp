@@ -11,6 +11,14 @@ namespace fea
 {
 	namespace geometry
 	{
+		class Geometry;
+	}
+}
+
+namespace fea
+{
+	namespace geometry
+	{
 		class Loop
 		{
 		public:
@@ -30,6 +38,9 @@ namespace fea
 		private:
 			//data
 			std::vector<Item> m_items;
+
+			//friends
+			friend class fea::geometry::Geometry;
 		};
 	}
 }

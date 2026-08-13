@@ -1,6 +1,7 @@
 //FEA
 #include "FEA/inc/Model.hpp"
 
+#include "FEA/inc/Draw/Data.hpp"
 #include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Geometry.hpp"
 
@@ -89,11 +90,23 @@ namespace fea
 		//setup
 		void Geometry::setup_points(void)
 		{
-			return;
+			m_counter_dots += m_geometry->points().size();
+			m_counter_vertices += m_geometry->points().size();
 		}
 		void Geometry::setup_curves(void)
 		{
-			return;
+			//data
+			Data data = {
+				m_draw->m_step, m_draw->m_colors,
+				m_index_dots, m_index_edges, m_index_faces, m_index_vertices,
+				m_counter_dots, m_counter_edges, m_counter_faces, m_counter_vertices,
+				m_ibo, m_vbo, m_draw->m_positions_data, m_draw->m_rotations_data
+			};
+			//setup
+			for(const geometry::Curve* curve : m_geometry->curves())
+			{
+				curve->draw_setup(data);
+			}
 		}
 		void Geometry::setup_surfaces(void)
 		{
@@ -103,11 +116,35 @@ namespace fea
 		//update
 		void Geometry::update_points(void)
 		{
-			return;
+			//data
+			const uint32_t nn = m_geometry->points().size();
+			uint32_t* ibo_ptr = m_ibo.data() + m_index_dots;
+			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+			//buffers data
+			for(uint32_t i = 0; i < nn; i++)
+			{
+				ibo_ptr[i] = m_index_vertices + i;
+				vbo_ptr[i].m_color = m_draw->m_colors.nodes();
+				vbo_ptr[i].m_position = m_geometry->point(i)->position();
+			}
+			//update
+			m_index_dots += nn;
+			m_index_vertices += nn;
 		}
 		void Geometry::update_curves(void)
 		{
-			return;
+			//data
+			Data data = {
+				m_draw->m_step, m_draw->m_colors,
+				m_index_dots, m_index_edges, m_index_faces, m_index_vertices,
+				m_counter_dots, m_counter_edges, m_counter_faces, m_counter_vertices,
+				m_ibo, m_vbo, m_draw->m_positions_data, m_draw->m_rotations_data
+			};
+			//setup
+			for(const geometry::Curve* curve : m_geometry->curves())
+			{
+				curve->draw_update(data);
+			}
 		}
 		void Geometry::update_surfaces(void)
 		{

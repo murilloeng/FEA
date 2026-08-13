@@ -66,12 +66,12 @@ namespace fea
 
 			//create
 			void create_support(uint32_t, mesh::nodes::DOF);
-
-			void create_load_combination(void);
-			void create_load_combination(uint32_t, bool, double);
-
+			
 			void create_load_case(void);
 			void create_load_case(uint32_t, mesh::nodes::DOF, double);
+
+			void create_load_combination(void);
+			void create_load_combination(uint32_t, bool = false, double = 1);
 
 			void create_constraint(std::vector<uint32_t>, std::vector<mesh::nodes::DOF>);
 

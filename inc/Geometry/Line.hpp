@@ -28,6 +28,10 @@ namespace fea
 			//clone
 			Curve* clone(void) const override;
 
+			//draw
+			virtual void draw_setup(draw::Data&) const;
+			virtual void draw_update(draw::Data&) const;
+
 			//friends
 			friend class fea::geometry::Geometry;
 		};

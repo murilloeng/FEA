@@ -1,5 +1,6 @@
 //std
 #include <cmath>
+#include <numeric>
 
 //Math
 #include "Math/inc/Miscellaneous/util.hpp"
@@ -18,10 +19,11 @@
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
-#include "FEA/inc/Mesh/Joints/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
-#include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
+#include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 
+#include "FEA/inc/Geometry/Arc.hpp"
+#include "FEA/inc/Geometry/Line.hpp"
 #include "FEA/inc/Geometry/Curve.hpp"
 #include "FEA/inc/Geometry/Geometry.hpp"
 
@@ -29,7 +31,6 @@
 #include "FEA/inc/Boundary/Loads/Node.hpp"
 #include "FEA/inc/Boundary/Loads/LoadCase.hpp"
 #include "FEA/inc/Boundary/Supports/Support.hpp"
-#include "FEA/inc/Boundary/Constraints/Constraint.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Type.hpp"
@@ -39,46 +40,118 @@
 #include "FEA/Test/inc/Beam2D.hpp"
 
 //data
+static const uint32_t na = 5;
+static const uint32_t nl = 5;
+static const uint32_t nw = 1;
+static const uint32_t nh = 40;
+static const uint32_t nu = 10;
+static const double a = 2.00e-04;
+static const double P = 2.00e+00;
+static const double t = 5.10e-04;
+static const double v = 3.00e-01;
+static const double E = 1.57e+09;
+static const double Ep = 3.08e+06;
+static const double ey = 2.85e-02;
+static const double L1 = 4.00e-03;
+static const double L2 = 1.20e-02;
+static const double R0 = 4.00e-04;
+
+static const double sy = E * ey;
+static const double K = E * Ep / (E - Ep);
 
 //reference: doi.org/10.48550/arXiv.2412.06022
+
+static double time_function(double t)
+{
+	return t < 0.5 ? 2 * t : 2 * (1 - t);
+}
 
 void test::beam2D::inelastic::morpho_plastic_line(void)
 {
 	//data
 	fea::Model model;
-	//types
+	sections::Rectangle section;
+	materials::Uniaxial material;
 	typedef fea::mesh::nodes::DOF dof;
 	typedef fea::analysis::Type solver;
-	//nodes
-	model.mesh()->create_node(0, 0, 0);
-	model.mesh()->create_node(1, 0, 0);
-	//joints
-	model.mesh()->create_joint(fea::mesh::joints::Type::Rigid2D, {0, 1});
+	//points
+	model.geometry()->create_point(0, 0, 0);
+	model.geometry()->create_point(R0, 0, 0);
+	model.geometry()->create_point(R0, R0, 0);
+	model.geometry()->create_point(L2 + R0, R0, 0);
+	//half-right
+	model.geometry()->create_line(2, 3);
+	model.geometry()->create_arc(0, 1, 2);
+	model.geometry()->curve(0)->move(0, 2 * R0, 0, true);
+	model.geometry()->curve(1)->rotate(R0, R0, 0, 0, 0, 1, M_PI, true)->move(L2, 0, 0, false);
+	model.geometry()->curve(1)->rotate(R0, R0, 0, 0, 0, 1, -M_PI_2, true)->move(L2 + R0, R0, 0, false);
+	model.geometry()->curve(1)->rotate(R0, R0, 0, 0, 0, 1, +M_PI_2, true)->move(-R0, 3 * R0, 0, false);
+	//half-left
+	model.geometry()->scale_curves({0, 1, 2, 3, 4, 5}, 0, 0, 0, -1, 1, 1, true);
+	model.geometry()->curve( 9)->move(L2 - L1, 0, 0, false);
+	model.geometry()->curve(10)->move(L2 - L1, 0, 0, false);
+	model.geometry()->curve( 6)->scale(-R0, 0, 0, L1 / L2, 1, 1, false);
+	model.geometry()->curve( 8)->scale(-R0, 0, 0, L1 / L2, 1, 1, false);
+	//units
+	std::vector<uint32_t> list(12);
+	std::iota(list.begin(), list.end(), 0);
+	for(uint32_t i = 1; i < nu; i++)
+	{
+		model.geometry()->move_curves(list, 0, 4 * R0 * i, 0, true);
+	}
+	//curves
+	for(fea::geometry::Curve* curve : model.geometry()->curves())
+	{
+		curve->element_type(fea::mesh::elements::Type::Beam2D);
+		if(dynamic_cast<fea::geometry::Arc*>(curve)) curve->structured(na);
+		if(dynamic_cast<fea::geometry::Line*>(curve)) curve->structured(nl);
+	}
+	materials::Mechanic::inelastic(true);
+	//generate
+	model.geometry()->merge();
+	model.geometry()->generate_mesh();
+	const uint32_t in = model.geometry()->curve(12 * nu - 1)->index_point(2);
 	//elements
-	model.mesh()->create_element(fea::mesh::elements::Type::Nodal, { 0 });
-	((fea::mesh::elements::Nodal*) model.mesh()->element(0))->stiffness(1e3);
-	((fea::mesh::elements::Nodal*) model.mesh()->element(0))->dof(dof::Rotation_3);
+	section.width(t);
+	section.height(t);
+	section.fibers_width(nw);
+	section.fibers_height(nh);
+	material.yield_stress(sy);
+	material.poisson_ratio(v);
+	material.elastic_modulus(E);
+	material.plastic_modulus(K);
+	for(fea::mesh::elements::Element* element : model.mesh()->elements())
+	{
+		((fea::mesh::elements::Beam2D*) element)->section(&section);
+		((fea::mesh::elements::Beam2D*) element)->material(&material);
+	}
 	//supports
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
+	model.boundary()->create_support(in, dof::Translation_1);
 	//loads
-	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(0, dof::Rotation_3, 1e3);
+	model.boundary()->create_load_combination(0, true);
+	model.boundary()->create_load_case(in, dof::Translation_2, P);
+	model.boundary()->load_case(0)->load_node(0)->time_function(time_function);
 	//setup
+	section.compute();
 	model.analysis()->type(solver::StaticNonlinear);
 	model.analysis()->solver_static_nonlinear()->silent(false);
-	model.analysis()->solver_static_nonlinear()->step_max(1000);
+	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->attempt_max(1);
+	model.analysis()->solver_static_nonlinear()->iteration_max(30);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
-	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_1);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node(in);
+	model.analysis()->solver_static_nonlinear()->convergence().tolerance(1.00e-05);
+	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
+	model.analysis()->solver_static_nonlinear()->convergence().type(math::solvers::Convergence::Type::Fixed);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::LoadControl);
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 2D/Inelastic/MorphoPlastic Line");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/MorphoPlastic Line/data.txt", {
-		{1, dof::Translation_1}, {1, dof::Translation_2}
+	model.save_results("Test/data/Beam 2D/Inelastic/Morpho Plastic Line");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/Morpho Plastic Line/data.txt", {
+		{0, dof::Rotation_3}, {in, dof::Translation_2}, {in, dof::Rotation_3}
 	});
 	//draw
 	fea::draw::Engine(&model).start();

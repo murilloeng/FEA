@@ -348,7 +348,7 @@ namespace fea
 				1 << uint32_t(mesh::nodes::DOF::Rotation_3) |
 				1 << uint32_t(mesh::nodes::DOF::Translation_3);
 			const float* x = m_draw->position(support->index_node());
-			const float s = m_draw->sizes().supports() * m_draw->m_bounding_box.radius();
+			const float s = m_draw->sizes().supports() * m_draw->m_bounding_box_mesh.radius();
 			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
 			//transformation
 			canvas::mat4 A = canvas::mat4::shifting(x) * canvas::mat4::scaling(s);
@@ -367,7 +367,7 @@ namespace fea
 				1 << uint32_t(mesh::nodes::DOF::Rotation_3) |
 				1 << uint32_t(mesh::nodes::DOF::Translation_3);
 			const float* x = m_draw->position(load->index_node());
-			const float s = m_draw->sizes().loads() * m_draw->m_bounding_box.radius();
+			const float s = m_draw->sizes().loads() * m_draw->m_bounding_box_mesh.radius();
 			canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
 			//transformation
 			canvas::mat4 A = canvas::mat4::shifting(x) * canvas::mat4::scaling(s);

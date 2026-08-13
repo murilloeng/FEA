@@ -1,6 +1,7 @@
 #pragma once
 
 //FEA
+#include "FEA/inc/Draw/Mode.hpp"
 #include "FEA/inc/Draw/What.hpp"
 #include "FEA/inc/Draw/Sizes.hpp"
 #include "FEA/inc/Draw/Colors.hpp"
@@ -35,6 +36,9 @@ namespace fea
 			~Draw(void);
 
 			//data
+			Mode mode(Mode);
+			Mode mode(void) const;
+
 			float scale(float);
 			float scale(void) const;
 
@@ -50,6 +54,8 @@ namespace fea
 			Colors& colors(void);
 			const Colors& colors(void) const;
 
+			const canvas::cameras::BoundingBox& bounding_box(void) const;
+
 		protected:
 			//draw
 			void draw(void) override;
@@ -57,13 +63,15 @@ namespace fea
 			void update(void) override;
 
 			//compute
-			void compute_bounding_box(void);
+			void compute_bounding_box_mesh(void);
+			void compute_bounding_box_geometry(void);
 
 			//data
 			const float* position(uint32_t) const;
 			const float* rotation(uint32_t) const;
 
 			//data
+			Mode m_mode;
 			What m_what;
 			Sizes m_sizes;
 			Colors m_colors;
@@ -78,12 +86,14 @@ namespace fea
 			float* m_positions_data;
 			float* m_rotations_data;
 
-			canvas::cameras::BoundingBox m_bounding_box;
+			canvas::cameras::BoundingBox m_bounding_box_mesh;
+			canvas::cameras::BoundingBox m_bounding_box_geometry;
 
 			//friends
 			friend class fea::draw::Mesh;
 			friend class fea::draw::Engine;
 			friend class fea::draw::Boundary;
+			friend class fea::draw::Geometry;
 		};
 	}
 }

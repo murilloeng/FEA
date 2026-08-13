@@ -8,6 +8,14 @@ namespace fea
 {
 	namespace geometry
 	{
+		class Geometry;
+	}
+}
+
+namespace fea
+{
+	namespace geometry
+	{
 		class Item
 		{
 		public:
@@ -31,6 +39,9 @@ namespace fea
 			//data
 			bool m_inverted;
 			uint32_t m_index;
+
+			//friends
+			friend class fea::geometry::Geometry;
 		};
 	}
 }
