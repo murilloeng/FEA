@@ -18,12 +18,6 @@ namespace fea
 				//destructor
 				~Beam2D(void);
 
-			public:
-				//data
-				static uint32_t draw_mesh(void);
-				static uint32_t draw_mesh(uint32_t);
-
-			private:
 				//data
 				uint32_t stress_set(void) const override;
 				uint32_t dof_set(uint32_t) const override;
@@ -49,18 +43,18 @@ namespace fea
 				//analysis
 				void update(void) override;
 				void restore(void) override;
+				void compute(void) override;
 
 				//compute
 				void compute_TL(void);
 				void compute_CR(void);
-				void compute(void) override;
 
 				//compute CR
 				void compute_CR_state(void);
 				void compute_CR_elastic(void);
 				void compute_CR_plastic(void);
+				void compute_CR_plastic_length(double*, double);
 				void compute_CR_plastic_section(double*, double);
-				void compute_CR_plastic_kinematic(double*, double);
 
 				//draw
 				void draw_setup(draw::Data&) const override;
@@ -69,9 +63,6 @@ namespace fea
 				//data
 				double m_tr_old, m_tr_new;
 				double m_dl[3], m_fl[3], m_Kl[9];
-
-				//static
-				static uint32_t m_draw_mesh;
 
 				//friends
 				friend class fea::mesh::Mesh;

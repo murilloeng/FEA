@@ -59,6 +59,7 @@ namespace fea
 				double velocity(DOF, uint32_t) const;
 				double acceleration(DOF, uint32_t) const;
 
+				const double* rotation_new(void) const;
 				const double* quaternion_old(void) const;
 				const double* quaternion_new(void) const;
 
@@ -80,6 +81,7 @@ namespace fea
 				static Mesh* m_mesh;
 				double m_position_ref[3];
 				double m_position_new[3];
+				double m_rotation_new[3];
 				double* m_quaternion_old;
 				double* m_quaternion_new;
 				std::vector<uint32_t> m_dof_indexes;

@@ -135,6 +135,10 @@ namespace fea
 				return (m_dof_set & 1 << uint32_t(dof)) && m_dof_indexes[id] < nu ? a[m_dof_indexes[id] + nu * step] : 0;
 			}
 
+			const double* Node::rotation_new(void) const
+			{
+				return m_rotation_new;
+			}
 			const double* Node::quaternion_old(void) const
 			{
 				return m_quaternion_old;
@@ -187,21 +191,18 @@ namespace fea
 			}
 			void Node::compute(void)
 			{
-				//data
-				const double t[] = {
-					state(DOF::Rotation_1), state(DOF::Rotation_2), state(DOF::Rotation_3)
-				};
-				const double u[] = {
-					state(DOF::Translation_1), state(DOF::Translation_2), state(DOF::Translation_3)
-				};
-				//position
-				m_position_new[0] = m_position_ref[0] + u[0];
-				m_position_new[1] = m_position_ref[1] + u[1];
-				m_position_new[2] = m_position_ref[2] + u[2];
 				//rotation
+				m_rotation_new[0] = state(DOF::Rotation_1);
+				m_rotation_new[1] = state(DOF::Rotation_1);
+				m_rotation_new[2] = state(DOF::Rotation_1);
+				//position
+				m_position_new[0] = m_position_ref[0] + state(DOF::Translation_1);
+				m_position_new[1] = m_position_ref[1] + state(DOF::Translation_2);
+				m_position_new[2] = m_position_ref[2] + state(DOF::Translation_3);
+				//quaternion
 				if(m_quaternion_new)
 				{
-					math::Quat(m_quaternion_new + 0) = math::Vec3(t).quaternion() * math::Quat(m_quaternion_old);
+					math::Quat(m_quaternion_new + 0) = math::Vec3(m_rotation_new).quaternion() * math::Quat(m_quaternion_old);
 				}
 			}
 			void Node::dof_setup(uint32_t& dof_counter)

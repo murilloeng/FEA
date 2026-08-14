@@ -23,6 +23,10 @@ namespace fea
 
 			public:
 				//data
+				const double* major_axis(void) const;
+				const double* major_axis(const double*);
+				const double* major_axis(double, double, double);
+
 				const sections::Section* section(void) const;
 				const sections::Section* section(sections::Section*);
 
@@ -37,6 +41,7 @@ namespace fea
 
 				//data
 				double m_Lr;
+				double m_major_axis[3];
 				const sections::Section* m_section;
 			};
 		}

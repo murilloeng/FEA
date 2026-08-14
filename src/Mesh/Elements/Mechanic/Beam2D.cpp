@@ -39,15 +39,6 @@ namespace fea
 			}
 
 			//data
-			uint32_t Beam2D::draw_mesh(void)
-			{
-				return m_draw_mesh;
-			}
-			uint32_t Beam2D::draw_mesh(uint32_t draw_mesh)
-			{
-				return m_draw_mesh = draw_mesh;
-			}
-
 			uint32_t Beam2D::stress_set(void) const
 			{
 				return m_shear ?
@@ -55,8 +46,6 @@ namespace fea
 					1 << uint32_t(materials::Stress::Type::s11)|
 					1 << uint32_t(materials::Stress::Type::s12);
 			}
-
-			//data
 			uint32_t Beam2D::dof_set(uint32_t) const
 			{
 				return
@@ -160,12 +149,12 @@ namespace fea
 				Beam::restore();
 				m_tr_new = m_tr_old;
 			}
-
-			//analysis
 			void Beam2D::compute(void)
 			{
 				m_formulation == Formulation::Corotational ? compute_CR() : compute_TL();
 			}
+
+			//compute
 			void Beam2D::compute_CR(void)
 			{
 				compute_CR_state();
@@ -248,7 +237,7 @@ namespace fea
 					//quadrature
 					const double s = m_quadrature.point(i);
 					const double w = m_quadrature.weight(i);
-					compute_CR_plastic_kinematic(B.data(), s);
+					compute_CR_plastic_length(B.data(), s);
 					//fibers
 					ss.zeros();
 					Ks.zeros();
@@ -271,15 +260,7 @@ namespace fea
 					Kl += w * m_Lr / 2 * B.transpose() * Ks * B;
 				}
 			}
-			void Beam2D::compute_CR_plastic_section(double* H, double x2)
-			{
-				if(!m_shear)
-				{
-					H[0 + 1 * 0] = 1;
-					H[0 + 1 * 1] = -x2;
-				}
-			}
-			void Beam2D::compute_CR_plastic_kinematic(double* B, double s)
+			void Beam2D::compute_CR_plastic_length(double* B, double s)
 			{
 				//data
 				const double a = (1 + s) / 2;
@@ -290,6 +271,14 @@ namespace fea
 					B[1 + 2 * 1] = (6 * a - 4) / m_Lr;
 					B[1 + 2 * 2] = (6 * a - 2) / m_Lr;
 					B[1 + 2 * 0] = B[0 + 2 * 1] = B[0 + 2 * 2] = 0;
+				}
+			}
+			void Beam2D::compute_CR_plastic_section(double* H, double x2)
+			{
+				if(!m_shear)
+				{
+					H[0 + 1 * 0] = 1;
+					H[0 + 1 * 1] = -x2;
 				}
 			}
 
@@ -331,9 +320,6 @@ namespace fea
 				data.m_index_edges += 2 * m_draw_mesh;
 				data.m_index_vertices += m_draw_mesh + 1;
 			}
-
-			//static
-			uint32_t Beam2D::m_draw_mesh = 20;
 		}
 	}
 }

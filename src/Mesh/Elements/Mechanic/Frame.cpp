@@ -1,4 +1,5 @@
 //std
+#include <cstring>
 #include <stdexcept>
 
 //Math
@@ -33,6 +34,22 @@ namespace fea
 			}
 
 			//data
+			const double* Frame::major_axis(void) const
+			{
+				return m_major_axis;
+			}
+			const double* Frame::major_axis(const double* major_axis)
+			{
+				return (const double*) memcpy(m_major_axis, major_axis, 3 * sizeof(double));
+			}
+			const double* Frame::major_axis(double s1, double s2, double s3)
+			{
+				m_major_axis[0] = s1;
+				m_major_axis[1] = s2;
+				m_major_axis[2] = s3;
+				return m_major_axis;
+			}
+
 			const sections::Section* Frame::section(void) const
 			{
 				return m_section;

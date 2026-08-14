@@ -38,6 +38,15 @@ namespace fea
 				return m_mixed;
 			}
 
+			uint32_t Beam::draw_mesh(void)
+			{
+				return m_draw_mesh;
+			}
+			uint32_t Beam::draw_mesh(uint32_t draw_mesh)
+			{
+				return m_draw_mesh = draw_mesh;
+			}
+
 			math::quadrature::Quadrature& Beam::quadrature(void)
 			{
 				return m_quadrature;
@@ -93,6 +102,7 @@ namespace fea
 			//static
 			bool Beam::m_shear = false;
 			bool Beam::m_mixed = false;
+			uint32_t Beam::m_draw_mesh = 20;
 		}
 	}
 }
