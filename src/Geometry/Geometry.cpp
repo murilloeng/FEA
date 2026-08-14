@@ -382,7 +382,7 @@ namespace fea
 			//data
 			const uint32_t npt = m_points.size();
 			const uint32_t npc = m_curves[index]->m_points.size();
-			//move
+			//scale
 			scale_points(m_curves[index]->m_points, c1, c2, c3, a, copy);
 			//copy
 			if(copy)
@@ -414,7 +414,7 @@ namespace fea
 			//data
 			const uint32_t npt = m_points.size();
 			const uint32_t npc = m_curves[index]->m_points.size();
-			//move
+			//scale
 			scale_points(m_curves[index]->m_points, c1, c2, c3, a1, a2, a3, copy);
 			//copy
 			if(copy)
@@ -579,40 +579,9 @@ namespace fea
 		//mesh
 		void Geometry::merge(void)
 		{
-			//data
-			std::vector<uint32_t> l1, l2;
-			math::BoundingBox bounding_box;
-			//bounding box
-			for(const Point* point : m_points) bounding_box.insert_vertex(point->m_position);
-			//query
-			const double r = bounding_box.radius();
-			for(uint32_t i = 0; i < m_points.size(); i++)
-			{
-				for(uint32_t j = 0; j < i; j++)
-				{
-					const math::Vec3 xi = m_points[i]->m_position;
-					const math::Vec3 xj = m_points[j]->m_position;
-					if((xj - xi).norm() < 1e-5 * r)
-					{
-						l1.push_back(i);
-						l2.push_back(j);
-						break;
-					}
-				}
-			}
-			//replace
-			for(auto [i1, i2] : std::views::zip(l1, l2))
-			{
-				for(Curve* curve : m_curves)
-				{
-					std::replace(curve->m_points.begin(), curve->m_points.end(), i1, i2);
-				}
-			}
-			//remove
-			for(uint32_t index : l1 | std::views::reverse)
-			{
-				remove_point(index);
-			}
+			merge_points();
+			merge_curves();
+			merge_surfaces();
 		}
 		void Geometry::generate_mesh(void) const
 		{
@@ -658,6 +627,103 @@ namespace fea
 			for(const Point* point : m_points) point->check();
 			for(const Curve* curve : m_curves) curve->check();
 			for(const Surface* surface : m_surfaces) surface->check();
+		}
+
+		//merge
+		void Geometry::merge_points(void)
+		{
+			//data
+			std::vector<uint32_t> l1, l2;
+			math::BoundingBox bounding_box;
+			//bounding box
+			for(const Point* point : m_points) bounding_box.insert_vertex(point->m_position);
+			//query
+			const double r = bounding_box.radius();
+			for(uint32_t i = 0; i < m_points.size(); i++)
+			{
+				for(uint32_t j = 0; j < i; j++)
+				{
+					const math::Vec3 xi = m_points[i]->m_position;
+					const math::Vec3 xj = m_points[j]->m_position;
+					if((xj - xi).norm() < 1e-5 * r)
+					{
+						l1.push_back(i);
+						l2.push_back(j);
+						break;
+					}
+				}
+			}
+			//merge
+			for(auto [i1, i2] : std::views::zip(l1, l2))
+			{
+				for(Curve* curve : m_curves)
+				{
+					std::replace(curve->m_points.begin(), curve->m_points.end(), i1, i2);
+				}
+			}
+			//remove
+			for(uint32_t index : l1 | std::views::reverse)
+			{
+				remove_point(index);
+			}
+		}
+		void Geometry::merge_curves(void)
+		{
+			//query
+			std::vector<bool> ld;
+			std::vector<uint32_t> l1, l2, ad, ar;
+			for(uint32_t i = 0; i < m_curves.size(); i++)
+			{
+				for(uint32_t j = 0; j < i; j++)
+				{
+					if(m_curves[j]->m_points.size() == m_curves[i]->m_points.size())
+					{
+						ad = ar = m_curves[j]->m_points;
+						std::reverse(ar.begin(), ar.end());
+						if(ad == m_curves[i]->m_points)
+						{
+							l1.push_back(i);
+							l2.push_back(j);
+							ld.push_back(true);
+							break;
+						}
+						if(ar == m_curves[i]->m_points)
+						{
+							l1.push_back(i);
+							l2.push_back(j);
+							ld.push_back(false);
+							break;
+						}
+					}
+				}
+			}
+			//merge
+			for(auto [i1, i2, id] : std::views::zip(l1, l2, ld))
+			{
+				for(Surface* surface : m_surfaces)
+				{
+					for(Loop& loop : surface->m_loops)
+					{
+						for(Item& item : loop.m_items)
+						{
+							if(item.m_index == i1)
+							{
+								item.m_index = i2;
+								if(!id) item.m_inverted = !item.m_inverted;
+							}
+						}
+					}
+				}
+			}
+			//remove
+			for(uint32_t index : l1 | std::views::reverse)
+			{
+				remove_curve(index);
+			}
+		}
+		void Geometry::merge_surfaces(void)
+		{
+			return;
 		}
 
 		//mesh

@@ -133,13 +133,20 @@ namespace fea
 			void rotate_curves(std::vector<uint32_t>, double, double, double, double, double, double, double, bool = false);
 			void rotate_surfaces(std::vector<uint32_t>, double, double, double, double, double, double, double, bool = false);
 
-			//generate
+			//merge
 			void merge(void);
+
+			//generate
 			void generate_mesh(void) const;
 
 		protected:
 			//analysis
 			void check(void) const;
+
+			//merge
+			void merge_points(void);
+			void merge_curves(void);
+			void merge_surfaces(void);
 
 			//generate
 			void generate_mesh_nodes(void) const;
