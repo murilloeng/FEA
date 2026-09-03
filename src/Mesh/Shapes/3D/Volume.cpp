@@ -8,7 +8,7 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Volume::Volume(void) : Shape(2)
+			Volume::Volume(uint32_t order) : Shape(order)
 			{
 				return;
 			}

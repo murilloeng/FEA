@@ -13,7 +13,7 @@ namespace fea
 			{
 			protected:
 				//constructor
-				Volume(void);
+				Volume(uint32_t);
 
 				//destructor
 				virtual ~Volume(void);
