@@ -16,7 +16,7 @@ namespace fea
 				Quadrangle(uint32_t);
 
 				//destructor
-				~Quadrangle(void);
+				virtual ~Quadrangle(void);
 
 			public:
 				//integration

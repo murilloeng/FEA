@@ -16,7 +16,7 @@ namespace fea
 				Volume(void);
 
 				//destructor
-				~Volume(void);
+				virtual ~Volume(void);
 
 			public:
 				//shape

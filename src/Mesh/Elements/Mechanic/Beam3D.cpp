@@ -81,7 +81,51 @@ namespace fea
 
 			void Beam3D::stiffness_CR(double* K) const
 			{
-				return;
+				//data
+				const math::Vec3 z1 = node(0)->position_ref();
+				const math::Vec3 z2 = node(1)->position_ref();
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
+				const math::Vec3 t1 = node(0)->rotation_new();
+				const math::Vec3 t2 = node(1)->rotation_new();
+				//axes
+				const math::Vec3 s1 = (z2 - z1) / m_Lr;
+				const math::Vec3 s2 = m_major_axis;
+				const math::Vec3 s3 = s1.cross(s2);
+				//quaternions
+				const math::Quat q0(s1, s2, s3);
+				const math::Quat q1 = node(0)->quaternion_new();
+				const math::Quat q2 = node(1)->quaternion_new();
+				//data
+				const math::Quat qr = q1 * q0;
+				const math::Mat3 Rr = qr.rotation();
+				const math::Mat3 Xr = (x2 - x1).spin();
+				const math::Mat3 T1 = t1.rotation_gradient();
+				const math::Mat3 T2 = t2.rotation_gradient();
+				const math::Mat3 Rt = qr.conjugate().rotation();
+				const math::Vec3 tl = qr.conjugate(q2 * q0).pseudo();
+				const math::Mat3 Ti = tl.rotation_gradient_inverse();
+				//material stiffness
+				compute_CR_kinematic();
+				math::Matrix(K, 12, 12) = m_B.transpose() * m_Kl * m_B;
+				//geometric stiffness
+				const math::Vec3 nl = m_fl.data() + 0;
+				const math::Vec3 ml = m_fl.data() + 3;
+				const math::Vec3 mp = Ti.transpose() * ml;
+				const math::Mat3 Hl = tl.rotation_hessian_inverse(ml, true);
+				math::Matrix(K, 12, 12).span(0, 3) += Rr * nl.spin() * Rt * T1;
+				math::Matrix(K, 12, 12).span(6, 3) -= Rr * nl.spin() * Rt * T1;
+				math::Matrix(K, 12, 12).span(9, 9) += t2.rotation_hessian(Rr * mp, true);
+				math::Matrix(K, 12, 12).span(3, 0) -= T1.transpose() * Rr * nl.spin() * Rt;
+				math::Matrix(K, 12, 12).span(3, 6) += T1.transpose() * Rr * nl.spin() * Rt;
+				math::Matrix(K, 12, 12).span(3, 3) += T1.transpose() * Rr * Hl * Ti * Rt * T1;
+				math::Matrix(K, 12, 12).span(9, 3) -= T2.transpose() * Rr * Hl * Ti * Rt * T1;
+				math::Matrix(K, 12, 12).span(3, 9) -= T1.transpose() * Rr * Hl * Ti * Rt * T2;
+				math::Matrix(K, 12, 12).span(9, 9) += T2.transpose() * Rr * Hl * Ti * Rt * T2;
+				math::Matrix(K, 12, 12).span(9, 3) -= T2.transpose() * Rr * mp.spin() * Rt * T1;
+				math::Matrix(K, 12, 12).span(3, 3) += T1.transpose() * Rr * mp.spin() * Rt * T1;
+				math::Matrix(K, 12, 12).span(3, 3) += T1.transpose() * Xr * Rr * nl.spin() * Rt * T1;
+				math::Matrix(K, 12, 12).span(3, 3) -= t1.rotation_hessian(Rr * mp + Xr * Rr * nl, true);
 			}
 			void Beam3D::stiffness_TL(double* K) const
 			{

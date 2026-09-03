@@ -30,7 +30,7 @@ namespace fea
 				Shape(uint32_t);
 
 				//destructor
-				~Shape(void);
+				virtual ~Shape(void);
 
 			public:
 				//types

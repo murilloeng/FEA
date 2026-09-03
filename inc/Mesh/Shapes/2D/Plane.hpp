@@ -16,7 +16,7 @@ namespace fea
 				Plane(uint32_t);
 
 				//destructor
-				~Plane(void);
+				virtual ~Plane(void);
 
 				//data
 				double thickness(double);

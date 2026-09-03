@@ -16,7 +16,7 @@ namespace fea
 				Triangle(uint32_t);
 
 				//destructor
-				~Triangle(void);
+				virtual ~Triangle(void);
 
 			public:
 				//integration
