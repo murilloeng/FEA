@@ -41,13 +41,16 @@ namespace fea
 					Tetra4, Tetra10, Brick8, Brick20, Brick27
 				};
 
+				//data
+				math::quadrature::Quadrature& quadrature(void);
+
 				//shape
 				virtual uint32_t dimension(void) const = 0;
 				virtual void function(double*, const double*) const = 0;
 				virtual void gradient(double*, const double*) const = 0;
 
 				//integration
-				math::quadrature::Quadrature& quadrature(void);
+				virtual uint32_t points(void) const = 0;
 				virtual void point(double&, double*, uint32_t) const = 0;
 
 				//geometry

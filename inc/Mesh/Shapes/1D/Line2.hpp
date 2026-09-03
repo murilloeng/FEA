@@ -11,14 +11,13 @@ namespace fea
 		{
 			class Line2 : public Line
 			{
-			protected:
+			public:
 				//constructor
 				Line2(void);
 
 				//destructor
 				virtual ~Line2(void);
 
-			public:
 				//shape
 				void function(double*, const double*) const override;
 				void gradient(double*, const double*) const override;

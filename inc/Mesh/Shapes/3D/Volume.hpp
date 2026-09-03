@@ -9,22 +9,21 @@ namespace fea
 	{
 		namespace shapes
 		{
-			class Line : public Shape
+			class Volume : public Shape
 			{
 			protected:
 				//constructor
-				Line(uint32_t);
+				Volume(void);
 
 				//destructor
-				virtual ~Line(void);
+				~Volume(void);
 
 			public:
 				//shape
 				uint32_t dimension(void) const override;
 
 				//integration
-				uint32_t points(void) const;
-				void point(double&, double*, uint32_t) const override;
+				uint32_t points(void) const override;
 			};
 		}
 	}

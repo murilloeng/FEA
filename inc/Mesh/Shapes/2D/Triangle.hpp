@@ -1,7 +1,7 @@
 #pragma once
 
 //FEA
-#include "FEA/inc/Mesh/Shapes/Shape.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Plane.hpp"
 
 namespace fea
 {
@@ -9,21 +9,17 @@ namespace fea
 	{
 		namespace shapes
 		{
-			class Line : public Shape
+			class Triangle : public Plane
 			{
 			protected:
 				//constructor
-				Line(uint32_t);
+				Triangle(uint32_t);
 
 				//destructor
-				virtual ~Line(void);
+				~Triangle(void);
 
 			public:
-				//shape
-				uint32_t dimension(void) const override;
-
 				//integration
-				uint32_t points(void) const;
 				void point(double&, double*, uint32_t) const override;
 			};
 		}

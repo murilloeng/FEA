@@ -19,7 +19,7 @@ namespace fea
 				return;
 			}
 
-			//inetgeration
+			//data
 			math::quadrature::Quadrature& Shape::quadrature(void)
 			{
 				return m_quadrature;

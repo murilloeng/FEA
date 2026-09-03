@@ -8,7 +8,7 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Line::Line(void) : Shape(2)
+			Line::Line(uint32_t order) : Shape(order)
 			{
 				return;
 			}
@@ -26,6 +26,10 @@ namespace fea
 			}
 
 			//integration
+			uint32_t Line::points(void) const
+			{
+				return m_quadrature.order();
+			}
 			void Line::point(double& w, double* s, uint32_t index) const
 			{
 				w = m_quadrature.weight(index);

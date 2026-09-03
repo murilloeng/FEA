@@ -8,7 +8,7 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Line2::Line2(void)
+			Line2::Line2(void) : Line(2)
 			{
 				return;
 			}

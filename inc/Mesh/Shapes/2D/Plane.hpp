@@ -9,22 +9,29 @@ namespace fea
 	{
 		namespace shapes
 		{
-			class Line : public Shape
+			class Plane : public Shape
 			{
 			protected:
 				//constructor
-				Line(uint32_t);
+				Plane(uint32_t);
 
 				//destructor
-				virtual ~Line(void);
+				~Plane(void);
+
+				//data
+				double thickness(double);
+				double thickness(void) const;
 
 			public:
 				//shape
 				uint32_t dimension(void) const override;
 
 				//integration
-				uint32_t points(void) const;
-				void point(double&, double*, uint32_t) const override;
+				uint32_t points(void) const override;
+
+			protected:
+				//data
+				double m_thickness;
 			};
 		}
 	}
