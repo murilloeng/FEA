@@ -49,7 +49,7 @@ namespace fea
 				for(uint32_t i = 0; i < 9; i++)
 				{
 					N[i] = 0;
-					for (uint32_t j = 0; j < 9; j++)
+					for(uint32_t j = 0; j < 9; j++)
 					{
 						N[i] += A[i + 9 * j] / 4 * v[j];
 					}

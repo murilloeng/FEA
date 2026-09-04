@@ -58,6 +58,6 @@ namespace fea
 				friend class fea::mesh::Mesh;
 			};
 		}
-		
+
 	}
 }

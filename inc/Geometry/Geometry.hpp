@@ -72,7 +72,7 @@ namespace fea
 			void move_point(uint32_t, const double*, bool = false);
 			void move_curve(uint32_t, const double*, bool = false);
 			void move_surface(uint32_t, const double*, bool = false);
-			
+
 			void move_point(uint32_t, double, double, double, bool = false);
 			void move_curve(uint32_t, double, double, double, bool = false);
 			void move_surface(uint32_t, double, double, double, bool = false);
@@ -80,7 +80,7 @@ namespace fea
 			void scale_point(uint32_t, const double*, double, bool = false);
 			void scale_curve(uint32_t, const double*, double, bool = false);
 			void scale_surface(uint32_t, const double*, double, bool = false);
-			
+
 			void scale_point(uint32_t, const double*, const double*, bool = false);
 			void scale_curve(uint32_t, const double*, const double*, bool = false);
 			void scale_surface(uint32_t, const double*, const double*, bool = false);
@@ -104,7 +104,7 @@ namespace fea
 			void move_points(std::vector<uint32_t>, const double*, bool = false);
 			void move_curves(std::vector<uint32_t>, const double*, bool = false);
 			void move_surfaces(std::vector<uint32_t>, const double*, bool = false);
-	
+
 			void move_points(std::vector<uint32_t>, double, double, double, bool = false);
 			void move_curves(std::vector<uint32_t>, double, double, double, bool = false);
 			void move_surfaces(std::vector<uint32_t>, double, double, double, bool = false);

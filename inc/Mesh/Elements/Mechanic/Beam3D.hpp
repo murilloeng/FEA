@@ -33,7 +33,7 @@ namespace fea
 				void damping_CR(double*) const;
 				void damping_TL(double*) const;
 				void damping(double*) const override;
-				
+
 				void stiffness_CR(double*) const;
 				void stiffness_TL(double*) const;
 				void stiffness(double*) const override;

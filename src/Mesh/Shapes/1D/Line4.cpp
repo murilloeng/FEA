@@ -1,6 +1,14 @@
 //FEA
 #include "FEA/inc/Mesh/Shapes/1D/Line4.hpp"
 
+//static
+static const double A[] = {
+	-1, -1,  +9,  +9, 
+	+1, -1, -27, +27, 
+	+9, +9,  -9,  -9, 
+	-9, +9, +27, -27
+};
+
 namespace fea
 {
 	namespace mesh
@@ -12,7 +20,7 @@ namespace fea
 			{
 				return;
 			}
-			
+
 			//destructor
 			Line4::~Line4(void)
 			{
@@ -26,19 +34,35 @@ namespace fea
 			}
 
 			//shape
-			void Line4::function(double* N, const double* s) const
+			void Line4::function(double* N, const double* p) const
 			{
-				N[0] = (-1 + s[0] + 9 * s[0] * s[0] - 9 * s[0] * s[0] * s[0]) / 16;
-				N[3] = (-1 - s[0] + 9 * s[0] * s[0] + 9 * s[0] * s[0] * s[0]) / 16;
-				N[1] = 9 * (1 - 3 * s[0] - s[0] * s[0] + 3 * s[0] * s[0] * s[0]) / 16;
-				N[2] = 9 * (1 + 3 * s[0] - s[0] * s[0] - 3 * s[0] * s[0] * s[0]) / 16;
+				//data
+				const double r = p[0];
+				const double v[] = {1, r, r * r, r * r * r};
+				//shape
+				for(uint32_t i = 0; i < 4; i++)
+				{
+					N[i] = 0;
+					for(uint32_t j = 0; j < 4; j++)
+					{
+						N[i] += A[i + 4 * j] / 16 * v[j];
+					}
+				}
 			}
-			void Line4::gradient(double* B, const double* s) const
+			void Line4::gradient(double* B, const double* p) const
 			{
-				B[0] = (+1 + 18 * s[0] - 27 * s[0] * s[0]) / 16;
-				B[3] = (-1 + 18 * s[0] + 27 * s[0] * s[0]) / 16;
-				B[1] = 9 * (-3 - 2 * s[0] + 9 * s[0] * s[0]) / 16;
-				B[2] = 9 * (+3 - 2 * s[0] - 9 * s[0] * s[0]) / 16;
+				//data
+				const double r = p[0];
+				const double dv[] = {0, 1, 2 * r, 3 * r * r};
+				//shape
+				for(uint32_t i = 0; i < 4; i++)
+				{
+					B[i] = 0;
+					for(uint32_t j = 0; j < 4; j++)
+					{
+						B[i] += A[i + 4 * j] / 16 * dv[j];
+					}
+				}
 			}
 		}
 	}

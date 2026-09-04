@@ -22,13 +22,13 @@ namespace fea
 			{
 				return;
 			}
-			
+
 			//destructor
 			Nodal::~Nodal(void)
 			{
 				return;
 			}
-			
+
 			//data
 			nodes::DOF Nodal::dof(void) const
 			{

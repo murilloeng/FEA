@@ -12,7 +12,7 @@ namespace fea
 			{
 				return;
 			}
-			
+
 			//destructor
 			Line::~Line(void)
 			{

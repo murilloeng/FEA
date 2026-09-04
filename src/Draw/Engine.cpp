@@ -308,7 +308,7 @@ namespace fea
 				canvas::modifier::alt, canvas::modifier::shift, canvas::modifier::control};
 			//modifiers
 			uint32_t canvas_modifiers = 0;
-			for (uint32_t i = 0; i < 3; i++)
+			for(uint32_t i = 0; i < 3; i++)
 			{
 				if(glfw_modifiers & glfw_list[i])
 				{
@@ -326,7 +326,7 @@ namespace fea
 			canvas::button canvas_list[] = {
 				canvas::button::left, canvas::button::right, canvas::button::middle};
 			//modifiers
-			for (uint32_t i = 0; i < 3; i++)
+			for(uint32_t i = 0; i < 3; i++)
 			{
 				if(glfw_button == glfw_list[i])
 				{

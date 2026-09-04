@@ -47,7 +47,7 @@ namespace fea
 				const double s = p[1];
 				const double v[] = {1, r, s, r * r, r * s, s * s, r * r * r, r * r * s, r * s * s, s * s * s};
 				//shape
-				for (uint32_t i = 0; i < 9; i++)
+				for(uint32_t i = 0; i < 9; i++)
 				{
 					N[i] = 0;
 					for(uint32_t j = 0; j < 10; j++)
