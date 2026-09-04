@@ -1,14 +1,6 @@
 //FEA
 #include "FEA/inc/Mesh/Shapes/1D/Line4.hpp"
 
-//static
-static const double A[] = {
-	-1, -1,  +9,  +9, 
-	+1, -1, -27, +27, 
-	+9, +9,  -9,  -9, 
-	-9, +9, +27, -27
-};
-
 namespace fea
 {
 	namespace mesh
@@ -38,31 +30,21 @@ namespace fea
 			{
 				//data
 				const double r = p[0];
-				const double v[] = {1, r, r * r, r * r * r};
 				//shape
-				for(uint32_t i = 0; i < 4; i++)
-				{
-					N[i] = 0;
-					for(uint32_t j = 0; j < 4; j++)
-					{
-						N[i] += A[i + 4 * j] / 16 * v[j];
-					}
-				}
+				N[0] = (-1 + r + 9 * r * r - 9 * r * r * r) / 16;
+				N[1] = (-1 - r + 9 * r * r + 9 * r * r * r) / 16;
+				N[2] = (+9 - 27 * r - 9 * r * r + 27 * r * r * r) / 16; 
+				N[3] = (+9 + 27 * r - 9 * r * r - 27 * r * r * r) / 16;
 			}
 			void Line4::gradient(double* B, const double* p) const
 			{
 				//data
 				const double r = p[0];
-				const double dv[] = {0, 1, 2 * r, 3 * r * r};
-				//shape
-				for(uint32_t i = 0; i < 4; i++)
-				{
-					B[i] = 0;
-					for(uint32_t j = 0; j < 4; j++)
-					{
-						B[i] += A[i + 4 * j] / 16 * dv[j];
-					}
-				}
+				//gradient
+				B[0] = (+1 + 18 * r - 27 * r * r) / 16;
+				B[1] = (-1 + 18 * r + 27 * r * r) / 16;
+				B[2] = (-27 - 18 * r + 81 * r * r) / 16;
+				B[3] = (+27 - 18 * r - 81 * r * r) / 16;
 			}
 		}
 	}

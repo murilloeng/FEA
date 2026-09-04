@@ -1,12 +1,6 @@
 //FEA
 #include "FEA/inc/Mesh/Shapes/1D/Line2.hpp"
 
-//static
-static const double A[] = {
-	+1.0, +1.0,
-	-1.0, +1.0
-};
-
 namespace fea
 {
 	namespace mesh
@@ -36,30 +30,15 @@ namespace fea
 			{
 				//data
 				const double r = p[0];
-				const double v[] = {1, r};
 				//shape
-				for(uint32_t i = 0; i < 2; i++)
-				{
-					N[i] = 0;
-					for(uint32_t j = 0; j < 2; j++)
-					{
-						N[i] += A[i + 2 * j] / 2 * v[j];
-					}
-				}
+				N[0] = (1 - r) / 2;
+				N[1] = (1 + r) / 2;
 			}
 			void Line2::gradient(double* B, const double* p) const
 			{
-				//data
-				const double dv[] = {0, 1};
 				//gradient
-				for(uint32_t i = 0; i < 2; i++)
-				{
-					B[i] = 0;
-					for(uint32_t j = 0; j < 2; j++)
-					{
-						B[i] += A[i + 2 * j] / 2 * dv[j];
-					}
-				}
+				B[0] = -0.5;
+				B[1] = +0.5;
 			}
 		}
 	}

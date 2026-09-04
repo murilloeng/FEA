@@ -26,11 +26,11 @@ namespace fea
 			}
 
 			//integration
-			void Brick27::function(double* N, const double* s) const
+			void Brick27::function(double* N, const double* p) const
 			{
 				return;
 			}
-			void Brick27::gradient(double* B, const double* s) const
+			void Brick27::gradient(double* B, const double* p) const
 			{
 				return;
 			}

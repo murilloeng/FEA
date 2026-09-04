@@ -1,19 +1,6 @@
 //FEA
 #include "FEA/inc/Mesh/Shapes/2D/Quad8.hpp"
 
-//static
-static const double A[] = {
-	+1, +1, +1, +1, +1, +1, +1, +1,
-	+0, +0, +0, +0, +0, +4, +0, -4,
-	+0, +0, +0, +0, -4, +0, +4, +0,
-	-1, -1, -1, -1, -1, +3, -1, +3,
-	+2, -2, +2, -2, +0, +0, +0, +0,
-	-1, -1, -1, -1, +3, -1, +3, -1,
-	-2, -2, +2, +2, +4, +0, -4, +0,
-	-2, +2, +2, -2, +0, -4, +0, +4,
-	+3, +3, +3, +3, -3, -3, -3, -3
-};
-
 namespace fea
 {
 	namespace mesh
@@ -44,36 +31,39 @@ namespace fea
 				//data
 				const double r = p[0];
 				const double s = p[1];
-				const double v[] = {1, r, s, r * r, r * s, s * s, r * r * s, r * s * s, r * r * s * s};
 				//shape
-				for(uint32_t i = 0; i < 8; i++)
-				{
-					N[i] = 0;
-					for(uint32_t j = 0; j < 9; j++)
-					{
-						N[i] += A[i + 8 * j] / 8 * v[j];
-					}
-				}
+				N[4] = (1 - r * r) * (1 - s) * (1 - 3 * s) / 8;
+				N[5] = (1 + r) * (1 + 3 * r) * (1 - s * s) / 8;
+				N[6] = (1 - r * r) * (1 + s) * (1 + 3 * s) / 8;
+				N[7] = (1 - r) * (1 - 3 * r) * (1 - s * s) / 8;
+				N[0] = (1 - r) * (1 - s) * (1 + r + s + 3 * r * s) / 8;
+				N[1] = (1 + r) * (1 - s) * (1 - r + s - 3 * r * s) / 8;
+				N[2] = (1 + r) * (1 + s) * (1 - r - s + 3 * r * s) / 8;
+				N[3] = (1 - r) * (1 + s) * (1 + r - s - 3 * r * s) / 8;
 			}
 			void Quad8::gradient(double* B, const double* p) const
 			{
 				//data
 				const double r = p[0];
 				const double s = p[1];
-				const double dv[] = {
-					0, 1, 0, 2 * r, s, 0, 2 * r * s, s * s, 2 * r * s * s,
-					0, 0, 1, 0, r, 2 * s, r * r, 2 * r * s, 2 * r * r * s
-				};
-				//gradient
-				for(uint32_t i = 0; i < 8; i++)
-				{
-					B[i + 0] = B[i + 8] = 0;
-					for(uint32_t j = 0; j < 9; j++)
-					{
-						B[i + 0] += A[i + 8 * j] / 8 * dv[j + 0];
-						B[i + 8] += A[i + 8 * j] / 8 * dv[j + 8];
-					}
-				}
+				//gradient r
+				B[5 + 0] = +(3 * r + 2) * (1 - s * s) / 4;
+				B[7 + 0] = +(3 * r - 2) * (1 - s * s) / 4;
+				B[4 + 0] = -r * (1 - s) * (1 - 3 * s) / 4;
+				B[6 + 0] = -r * (1 + s) * (1 + 3 * s) / 4;
+				B[0 + 0] = -(1 - s) * (r - s + 3 * r * s) / 4;
+				B[1 + 0] = -(1 - s) * (r + s + 3 * r * s) / 4;
+				B[2 + 0] = -(1 + s) * (r - s - 3 * r * s) / 4;
+				B[3 + 0] = -(1 + s) * (r + s - 3 * r * s) / 4;
+				//gradient s
+				B[4 + 8] = -(1 - r * r) * (3 * s - 2) / 4;
+				B[6 + 8] = +(1 - r * r) * (3 * s + 2) / 4;
+				B[5 + 8] = -(1 + r) * (3 * r + 1) * s / 4;
+				B[7 + 8] = +(1 - r) * (3 * r - 1) * s / 4;
+				B[0 + 8] = -(1 - r) * (s - r + 3 * r * s) / 4;
+				B[1 + 8] = -(1 + r) * (s + r - 3 * r * s) / 4;
+				B[2 + 8] = -(1 + r) * (s - r - 3 * r * s) / 4;
+				B[3 + 8] = -(1 - r) * (s + r + 3 * r * s) / 4;
 			}
 		}
 	}

@@ -1,13 +1,6 @@
 //FEA
 #include "FEA/inc/Mesh/Shapes/2D/Tri3.hpp"
 
-//static
-static const double A[] = {
-	+0, +1, +1,
-	-1, +1, +0, 
-	-1, +0, +1
-};
-
 namespace fea
 {
 	namespace mesh
@@ -38,34 +31,21 @@ namespace fea
 				//data
 				const double r = p[0];
 				const double s = p[1];
-				const double v[] = {1, r, s};
 				//shape
-				for(uint32_t i = 0; i < 3; i++)
-				{
-					N[i] = 0;
-					for(uint32_t j = 0; j < 3; j++)
-					{
-						N[i] += A[i + 3 * j] / 2 * v[j];
-					}
-				}
+				N[0] = -(r + s) / 2;
+				N[1] = +(1 + r) / 2;
+				N[2] = +(1 + s) / 2;
 			}
 			void Tri3::gradient(double* B, const double* p) const
 			{
-				//data
-				const double dv[] = {
-					0, 1, 0,
-					0, 0, 1
-				};
-				//gradient
-				for(uint32_t i = 0; i < 3; i++)
-				{
-					B[i + 0] = B[i + 3] = 0;
-					for(uint32_t j = 0; j < 3; j++)
-					{
-						B[i + 0] += A[i + 3 * j] / 2 * dv[j + 0];
-						B[i + 3] += A[i + 3 * j] / 2 * dv[j + 3];
-					}
-				}
+				//gradient r
+				B[0 + 0] = -0.5;
+				B[1 + 0] = +0.5;
+				B[2 + 0] = +0.0;
+				//gradient s
+				B[0 + 3] = -0.5;
+				B[1 + 3] = +0.0;
+				B[2 + 3] = +0.5;
 			}
 		}
 	}
