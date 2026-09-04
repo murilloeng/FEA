@@ -19,6 +19,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tetra4::vertices(void) const
+			{
+				return 4U;
+			}
+
 			//integration
 			void Tetra4::function(double* N, const double* s) const
 			{

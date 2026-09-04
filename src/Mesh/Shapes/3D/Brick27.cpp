@@ -19,6 +19,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Brick27::vertices(void) const
+			{
+				return 27U;
+			}
+
 			//integration
 			void Brick27::function(double* N, const double* s) const
 			{

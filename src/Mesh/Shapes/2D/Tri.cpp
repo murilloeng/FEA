@@ -19,8 +19,14 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tri::edges(void) const
+			{
+				return 3U;
+			}
+
 			//integration
-			void Tri::point(double& w, double* s, uint32_t index) const
+			void Tri::point(double& w, double* p, uint32_t index) const
 			{
 				//data
 				const uint32_t i = index / m_quadrature.order();
@@ -32,8 +38,8 @@ namespace fea
 				const double wj = m_quadrature.weight(j);
 				//return
 				w = wi * wj * (1 + n) / 2;
-				s[0] = (1 + e) * (1 + n) / 2 - 1;
-				s[1] = (1 - e) * (1 + n) / 2 - 1;
+				p[0] = (1 + e) * (1 + n) / 2 - 1;
+				p[1] = (1 - e) * (1 + n) / 2 - 1;
 			}
 		}
 	}

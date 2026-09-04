@@ -19,15 +19,21 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Quad::edges(void) const
+			{
+				return 4U;
+			}
+
 			//integration
-			void Quad::point(double& w, double* s, uint32_t index) const
+			void Quad::point(double& w, double* p, uint32_t index) const
 			{
 				//data
 				const uint32_t i = index % m_quadrature.order();
 				const uint32_t j = index / m_quadrature.order();
 				//point
-				s[0] = m_quadrature.point(i);
-				s[1] = m_quadrature.point(j);
+				p[0] = m_quadrature.point(i);
+				p[1] = m_quadrature.point(j);
 				w = m_quadrature.weight(i) * m_quadrature.weight(j);
 			}
 		}

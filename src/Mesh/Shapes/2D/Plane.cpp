@@ -30,6 +30,10 @@ namespace fea
 			}
 
 			//shape
+			uint32_t Plane::faces(void) const
+			{
+				return 1U;
+			}
 			uint32_t Plane::dimension(void) const
 			{
 				return 2U;

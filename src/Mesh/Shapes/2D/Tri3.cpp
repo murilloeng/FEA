@@ -26,6 +26,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tri3::vertices(void) const
+			{
+				return 3U;
+			}
+
 			//integration
 			void Tri3::function(double* N, const double* p) const
 			{

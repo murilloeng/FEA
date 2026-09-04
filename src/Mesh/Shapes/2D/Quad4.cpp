@@ -27,6 +27,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Quad4::vertices(void) const
+			{
+				return 4U;
+			}
+
 			//integration
 			void Quad4::function(double* N, const double* p) const
 			{

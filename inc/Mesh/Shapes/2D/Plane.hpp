@@ -23,7 +23,8 @@ namespace fea
 				double thickness(void) const;
 
 			public:
-				//shape
+				//geometry
+				uint32_t faces(void) const override;
 				uint32_t dimension(void) const override;
 
 				//integration

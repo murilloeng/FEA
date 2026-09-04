@@ -44,8 +44,13 @@ namespace fea
 				//data
 				math::quadrature::Quadrature& quadrature(void);
 
-				//shape
+				//geometry
+				virtual uint32_t edges(void) const = 0;
+				virtual uint32_t faces(void) const = 0;
+				virtual uint32_t vertices(void) const = 0;
 				virtual uint32_t dimension(void) const = 0;
+
+				//shape
 				virtual void function(double*, const double*) const = 0;
 				virtual void gradient(double*, const double*) const = 0;
 

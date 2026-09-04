@@ -19,6 +19,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Line3::vertices(void) const
+			{
+				return 3U;
+			}
+
 			//shape
 			void Line3::function(double* N, const double* s) const
 			{

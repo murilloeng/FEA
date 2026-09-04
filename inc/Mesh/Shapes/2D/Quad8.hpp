@@ -17,6 +17,9 @@ namespace fea
 
 				//destructor
 				~Quad8(void);
+
+				//geometry
+				uint32_t vertices(void) const override;
 				
 				//shape
 				void function(double*, const double*) const override;

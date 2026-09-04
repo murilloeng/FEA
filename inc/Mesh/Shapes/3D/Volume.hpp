@@ -19,7 +19,7 @@ namespace fea
 				virtual ~Volume(void);
 
 			public:
-				//shape
+				//geometry
 				uint32_t dimension(void) const override;
 
 				//integration

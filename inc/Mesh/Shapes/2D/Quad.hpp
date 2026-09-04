@@ -19,6 +19,9 @@ namespace fea
 				virtual ~Quad(void);
 
 			public:
+				//geometry
+				uint32_t edges(void) const override;
+
 				//integration
 				void point(double&, double*, uint32_t) const override;
 			};

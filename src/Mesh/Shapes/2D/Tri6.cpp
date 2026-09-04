@@ -29,6 +29,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tri6::vertices(void) const
+			{
+				return 6U;
+			}
+
 			//integration
 			void Tri6::function(double* N, const double* p) const
 			{

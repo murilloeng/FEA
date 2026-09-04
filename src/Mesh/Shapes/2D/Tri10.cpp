@@ -33,6 +33,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tri10::vertices(void) const
+			{
+				return 10U;
+			}
+
 			//integration
 			void Tri10::function(double* N, const double* p) const
 			{

@@ -32,6 +32,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Quad9::vertices(void) const
+			{
+				return 9U;
+			}
+
 			//integration
 			void Quad9::function(double* N, const double* p) const
 			{

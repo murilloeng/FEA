@@ -19,6 +19,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tetra10::vertices(void) const
+			{
+				return 10U;
+			}
+
 			//integration
 			void Tetra10::function(double* N, const double* s) const
 			{

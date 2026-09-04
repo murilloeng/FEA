@@ -19,6 +19,16 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tetra::edges(void) const
+			{
+				return 6U;
+			}
+			uint32_t Tetra::faces(void) const
+			{
+				return 4U;
+			}
+
 			//integration
 			void Tetra::point(double& w, double* s, uint32_t index) const
 			{

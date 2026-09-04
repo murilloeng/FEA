@@ -19,7 +19,9 @@ namespace fea
 				virtual ~Line(void);
 
 			public:
-				//shape
+				//geometry
+				uint32_t edges(void) const override;
+				uint32_t faces(void) const override;
 				uint32_t dimension(void) const override;
 
 				//integration

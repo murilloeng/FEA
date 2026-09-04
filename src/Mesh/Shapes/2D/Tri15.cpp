@@ -38,6 +38,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Tri15::vertices(void) const
+			{
+				return 15U;
+			}
+
 			//integration
 			void Tri15::function(double* N, const double* p) const
 			{

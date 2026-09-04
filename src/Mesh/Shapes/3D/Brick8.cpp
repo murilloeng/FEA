@@ -19,6 +19,12 @@ namespace fea
 				return;
 			}
 
+			//geometry
+			uint32_t Brick8::vertices(void) const
+			{
+				return 8U;
+			}
+
 			//integration
 			void Brick8::function(double* N, const double* s) const
 			{
