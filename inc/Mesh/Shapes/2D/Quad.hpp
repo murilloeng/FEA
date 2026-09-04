@@ -9,14 +9,14 @@ namespace fea
 	{
 		namespace shapes
 		{
-			class Triangle : public Plane
+			class Quad : public Plane
 			{
 			protected:
 				//constructor
-				Triangle(uint32_t);
+				Quad(uint32_t);
 
 				//destructor
-				virtual ~Triangle(void);
+				virtual ~Quad(void);
 
 			public:
 				//integration

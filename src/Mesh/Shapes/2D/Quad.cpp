@@ -1,5 +1,5 @@
 //FEA
-#include "FEA/inc/Mesh/Shapes/2D/Quadrangle.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Quad.hpp"
 
 namespace fea
 {
@@ -8,19 +8,19 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Quadrangle::Quadrangle(uint32_t order) : Plane(order)
+			Quad::Quad(uint32_t order) : Plane(order)
 			{
 				return;
 			}
 
 			//destructor
-			Quadrangle::~Quadrangle(void)
+			Quad::~Quad(void)
 			{
 				return;
 			}
 
 			//integration
-			void Quadrangle::point(double& w, double* s, uint32_t index) const
+			void Quad::point(double& w, double* s, uint32_t index) const
 			{
 				//data
 				const uint32_t i = index % m_quadrature.order();

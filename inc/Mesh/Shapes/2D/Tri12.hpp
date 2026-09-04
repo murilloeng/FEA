@@ -1,7 +1,7 @@
 #pragma once
 
 //FEA
-#include "FEA/inc/Mesh/Shapes/2D/Triangle.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Tri.hpp"
 
 namespace fea
 {
@@ -9,7 +9,7 @@ namespace fea
 	{
 		namespace shapes
 		{
-			class Tri12 : public Triangle
+			class Tri12 : public Tri
 			{
 			public:
 				//constructor

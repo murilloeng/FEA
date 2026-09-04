@@ -3,9 +3,9 @@
 
 //static
 static const double A[] = {
-	+0, -1, -1, 
-	+1, +1, +0, 
-	+1, +0, +1
+	+0, +1, +1,
+	-1, +1, +0, 
+	-1, +0, +1
 };
 
 namespace fea
@@ -15,7 +15,7 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Tri3::Tri3(void) : Triangle(1)
+			Tri3::Tri3(void) : Tri(1)
 			{
 				return;
 			}
@@ -27,34 +27,37 @@ namespace fea
 			}
 
 			//integration
-			void Tri3::function(double* N, const double* s) const
+			void Tri3::function(double* N, const double* p) const
 			{
 				//data
-				const double v[] = {1, s[0], s[1]};
+				const double r = p[0];
+				const double s = p[1];
+				const double v[] = {1, r, s};
 				//shape
 				for(uint32_t i = 0; i < 3; i++)
 				{
 					N[i] = 0;
 					for (uint32_t j = 0; j < 3; j++)
 					{
-						N[i] += A[3 * i + j] / 2 * v[j];
+						N[i] += A[i + 3 * j] / 2 * v[j];
 					}
 				}
 			}
-			void Tri3::gradient(double* B, const double* s) const
+			void Tri3::gradient(double* B, const double* p) const
 			{
 				//data
-				const double dv1[] = {0, 1, 0};
-				const double dv2[] = {0, 0, 1};
+				const double dv[] = {
+					0, 1, 0,
+					0, 0, 1
+				};
 				//gradient
 				for(uint32_t i = 0; i < 3; i++)
 				{
-					B[3 * 0 + i] = 0;
-					B[3 * 1 + i] = 0;
+					B[i + 0] = B[i + 3] = 0;
 					for(uint32_t j = 0; j < 3; j++)
 					{
-						B[3 * 0 + i] += A[3 * i + j] / 2 * dv1[j];
-						B[3 * 1 + i] += A[3 * i + j] / 2 * dv2[j];
+						B[i + 0] += A[i + 3 * j] / 2 * dv[j + 0];
+						B[i + 3] += A[i + 3 * j] / 2 * dv[j + 3];
 					}
 				}
 			}

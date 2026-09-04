@@ -1,5 +1,5 @@
 //FEA
-#include "FEA/inc/Mesh/Shapes/2D/Triangle.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Tri.hpp"
 
 namespace fea
 {
@@ -8,19 +8,19 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Triangle::Triangle(uint32_t order) : Plane(order)
+			Tri::Tri(uint32_t order) : Plane(order)
 			{
 				return;
 			}
 
 			//destructor
-			Triangle::~Triangle(void)
+			Tri::~Tri(void)
 			{
 				return;
 			}
 
 			//integration
-			void Triangle::point(double& w, double* s, uint32_t index) const
+			void Tri::point(double& w, double* s, uint32_t index) const
 			{
 				//data
 				const uint32_t i = index / m_quadrature.order();

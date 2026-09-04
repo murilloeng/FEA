@@ -1,7 +1,7 @@
 #pragma once
 
 //FEA
-#include "FEA/inc/Mesh/Shapes/2D/Quadrangle.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Quad.hpp"
 
 namespace fea
 {
@@ -9,7 +9,7 @@ namespace fea
 	{
 		namespace shapes
 		{
-			class Quad8 : public Quadrangle
+			class Quad8 : public Quad
 			{
 			public:
 				//constructor

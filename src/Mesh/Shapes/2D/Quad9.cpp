@@ -3,15 +3,15 @@
 
 //static
 static const double A[] = {
-	+0, +0, +0, +0, +1, +0, -1, -1, +1,
-	+0, +0, +0, +0, -1, +0, -1, +1, +1,
-	+0, +0, +0, +0, +1, +0, +1, +1, +1,
-	+0, +0, +0, +0, -1, +0, +1, -1, +1,
-	+0, +0, -2, +0, +0, +2, +2, +0, -2,
-	+0, +2, +0, +2, +0, +0, +0, -2, -2,
-	+0, +0, +2, +0, +0, +2, -2, +0, -2,
-	+0, -2, +0, +2, +0, +0, +0, +2, -2,
-	+4, +0, +0, -4, +0, -4, +0, +0, +4
+	+0, +0, +0, +0, +0, +0, +0, +0, +4, 
+	+0, +0, +0, +0, +0, +2, +0, -2, +0, 
+	+0, +0, +0, +0, -2, +0, +2, +0, +0,
+	+0, +0, +0, +0, +0, +2, +0, +2, -4, 
+	+1, -1, +1, -1, +0, +0, +0, +0, +0, 
+	+0, +0, +0, +0, +2, +0, +2, +0, -4, 
+	-1, -1, +1, +1, +2, +0, -2, +0, +0, 
+	-1, +1, +1, -1, +0, -2, +0, +2, +0, 
+	+1, +1, +1, +1, -2, -2, -2, -2, +4
 };
 
 namespace fea
@@ -21,7 +21,7 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Quad9::Quad9(void) : Quadrangle(2)
+			Quad9::Quad9(void) : Quad(2)
 			{
 				return;
 			}
@@ -33,37 +33,39 @@ namespace fea
 			}
 
 			//integration
-			void Quad9::function(double* N, const double* s) const
+			void Quad9::function(double* N, const double* p) const
 			{
 				//data
-				const double v[] = {
-					1, s[0], s[1], s[0] * s[0], s[0] * s[1], s[1] * s[1], 
-					s[0] * s[0] * s[1], s[0] * s[1] * s[1], s[0] * s[0] * s[1] * s[1]
-				};
+				const double r = p[0];
+				const double s = p[1];
+				const double v[] = {1, r, s, r * r, r * s, s * s, r * r * s, r * s * s, r * r * s * s};
 				//shape
 				for(uint32_t i = 0; i < 9; i++)
 				{
 					N[i] = 0;
 					for (uint32_t j = 0; j < 9; j++)
 					{
-						N[i] += A[9 * i + j] / 4 * v[j];
+						N[i] += A[i + 9 * j] / 4 * v[j];
 					}
 				}
 			}
-			void Quad9::gradient(double* B, const double* s) const
+			void Quad9::gradient(double* B, const double* p) const
 			{
 				//data
-				const double dv1[] = {0, 1, 0, 2 * s[0], s[1], 0, 2 * s[0] * s[1], s[1] * s[1], 2 * s[0] * s[1] * s[1]};
-				const double dv2[] = {0, 0, 1, 0, s[0], 2 * s[1], s[0] * s[0], 2 * s[0] * s[1], 2 * s[0] * s[0] * s[1]};
+				const double r = p[0];
+				const double s = p[1];
+				const double dv[] = {
+					0, 1, 0, 2 * r, s, 0, 2 * r * s, s * s, 2 * r * s * s,
+					0, 0, 1, 0, r, 2 * s, r * r, 2 * r * s, 2 * r * r * s
+				};
 				//gradient
 				for(uint32_t i = 0; i < 9; i++)
 				{
-					B[9 * 0 + i] = 0;
-					B[9 * 1 + i] = 0;
+					B[i + 0] = B[i + 9] = 0;
 					for(uint32_t j = 0; j < 9; j++)
 					{
-						B[9 * 0 + i] += A[9 * i + j] / 4 * dv1[j];
-						B[9 * 1 + i] += A[9 * i + j] / 4 * dv2[j];
+						B[i + 0] += A[i + 9 * j] / 4 * dv[j + 0];
+						B[i + 9] += A[i + 9 * j] / 4 * dv[j + 0];
 					}
 				}
 			}

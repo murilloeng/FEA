@@ -3,9 +3,9 @@
 
 //static
 static const double A[] = {
-	+1, -1, -1, +1,
-	+1, +1, -1, -1,
-	+1, +1, +1, +1,
+	+1, +1, +1, +1, 
+	-1, +1, +1, -1, 
+	-1, -1, +1, +1, 
 	+1, -1, +1, -1
 };
 
@@ -16,7 +16,7 @@ namespace fea
 		namespace shapes
 		{
 			//constructor
-			Quad4::Quad4(void) : Quadrangle(2)
+			Quad4::Quad4(void) : Quad(2)
 			{
 				return;
 			}
@@ -28,34 +28,39 @@ namespace fea
 			}
 
 			//integration
-			void Quad4::function(double* N, const double* s) const
+			void Quad4::function(double* N, const double* p) const
 			{
 				//data
-				const double v[] = {1, s[0], s[1], s[0] * s[1]};
+				const double r = p[0];
+				const double s = p[1];
+				const double v[] = {1, r, s, r * s};
 				//shape
 				for(uint32_t i = 0; i < 4; i++)
 				{
 					N[i] = 0;
 					for (uint32_t j = 0; j < 4; j++)
 					{
-						N[i] += A[4 * i + j] / 4 * v[j];
+						N[i] += A[i + 4 * j] / 4 * v[j];
 					}
 				}
 			}
-			void Quad4::gradient(double* B, const double* s) const
+			void Quad4::gradient(double* B, const double* p) const
 			{
 				//data
-				const double dv1[] = {0, 1, 0, s[1]};
-				const double dv2[] = {0, 0, 1, s[0]};
+				const double r = p[0];
+				const double s = p[1];
+				const double dv[] = {
+					0, 1, 0, s,
+					0, 0, 1, r
+				};
 				//gradient
 				for(uint32_t i = 0; i < 4; i++)
 				{
-					B[4 * 0 + i] = 0;
-					B[4 * 1 + i] = 0;
+					B[i + 0] = B[i + 4] = 0;
 					for(uint32_t j = 0; j < 4; j++)
 					{
-						B[4 * 0 + i] += A[4 * i + j] / 4 * dv1[j];
-						B[4 * 1 + i] += A[4 * i + j] / 4 * dv2[j];
+						B[i + 0] += A[i + 4 * j] / 4 * dv[j + 0];
+						B[i + 4] += A[i + 4 * j] / 4 * dv[j + 4];
 					}
 				}
 			}
