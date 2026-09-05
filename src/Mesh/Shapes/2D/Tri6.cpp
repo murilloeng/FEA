@@ -41,16 +41,8 @@ namespace fea
 				//data
 				const double r = p[0];
 				const double s = p[1];
-				const double v[] = {1, r, s, r * r, r * s, s * s};
 				//shape
-				for(uint32_t i = 0; i < 6; i++)
-				{
-					N[i] = 0;
-					for(uint32_t j = 0; j < 6; j++)
-					{
-						N[i] += A[i + 6 * j] / 2 * v[j];
-					}
-				}
+				
 			}
 			void Tri6::gradient(double* B, const double* p) const
 			{

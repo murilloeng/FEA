@@ -31,9 +31,9 @@ namespace fea
 				//data
 				const double r = p[0];
 				//shape
-				N[2] = 1 - r * r;
-				N[0] = r * (r - 1) / 2;
-				N[1] = r * (r + 1) / 2;
+				N[0] = -r * (1 - r) / 2;
+				N[1] = +r * (1 + r) / 2;
+				N[2] = (1 - r) * (1 + r);
 			}
 			void Line3::gradient(double* B, const double* p) const
 			{
@@ -41,8 +41,8 @@ namespace fea
 				const double r = p[0];
 				//gradient
 				B[2] = -2 * r;
-				B[0] = r - 0.5;
-				B[1] = r + 0.5;
+				B[0] = -(1 - 2 * r) / 2;
+				B[1] = +(1 + 2 * r) / 2;
 			}
 		}
 	}
