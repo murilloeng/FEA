@@ -37,8 +37,8 @@ namespace fea
 				enum class Type : uint32_t
 				{
 					Line2, Line3, Line4, Line5, Line6, 
-					Tri3, Tri6, Tri9, Tri10, Tri12, Tri15, Quad4, Quad8, Quad9,
-					Tetra4, Tetra10, Brick8, Brick20, Brick27
+					Triangle3, Triangle6, Triangle9, Triangle10, Triangle12, Triangle15, Quadrangle4, Quadrangle8, Quadrangle9,
+					Tetraheadron4, Tetraheadron10, Hexahedron8, Hexahedron20, Hexahedron27
 				};
 
 				//data
