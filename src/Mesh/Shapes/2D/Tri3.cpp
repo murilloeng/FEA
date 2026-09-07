@@ -39,13 +39,13 @@ namespace fea
 			void Tri3::gradient(double* B, const double* p) const
 			{
 				//gradient r
-				B[0 + 0] = -0.5;
-				B[1 + 0] = +0.5;
-				B[2 + 0] = +0.0;
+				B[2 + 0] = +0;
+				B[0 + 0] = -1.0 / 2;
+				B[1 + 0] = +1.0 / 2;
 				//gradient s
-				B[0 + 3] = -0.5;
-				B[1 + 3] = +0.0;
-				B[2 + 3] = +0.5;
+				B[1 + 3] = +0;
+				B[0 + 3] = -1.0 / 2;
+				B[2 + 3] = +1.0 / 2;
 			}
 		}
 	}
