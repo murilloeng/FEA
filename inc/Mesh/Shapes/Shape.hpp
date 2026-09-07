@@ -63,6 +63,9 @@ namespace fea
 				double jacobian(double*, const elements::Element*, const double*) const;
 				double gradient(double*, const elements::Element*, const double*) const;
 
+				//test
+				static void test(void);
+
 			protected:
 				//data
 				uint32_t m_index;

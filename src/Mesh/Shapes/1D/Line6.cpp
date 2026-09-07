@@ -22,7 +22,7 @@ namespace fea
 			//geometry
 			uint32_t Line6::vertices(void) const
 			{
-				return 2U;
+				return 6U;
 			}
 
 			//shape
