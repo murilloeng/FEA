@@ -36,7 +36,7 @@ namespace fea
 				//types
 				enum class Type : uint32_t
 				{
-					Line2, Line3, Line4, 
+					Line2, Line3, Line4, Line5, Line6, 
 					Tri3, Tri6, Tri9, Tri10, Tri12, Tri15, Quad4, Quad8, Quad9,
 					Tetra4, Tetra10, Brick8, Brick20, Brick27
 				};
