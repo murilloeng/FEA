@@ -4,25 +4,25 @@
 
 //FEA
 #include "FEA/inc/Mesh/Shapes/Shape.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Tri3.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Tri6.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Tri9.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Tri10.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Tri12.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Tri15.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Quad4.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Quad8.hpp"
-#include "FEA/inc/Mesh/Shapes/2D/Quad9.hpp"
 #include "FEA/inc/Mesh/Shapes/1D/Line2.hpp"
 #include "FEA/inc/Mesh/Shapes/1D/Line3.hpp"
 #include "FEA/inc/Mesh/Shapes/1D/Line4.hpp"
 #include "FEA/inc/Mesh/Shapes/1D/Line5.hpp"
 #include "FEA/inc/Mesh/Shapes/1D/Line6.hpp"
-#include "FEA/inc/Mesh/Shapes/3D/Tetra4.hpp"
-#include "FEA/inc/Mesh/Shapes/3D/Brick8.hpp"
-#include "FEA/inc/Mesh/Shapes/3D/Tetra10.hpp"
-#include "FEA/inc/Mesh/Shapes/3D/Brick20.hpp"
-#include "FEA/inc/Mesh/Shapes/3D/Brick27.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Triangle3.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Triangle6.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Triangle9.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Triangle10.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Triangle12.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Triangle15.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Quadrangle4.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Quadrangle8.hpp"
+#include "FEA/inc/Mesh/Shapes/2D/Quadrangle9.hpp"
+#include "FEA/inc/Mesh/Shapes/3D/Hexahedron8.hpp"
+#include "FEA/inc/Mesh/Shapes/3D/Hexahedron20.hpp"
+#include "FEA/inc/Mesh/Shapes/3D/Hexahedron27.hpp"
+#include "FEA/inc/Mesh/Shapes/3D/Tetrahedron4.hpp"
+#include "FEA/inc/Mesh/Shapes/3D/Tetrahedron10.hpp"
 
 //Math
 #include "Math/inc/Linear/Matrix.hpp"
@@ -60,13 +60,13 @@ namespace fea
 				double p[3], N[100], Ba[300], Bn[300], Be[300];
 				Shape* shapes[] = {
 					new Line2, new Line3, new Line4, new Line5, new Line6,
-					new Tri3, new Tri6, new Tri9, new Tri10, new Tri12, new Tri15, new Quad4, new Quad8, new Quad9,
-					new Tetra4, new Tetra10, new Brick8, new Brick20, new Brick27
+					new Triangle3, new Triangle6, new Triangle9, new Triangle10, new Triangle12, new Triangle15, new Quadrangle4, new Quadrangle8, new Quadrangle9,
+					new Tetrahedron4, new Tetrahedron10, new Hexahedron8, new Hexahedron20, new Hexahedron27
 				};
 				const char* names[] = {
 					"Line2", "Line3", "Line4", "Line5", "Line6",
 					"Tri3", "Tri6", "Tri9", "Tri10", "Tri12", "Tri15", "Quad4", "Quad8", "Quad9",
-					"Tetra4", "Tetra10", "Brick8", "Brick20", "Brick27"
+					"Tetrahedron4", "Tetrahedron10", "Hexahedron8", "Hexahedron20", "Hexahedron27"
 				};
 				//test
 				srand(time(nullptr));
