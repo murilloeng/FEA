@@ -64,7 +64,7 @@ namespace fea
 				double gradient(double*, const elements::Element*, const double*) const;
 
 				//test
-				static void test(void);
+				static void test_interpolation(void);
 
 			protected:
 				//data

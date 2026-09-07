@@ -14,7 +14,7 @@ int main(void)
 {
 	try
 	{
-		fea::mesh::shapes::Shape::test();
+		fea::mesh::shapes::Shape::test_interpolation();
 	}
 	catch(const std::exception& exception)
 	{
