@@ -22,7 +22,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Frame::Frame(void) : m_section{nullptr}
+			Frame::Frame(void) : m_major_axis{0, 0, 1}, m_section{nullptr}
 			{
 				return;
 			}
