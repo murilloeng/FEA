@@ -53,6 +53,10 @@ namespace fea
 			}
 
 			//tangents
+			void Beam3D::inertia(double* M) const
+			{
+				m_formulation == Formulation::Corotational ? inertia_CR(M) : inertia_TL(M);
+			}
 			void Beam3D::inertia_CR(double* M) const
 			{
 				return;
@@ -61,11 +65,11 @@ namespace fea
 			{
 				return;
 			}
-			void Beam3D::inertia(double* M) const
-			{
-				m_formulation == Formulation::Corotational ? inertia_CR(M) : inertia_TL(M);
-			}
 
+			void Beam3D::damping(double* C) const
+			{
+				m_formulation == Formulation::Corotational ? damping_CR(C) : damping_TL(C);
+			}
 			void Beam3D::damping_CR(double* C) const
 			{
 				return;
@@ -74,11 +78,11 @@ namespace fea
 			{
 				return;
 			}
-			void Beam3D::damping(double* C) const
-			{
-				m_formulation == Formulation::Corotational ? damping_CR(C) : damping_TL(C);
-			}
 
+			void Beam3D::stiffness(double* K) const
+			{
+				m_formulation == Formulation::Corotational ? stiffness_CR(K) : stiffness_TL(K);
+			}
 			void Beam3D::stiffness_CR(double* K) const
 			{
 				//data
@@ -89,9 +93,9 @@ namespace fea
 				const math::Vec3 t1 = node(0)->rotation_new();
 				const math::Vec3 t2 = node(1)->rotation_new();
 				//axes
-				const math::Vec3 s1 = (z2 - z1) / m_Lr;
 				const math::Vec3 s2 = m_major_axis;
-				const math::Vec3 s3 = s1.cross(s2);
+				const math::Vec3 s1 = (z2 - z1) / m_Lr;
+				const math::Vec3 s3 = (z2 - z1).cross(s2) / m_Lr;
 				//quaternions
 				const math::Quat q0(s1, s2, s3);
 				const math::Quat q1 = node(0)->quaternion_new();
@@ -99,10 +103,10 @@ namespace fea
 				//data
 				const math::Quat qr = q1 * q0;
 				const math::Mat3 Rr = qr.rotation();
+				const math::Mat3 Rt = Rr.transpose();
 				const math::Mat3 Xr = (x2 - x1).spin();
 				const math::Mat3 T1 = t1.rotation_gradient();
 				const math::Mat3 T2 = t2.rotation_gradient();
-				const math::Mat3 Rt = qr.conjugate().rotation();
 				const math::Vec3 tl = qr.conjugate(q2 * q0).pseudo();
 				const math::Mat3 Ti = tl.rotation_gradient_inverse();
 				//material stiffness
@@ -130,10 +134,6 @@ namespace fea
 			void Beam3D::stiffness_TL(double* K) const
 			{
 				return;
-			}
-			void Beam3D::stiffness(double* K) const
-			{
-				m_formulation == Formulation::Corotational ? stiffness_CR(K) : stiffness_TL(K);
 			}
 
 			//forces
@@ -185,9 +185,9 @@ namespace fea
 				const math::Vec3 x1 = node(0)->position_new();
 				const math::Vec3 x2 = node(1)->position_new();
 				//axes
-				const math::Vec3 s1 = (z2 - z1) / m_Lr;
 				const math::Vec3 s2 = m_major_axis;
-				const math::Vec3 s3 = s1.cross(s2);
+				const math::Vec3 s1 = (z2 - z1) / m_Lr;
+				const math::Vec3 s3 = (z2 - z1).cross(s2) / m_Lr;
 				//quaternions
 				const math::Quat q0(s1, s2, s3);
 				const math::Quat q1 = node(0)->quaternion_new();
@@ -237,16 +237,16 @@ namespace fea
 			void Beam3D::compute_CR_kinematic(void) const
 			{
 				//data
-				const math::Vec3 t1 = node(0)->rotation_new();
-				const math::Vec3 t2 = node(1)->rotation_new();
 				const math::Vec3 z1 = node(0)->position_ref();
 				const math::Vec3 z2 = node(1)->position_ref();
 				const math::Vec3 x1 = node(0)->position_new();
 				const math::Vec3 x2 = node(1)->position_new();
+				const math::Vec3 t1 = node(0)->rotation_new();
+				const math::Vec3 t2 = node(1)->rotation_new();
 				//axes
-				const math::Vec3 s1 = (z2 - z1) / m_Lr;
 				const math::Vec3 s2 = m_major_axis;
-				const math::Vec3 s3 = s1.cross(s2);
+				const math::Vec3 s1 = (z2 - z1) / m_Lr;
+				const math::Vec3 s3 = (z2 - z1).cross(s2) / m_Lr;
 				//quaternions
 				const math::Quat q0(s1, s2, s3);
 				const math::Quat q1 = node(0)->quaternion_new();

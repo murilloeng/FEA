@@ -43,7 +43,8 @@ namespace fea
 			//destructor
 			Node::~Node(void)
 			{
-				return;
+				delete[] m_quaternion_old;
+				delete[] m_quaternion_new;
 			}
 
 			//serialization
@@ -187,14 +188,60 @@ namespace fea
 			//analysis
 			void Node::setup(void)
 			{
-				return;
+				//data
+				const uint32_t dof_rotation = 
+					1 << uint32_t(DOF::Rotation_1) |
+					1 << uint32_t(DOF::Rotation_2) |
+					1 << uint32_t(DOF::Rotation_3);
+				//quaternions
+				if((m_dof_set & dof_rotation) == dof_rotation)
+				{
+					delete[] m_quaternion_old;
+					delete[] m_quaternion_new;
+					m_quaternion_old = new double[4];
+					m_quaternion_new = new double[4];
+					m_quaternion_old[0] = m_quaternion_new[0] = 1;
+					m_quaternion_old[1] = m_quaternion_new[1] = 0;
+					m_quaternion_old[2] = m_quaternion_new[2] = 0;
+					m_quaternion_old[3] = m_quaternion_new[3] = 0;
+				}
+			}
+			void Node::update(void)
+			{
+				//data
+				double* x = m_mesh->model()->analysis()->solver()->state_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
+				//update
+				if(m_quaternion_old)
+				{
+					if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
+					if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
+					if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
+					memcpy(m_quaternion_old, m_quaternion_new, 4 * sizeof(double));
+				}
+			}
+			void Node::restore(void)
+			{
+				//data
+				double* x = m_mesh->model()->analysis()->solver()->state_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
+				//restore
+				if(m_quaternion_new)
+				{
+					if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
+					if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
+					if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
+					memcpy(m_quaternion_new, m_quaternion_old, 4 * sizeof(double));
+				}
 			}
 			void Node::compute(void)
 			{
 				//rotation
 				m_rotation_new[0] = state(DOF::Rotation_1);
-				m_rotation_new[1] = state(DOF::Rotation_1);
-				m_rotation_new[2] = state(DOF::Rotation_1);
+				m_rotation_new[1] = state(DOF::Rotation_2);
+				m_rotation_new[2] = state(DOF::Rotation_3);
 				//position
 				m_position_new[0] = m_position_ref[0] + state(DOF::Translation_1);
 				m_position_new[1] = m_position_ref[1] + state(DOF::Translation_2);

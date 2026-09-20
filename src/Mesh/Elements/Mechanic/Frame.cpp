@@ -64,7 +64,7 @@ namespace fea
 			{
 				if(!m_section)
 				{
-					throw std::runtime_error("Error: Frame element has unset section!");
+					throw std::runtime_error("Error: Frame element has an unset section!");
 				}
 				Mechanic::check();
 			}

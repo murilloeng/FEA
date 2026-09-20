@@ -5,6 +5,7 @@
 
 //Test
 #include "FEA/Test/inc/Beam2D.hpp"
+#include "FEA/Test/inc/Beam3D.hpp"
 #include "FEA/Test/inc/Truss2D.hpp"
 #include "FEA/Test/inc/Truss3D.hpp"
 #include "FEA/Test/inc/Rigid2D.hpp"
@@ -14,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		fea::mesh::shapes::Shape::test_interpolation();
+		test::beam3D::elastic::cantilever_bending();
 	}
 	catch(const std::exception& exception)
 	{

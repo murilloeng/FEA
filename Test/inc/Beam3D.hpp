@@ -1,0 +1,30 @@
+#pragma once
+
+namespace test
+{
+	namespace beam3D
+	{
+		namespace elastic
+		{
+			void lee_frame(void);
+			void square_frame(void);
+			void diamond_frame(void);
+			void honeycomb_grid(void);
+			void williams_toggle(void);
+			void cantilever_force(void);
+			void cantilever_bending(void);
+		}
+		namespace inelastic
+		{
+			void pinned_force(void);
+			void pinned_bending(void);
+			void honeycomb_grid(void);
+			void cantilever_force(void);
+			void cantilever_bending(void);
+			void morpho_plastic_half(void);
+			void morpho_plastic_unit(void);
+			void morpho_plastic_line(void);
+			void morpho_plastic_grid(void);
+		}
+	}
+}
