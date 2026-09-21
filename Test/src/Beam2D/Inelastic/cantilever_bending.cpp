@@ -97,4 +97,5 @@ void test::beam2D::inelastic::cantilever_bending(void)
 	});
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Inelastic/Cantilever Bending/plot.gp");
 }

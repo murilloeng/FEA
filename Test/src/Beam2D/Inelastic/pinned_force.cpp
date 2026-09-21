@@ -106,4 +106,5 @@ void test::beam2D::inelastic::pinned_force(void)
 	fea::draw::Engine engine(&model);
 	engine.draw()->scale(10);
 	engine.start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Inelastic/Pinned Force/plot.gp");
 }
