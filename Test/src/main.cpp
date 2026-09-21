@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::test();
+		test::beam2D::elastic::honeycomb_grid();
 	}
 	catch(const std::exception& exception)
 	{

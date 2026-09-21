@@ -162,7 +162,7 @@ namespace fea
 			}
 			double Beam3D::internal_energy_CR(void) const
 			{
-				return 0;
+				return m_Kl.bilinear(m_dl) / 2;
 			}
 			double Beam3D::internal_energy_TL(void) const
 			{

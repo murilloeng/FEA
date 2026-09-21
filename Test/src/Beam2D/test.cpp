@@ -5,7 +5,6 @@
 #include "FEA/Test/inc/Beam2D.hpp"
 
 //Math
-#include "Math/inc/Linear/Vec2.hpp"
 #include "Math/inc/Miscellaneous/util.hpp"
 
 //Sections

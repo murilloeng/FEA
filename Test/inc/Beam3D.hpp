@@ -4,6 +4,7 @@ namespace test
 {
 	namespace beam3D
 	{
+		void test(void);
 		namespace elastic
 		{
 			void lee_frame(void);
