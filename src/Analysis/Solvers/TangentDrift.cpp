@@ -22,7 +22,7 @@ namespace fea
 	namespace analysis
 	{
 		//constructor
-		TangentDrift::TangentDrift(void)
+		TangentDrift::TangentDrift(void) : m_type{Type::InternalForce}, m_tests{10000}, m_dof_min{-1}, m_dof_max{+1}, m_tolerance{1.00e-05}
 		{
 			return;
 		}
@@ -37,10 +37,7 @@ namespace fea
 		void TangentDrift::solve(void)
 		{
 			srand(time(nullptr));
-			for(uint32_t i = 0; i < m_tests; i++)
-			{
-				
-			}
+			m_type == Type::InternalForce ? solve_internal_force() : solve_stiffness();
 		}
 
 		//data
@@ -80,6 +77,15 @@ namespace fea
 			return m_tolerance = tolerance;
 		}
 
+		TangentDrift::Type TangentDrift::type(Type type)
+		{
+			return m_type = type;
+		}
+		TangentDrift::Type TangentDrift::type(void) const
+		{
+			return m_type;
+		}
+
 		//data
 		uint32_t TangentDrift::state_set(void) const
 		{
@@ -113,6 +119,22 @@ namespace fea
 				{
 					math::Quat(node->quaternion_new()).randu();
 				}
+			}
+		}
+
+		//solve
+		void TangentDrift::solve_stiffness(void)
+		{
+			for(uint32_t i = 0; i < m_tests; i++)
+			{
+				
+			}
+		}
+		void TangentDrift::solve_internal_force(void)
+		{
+			for(uint32_t i = 0; i < m_tests; i++)
+			{
+				compute_state();
 			}
 		}
 	}

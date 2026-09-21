@@ -20,7 +20,13 @@ namespace fea
 			//solve
 			void solve(void) override;
 
+			//types
+			enum Type {InternalForce, Stiffness};
+
 			//data
+			Type type(Type);
+			Type type(void) const;
+
 			uint32_t tests(uint32_t);
 			uint32_t tests(void) const;
 
@@ -42,7 +48,12 @@ namespace fea
 			//compute
 			void compute_state(void);
 
+			//solve
+			void solve_stiffness(void);
+			void solve_internal_force(void);
+
 			//data
+			Type m_type;
 			uint32_t m_tests;
 			double m_dof_min;
 			double m_dof_max;

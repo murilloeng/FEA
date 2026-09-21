@@ -117,11 +117,11 @@ namespace fea
 				Element::check();
 				if(m_nodes.size() != 1)
 				{
-					throw std::runtime_error("Error: Spring element must have excatly one node!");
+					throw std::runtime_error("Error: Nodal element must have excatly one node!");
 				}
 				if(m_dof == nodes::DOF::Last)
 				{
-					throw std::runtime_error("Error: Spring element dof is unset!");
+					throw std::runtime_error("Error: Nodal element dof is unset!");
 				}
 			}
 			void Nodal::compute(void)
