@@ -61,7 +61,6 @@ namespace fea
 				K[4 + 6 * 0] = K[0 + 6 * 4] = K[3 + 6 * 1] = K[1 + 6 * 3] = -(m_K - m_f / m_Ln) * t1[0] * t1[1];
 				K[5 + 6 * 0] = K[0 + 6 * 5] = K[3 + 6 * 2] = K[2 + 6 * 3] = -(m_K - m_f / m_Ln) * t1[0] * t1[2];
 				K[5 + 6 * 1] = K[1 + 6 * 5] = K[4 + 6 * 2] = K[2 + 6 * 4] = -(m_K - m_f / m_Ln) * t1[1] * t1[2];
-
 			}
 
 			//forces
@@ -86,7 +85,16 @@ namespace fea
 			}
 			double Truss3D::internal_energy(void) const
 			{
-				return 0;
+				//data
+				const double A = m_section->area();
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
+				const double E = m_material->elastic_modulus();
+				//strain
+				const double Ln = (x2 - x1).norm();
+				const double em = elements::strain_measure(m_strain_measure, Ln / m_Lr);
+				//return
+				return E * A * m_Lr / 2 * em * em;
 			}
 		}
 	}

@@ -76,7 +76,16 @@ namespace fea
 			}
 			double Truss2D::internal_energy(void) const
 			{
-				return 0;
+				//data
+				const double A = m_section->area();
+				const math::Vec3 x1 = node(0)->position_new();
+				const math::Vec3 x2 = node(1)->position_new();
+				const double E = m_material->elastic_modulus();
+				//strain
+				const double Ln = (x2 - x1).norm();
+				const double em = elements::strain_measure(m_strain_measure, Ln / m_Lr);
+				//return
+				return E * A * m_Lr / 2 * em * em;
 			}
 		}
 	}

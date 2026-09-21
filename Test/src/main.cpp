@@ -15,8 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::cantilever_bending();
-		// test::truss2D::test();
+		test::beam2D::test();
 	}
 	catch(const std::exception& exception)
 	{

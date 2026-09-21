@@ -49,7 +49,7 @@ namespace fea
 
 		private:
 			//compute
-			void compute_state(void);
+			void compute_state(double*);
 
 			//solve
 			void solve_stiffness(void);

@@ -2,7 +2,7 @@
 #include <cmath>
 
 //Math
-#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Vec2.hpp"
 
 //Canvas
 #include "Canvas/inc/Math/vec2.hpp"
@@ -88,8 +88,8 @@ namespace fea
 			void Beam2D::stiffness_CR(double* K) const
 			{
 				//data
-				const math::Vec3 x1 = node(0)->position_new();
-				const math::Vec3 x2 = node(1)->position_new();
+				const math::Vec2 x1 = node(0)->position_new();
+				const math::Vec2 x2 = node(1)->position_new();
 				//direction
 				const double Ln = (x2 - x1).norm();
 				const double cn = (x2[0] - x1[0]) / Ln;
@@ -119,8 +119,8 @@ namespace fea
 			void Beam2D::internal_force_CR(double* f) const
 			{
 				//data
-				const math::Vec3 x1 = node(0)->position_new();
-				const math::Vec3 x2 = node(1)->position_new();
+				const math::Vec2 x1 = node(0)->position_new();
+				const math::Vec2 x2 = node(1)->position_new();
 				//directions
 				const double Ln = (x2 - x1).norm();
 				const double cn = (x2[0] - x1[0]) / Ln;
@@ -149,7 +149,7 @@ namespace fea
 			}
 			double Beam2D::internal_energy_CR(void) const
 			{
-				return 0;
+				return math::Matrix(m_Kl, 3, 3).bilinear(m_dl) / 2;
 			}
 			double Beam2D::internal_energy_TL(void) const
 			{
@@ -194,16 +194,16 @@ namespace fea
 			//compute CR
 			void Beam2D::compute_CR_state(void)
 			{
-				//kinematics
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
-				const math::Vec3 x1 = node(0)->position_new();
-				const math::Vec3 x2 = node(1)->position_new();
+				//data
+				const math::Vec2 z1 = node(0)->position_ref();
+				const math::Vec2 z2 = node(1)->position_ref();
+				const math::Vec2 x1 = node(0)->position_new();
+				const math::Vec2 x2 = node(1)->position_new();
 				//directions
 				const double L0 = (z2 - z1).norm();
 				const double Ln = (x2 - x1).norm();
-				const math::Vector sn = (x2 - x1) / Ln;
-				const math::Vector s0 = (z2 - z1) / L0;
+				const math::Vec2 sn = (x2 - x1) / Ln;
+				const math::Vec2 s0 = (z2 - z1) / L0;
 				//rigid rotation
 				const double cr_old = cos(m_tr_old);
 				const double sr_old = sin(m_tr_old);
@@ -222,7 +222,7 @@ namespace fea
 			}
 			void Beam2D::compute_CR_elastic(void)
 			{
-				//dof
+				//data
 				const double u2 = m_dl[0];
 				const double t1 = m_dl[1];
 				const double t2 = m_dl[2];
@@ -241,7 +241,7 @@ namespace fea
 				m_fl[0] = E * A * u2 / m_Lr;
 				m_fl[1] = E * I33 / m_Lr * m * (4 * (1 + 3 * w) * t1 + 2 * (1 - 6 * w) * t2);
 				m_fl[2] = E * I33 / m_Lr * m * (4 * (1 + 3 * w) * t2 + 2 * (1 - 6 * w) * t1);
-				//local stiffness
+				//stiffness
 				m_Kl[0 + 3 * 0] = E * A / m_Lr;
 				m_Kl[2 + 3 * 1] = m_Kl[1 + 3 * 2] = 2 * E * I33 / m_Lr * m * (1 - 6 * w);
 				m_Kl[1 + 3 * 1] = m_Kl[2 + 3 * 2] = 4 * E * I33 / m_Lr * m * (1 + 3 * w);
