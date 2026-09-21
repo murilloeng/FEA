@@ -95,6 +95,22 @@ namespace fea
 				f[0] = m_damping * v + m_stiffness * x;
 			}
 
+			//energies
+			double Nodal::kinetic_energy(void) const
+			{
+				//data
+				const double v = m_mesh->model()->analysis()->solver()->velocity_new() ? node(0)->velocity(m_dof) : 0;
+				//return
+				return m_inertia * v * v / 2;
+			}
+			double Nodal::internal_energy(void) const
+			{
+				//data
+				const double x = m_mesh->model()->analysis()->solver()->state_new() ? node(0)->state(m_dof) : 0;
+				//return
+				return m_stiffness * x * x / 2;
+			}
+
 			//analysis
 			void Nodal::check(void)
 			{

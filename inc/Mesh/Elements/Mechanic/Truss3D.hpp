@@ -29,6 +29,10 @@ namespace fea
 				//forces
 				void internal_force(double*) const override;
 
+				//energies
+				double kinetic_energy(void) const override;
+				double internal_energy(void) const override;
+
 				//friends
 				friend class fea::mesh::Mesh;
 			};

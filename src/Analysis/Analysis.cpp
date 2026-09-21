@@ -8,6 +8,7 @@
 #include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
+#include "FEA/inc/Analysis/Solvers/TangentDrift.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
@@ -19,6 +20,7 @@ namespace fea
 		Analysis::Analysis(void) : 
 			m_type{Type::StaticLinear},
 			m_assembler{new Assembler},
+			m_solver_tangent_drift{new TangentDrift},
 			m_solver_static_linear{new StaticLinear}, 
 			m_solver_static_nonlinear{new StaticNonlinear}
 		{
@@ -31,6 +33,7 @@ namespace fea
 		Analysis::~Analysis(void)
 		{
 			delete m_assembler;
+			delete m_solver_tangent_drift;
 			delete m_solver_static_linear;
 			delete m_solver_static_nonlinear;
 		}
@@ -59,6 +62,7 @@ namespace fea
 		Solver* Analysis::solver(void) const
 		{
 			return
+				m_type == Type::TangentDrift ? (Solver*) m_solver_tangent_drift :
 				m_type == Type::StaticLinear ? (Solver*) m_solver_static_linear :
 				m_type == Type::StaticNonlinear ? (Solver*) m_solver_static_nonlinear : nullptr; 
 		}
@@ -67,6 +71,10 @@ namespace fea
 			return m_assembler;
 		}
 
+		TangentDrift* Analysis::solver_tangent_drift(void) const
+		{
+			return m_solver_tangent_drift;
+		}
 		StaticLinear* Analysis::solver_static_linear(void) const
 		{
 			return m_solver_static_linear;

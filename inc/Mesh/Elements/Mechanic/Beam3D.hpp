@@ -43,6 +43,14 @@ namespace fea
 				void internal_force_TL(double*) const;
 				void internal_force(double*) const override;
 
+				//energies
+				double kinetic_energy_CR(void) const;
+				double kinetic_energy_TL(void) const;
+				double internal_energy_CR(void) const;
+				double internal_energy_TL(void) const;
+				double kinetic_energy(void) const override;
+				double internal_energy(void) const override;
+
 				//analysis
 				void update(void) override;
 				void restore(void) override;

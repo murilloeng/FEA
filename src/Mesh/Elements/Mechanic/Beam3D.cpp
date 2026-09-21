@@ -151,6 +151,32 @@ namespace fea
 				m_formulation == Formulation::Corotational ? internal_force_CR(fi) : internal_force_TL(fi);
 			}
 
+			//energies
+			double Beam3D::kinetic_energy_CR(void) const
+			{
+				return 0;
+			}
+			double Beam3D::kinetic_energy_TL(void) const
+			{
+				return 0;
+			}
+			double Beam3D::internal_energy_CR(void) const
+			{
+				return 0;
+			}
+			double Beam3D::internal_energy_TL(void) const
+			{
+				return 0;
+			}
+			double Beam3D::kinetic_energy(void) const
+			{
+				return m_formulation == Formulation::Corotational ? kinetic_energy_CR() : kinetic_energy_TL();
+			}
+			double Beam3D::internal_energy(void) const
+			{
+				return m_formulation == Formulation::Corotational ? internal_energy_CR() : internal_energy_TL();
+			}
+
 			//analysis
 			void Beam3D::update(void)
 			{

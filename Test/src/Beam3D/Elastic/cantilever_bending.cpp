@@ -98,7 +98,7 @@ void test::beam3D::elastic::cantilever_bending(void)
 	model.boundary()->create_load_case(1, dof::Rotation_3, 2 * M_PI * E * I / L);
 	//setup
 	model.analysis()->type(solver::StaticNonlinear);
-	model.analysis()->solver_static_nonlinear()->silent(true);
+	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);

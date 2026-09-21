@@ -62,6 +62,10 @@ namespace fea
 				//forces
 				virtual void internal_force(double*) const = 0;
 
+				//energies
+				virtual double kinetic_energy(void) const = 0;
+				virtual double internal_energy(void) const = 0;
+
 			protected:
 				//analysis
 				virtual void check(void);

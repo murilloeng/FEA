@@ -9,6 +9,7 @@ namespace fea
 	{
 		enum class Type : uint32_t
 		{
+			TangentDrift,
 			StaticLinear, StaticNonlinear,
 			DynamicLinear, DynamicNonlinear,
 			TransientLinear, TransientNonlinear

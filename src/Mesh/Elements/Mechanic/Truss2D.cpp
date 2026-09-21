@@ -68,6 +68,16 @@ namespace fea
 				f[2] = +m_f * (x2[0] - x1[0]) / m_Ln;
 				f[3] = +m_f * (x2[1] - x1[1]) / m_Ln;
 			}
+
+			//energies
+			double Truss2D::kinetic_energy(void) const
+			{
+				return 0;
+			}
+			double Truss2D::internal_energy(void) const
+			{
+				return 0;
+			}
 		}
 	}
 }

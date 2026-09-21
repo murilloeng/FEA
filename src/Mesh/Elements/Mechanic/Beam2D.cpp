@@ -138,6 +138,32 @@ namespace fea
 				return;
 			}
 
+			//energies
+			double Beam2D::kinetic_energy_CR(void) const
+			{
+				return 0;
+			}
+			double Beam2D::kinetic_energy_TL(void) const
+			{
+				return 0;
+			}
+			double Beam2D::internal_energy_CR(void) const
+			{
+				return 0;
+			}
+			double Beam2D::internal_energy_TL(void) const
+			{
+				return 0;
+			}
+			double Beam2D::kinetic_energy(void) const
+			{
+				return m_formulation == Formulation::Corotational ? kinetic_energy_CR() : kinetic_energy_TL();
+			}
+			double Beam2D::internal_energy(void) const
+			{
+				return m_formulation == Formulation::Corotational ? internal_energy_CR() : internal_energy_TL();
+			}
+
 			//analysis
 			void Beam2D::update(void)
 			{

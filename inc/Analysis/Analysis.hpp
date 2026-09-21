@@ -11,6 +11,7 @@ namespace fea
 	{
 		class Solver;
 		class Assembler;
+		class TangentDrift;
 		class StaticLinear;
 		class StaticNonlinear;
 		enum class Type : uint32_t;
@@ -43,6 +44,7 @@ namespace fea
 			Solver* solver(void) const;
 			Assembler* assembler(void) const;
 
+			TangentDrift* solver_tangent_drift(void) const;
 			StaticLinear* solver_static_linear(void) const;
 			StaticNonlinear* solver_static_nonlinear(void) const;
 
@@ -56,6 +58,7 @@ namespace fea
 			Type m_type;
 			static Model* m_model;
 			Assembler* m_assembler;
+			TangentDrift* m_solver_tangent_drift;
 			StaticLinear* m_solver_static_linear;
 			StaticNonlinear* m_solver_static_nonlinear;
 
