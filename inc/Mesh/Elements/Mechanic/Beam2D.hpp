@@ -49,8 +49,6 @@ namespace fea
 				double internal_energy(void) const override;
 
 				//analysis
-				void update(void) override;
-				void restore(void) override;
 				void compute(void) override;
 
 				//compute
@@ -69,7 +67,6 @@ namespace fea
 				void draw_update(draw::Data&) const override;
 
 				//data
-				double m_tr_old, m_tr_new;
 				double m_dl[3], m_fl[3], m_Kl[9];
 
 				//friends

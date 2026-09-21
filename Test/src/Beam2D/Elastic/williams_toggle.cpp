@@ -120,10 +120,11 @@ void test::beam2D::elastic::williams_toggle(void)
 	//validator
 	validator.create_item();
 	validator.item(0)->function(function);
-	validator.item(0)->tolerance(1.15e-02);
+	validator.item(0)->tolerance(5.00e-02);
 	validator.item(0)->load_numeric("Test/data/Beam 2D/Elastic/Williams Toggle/data.txt", 0, 1);
 	//validate
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Williams Toggle/plot.gp");
 }

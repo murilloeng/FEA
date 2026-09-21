@@ -34,7 +34,7 @@
 #include "FEA/Test/inc/Beam2D.hpp"
 
 //data
-static const uint32_t ne = 10;
+static const uint32_t ne = 20;
 static const double b = 1.00e-01;
 static const double h = 1.00e-01;
 static const double L = 1.00e+00;

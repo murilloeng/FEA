@@ -115,4 +115,5 @@ void test::beam2D::elastic::cantilever_force(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Cantilever Force/plot.gp");
 }

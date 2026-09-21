@@ -151,4 +151,6 @@ void test::beam2D::elastic::diamond_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Diamond Frame/plot-tension.gp");
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Diamond Frame/plot-compression.gp");
 }

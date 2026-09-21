@@ -108,4 +108,5 @@ void test::beam2D::elastic::lee_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Lee Frame/plot.gp");
 }

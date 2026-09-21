@@ -155,4 +155,6 @@ void test::beam2D::elastic::square_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Square Frame/plot-tension.gp");
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Square Frame/plot-compression.gp");
 }
