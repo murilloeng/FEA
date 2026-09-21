@@ -43,7 +43,7 @@ namespace fea
 			//system
 			m_system = [this](double* r, double* fe, double* K, double p, const double* x)
 			{
-				model_compute();
+				m_analysis->model()->compute();
 				m_analysis->assembler()->assemble_stiffness(K);
 				m_analysis->assembler()->assemble_dead_force(r, true);
 				m_analysis->assembler()->assemble_internal_force(r, false, -1);
@@ -51,8 +51,8 @@ namespace fea
 				m_analysis->assembler()->assemble_reference_force(fe, true, 1);
 			};
 			//callbacks
-			m_callback_update = [this](void){ model_update(); };
-			m_callback_restore = [this](void){ model_restore(); };
+			m_callback_update = [this](void){ m_analysis->model()->update(); };
+			m_callback_restore = [this](void){ m_analysis->model()->restore(); };
 		}
 		void StaticNonlinear::print(void)
 		{

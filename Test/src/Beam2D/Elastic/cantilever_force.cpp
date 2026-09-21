@@ -28,7 +28,6 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Test
@@ -56,7 +55,6 @@ void test::beam2D::elastic::cantilever_force(void)
 	math::validation::Validator validator;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
-	typedef fea::analysis::Type solver;
 	//points
 	model.geometry()->create_point(0, 0, 0);
 	model.geometry()->create_point(L, 0, 0);
@@ -85,7 +83,7 @@ void test::beam2D::elastic::cantilever_force(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(1, dof::Translation_2, -E * I /  L /  L);
 	//setup
-	model.analysis()->type(solver::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->active(true);
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

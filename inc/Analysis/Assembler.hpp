@@ -32,10 +32,18 @@ namespace fea
 			uint32_t dof_total(void) const;
 			uint32_t dof_unknow(void) const;
 
+			//apply
+			void apply_state(const double*) const;
+			void apply_velocity(const double*) const;
+			void apply_acceleration(const double*) const;
+
 			//assemble
 			void assemble_inertia(double*) const;
 			void assemble_damping(double*) const;
 			void assemble_stiffness(double*) const;
+
+			void assemble_kinetic_energy(double&) const;
+			void assemble_internal_energy(double&) const;
 
 			void assemble_dead_force(double*, bool = true, double = 1) const;
 			void assemble_external_force(double*, bool = true, double = 1) const;

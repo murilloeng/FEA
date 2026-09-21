@@ -35,6 +35,9 @@ namespace fea
 
 		public:
 			//data
+			bool active(bool);
+			bool active(void) const;
+
 			WatchDOF& watch_dof(void);
 
 			uint32_t load_combination(uint32_t);
@@ -53,10 +56,6 @@ namespace fea
 			void check(void) override;
 			void setup(void) override;
 			void allocate(void) override;
-
-			void model_update(void) const;
-			void model_restore(void) const;
-			void model_compute(void) const;
 
 			//data
 			double *m_s, *m_U;

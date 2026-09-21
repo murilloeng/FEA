@@ -44,17 +44,15 @@ namespace fea
 		analysis::Analysis* analysis(void) const;
 
 		//solve
-		void clear(void);
-		void solve(void);
-
-	protected:
-		//analysis
+		virtual void clear(void);
+		virtual void solve(void);
 		virtual void check(void);
 		virtual void setup(void);
 		virtual void update(void);
 		virtual void restore(void);
 		virtual void compute(void);
 
+	protected:
 		//data
 		mesh::Mesh* m_mesh;
 		geometry::Geometry* m_geometry;

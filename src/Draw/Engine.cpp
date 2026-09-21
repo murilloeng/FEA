@@ -85,6 +85,22 @@ namespace fea
 			return m_framerate = framerate;
 		}
 
+		//plot
+		void Engine::plot(const char* path)
+		{
+			std::string path_modified;
+			for(const char* p = path; *p; p++)
+			{
+				if(*p == ' ') path_modified += '\\';
+				path_modified += *p;
+			}
+			std::string command = "gnuplot -p " + path_modified;
+			if(system(command.c_str()))
+			{
+				throw std::runtime_error("Error: Gnuplot call failed!");
+			}
+		}
+
 		//setup
 		void Engine::setup_glfw(void)
 		{

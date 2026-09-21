@@ -30,7 +30,6 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Test
@@ -64,7 +63,6 @@ void test::beam2D::inelastic::honeycomb_grid(void)
 	materials::Uniaxial material;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
-	typedef fea::analysis::Type solver;
 	//points
 	double x2 = 0;
 	for(uint32_t i = 0; i < 2 * (n2 + 1); i++)
@@ -155,7 +153,7 @@ void test::beam2D::inelastic::honeycomb_grid(void)
 	}
 	//setup
 	section.compute();
-	model.analysis()->type(solver::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->active(true);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->attempt_max(1);

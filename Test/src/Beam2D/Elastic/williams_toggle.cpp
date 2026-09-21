@@ -28,7 +28,6 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Test
@@ -69,7 +68,6 @@ void test::beam2D::elastic::williams_toggle(void)
 	math::validation::Validator validator;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
-	typedef fea::analysis::Type solver;
 	//points
 	model.geometry()->create_point(0, 0, 0);
 	model.geometry()->create_point(-L * cos(b), -L * sin(b), 0);
@@ -105,7 +103,7 @@ void test::beam2D::elastic::williams_toggle(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(0, dof::Translation_2, -1);
 	//setup
-	model.analysis()->type(solver::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->active(true);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->step_size(5.00e-01);

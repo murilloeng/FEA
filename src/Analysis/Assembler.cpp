@@ -67,6 +67,20 @@ namespace fea
 			return m_dof_unknow;
 		}
 
+		//apply
+		void Assembler::apply_state(const double* x) const
+		{
+			memcpy(m_analysis->solver()->m_x_new, x, m_dof_unknow * sizeof(double));
+		}
+		void Assembler::apply_velocity(const double* v) const
+		{
+			memcpy(m_analysis->solver()->m_v_new, v, m_dof_unknow * sizeof(double));
+		}
+		void Assembler::apply_acceleration(const double* a) const
+		{
+			memcpy(m_analysis->solver()->m_a_new, a, m_dof_unknow * sizeof(double));
+		}
+
 		//dof
 		void Assembler::dof_map(void)
 		{
@@ -293,6 +307,23 @@ namespace fea
 				assemble_matrix(K, m_local_vector, constraint->m_dof_indexes, constraint->m_dof_index);
 				assemble_matrix(K, m_local_vector, constraint->m_dof_index, constraint->m_dof_indexes);
 				assemble_matrix(K, m_local_matrix, constraint->m_dof_indexes, m_analysis->solver()->state_new(constraint->m_dof_index));
+			}
+		}
+
+		void Assembler::assemble_kinetic_energy(double& K) const
+		{
+			K = 0;
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				K += element->kinetic_energy();
+			}
+		}
+		void Assembler::assemble_internal_energy(double& U) const
+		{
+			U = 0;
+			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				U += element->internal_energy();
 			}
 		}
 

@@ -36,9 +36,6 @@ namespace fea
 
 		public:
 			//data
-			Type type(Type);
-			Type type(void) const;
-
 			static Model* model(void);
 
 			Solver* solver(void) const;
@@ -55,7 +52,7 @@ namespace fea
 			void dof_apply(void);
 
 			//data
-			Type m_type;
+			Solver* m_solver;
 			static Model* m_model;
 			Assembler* m_assembler;
 			TangentDrift* m_solver_tangent_drift;

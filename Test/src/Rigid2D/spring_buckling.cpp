@@ -16,7 +16,6 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Test
@@ -34,7 +33,6 @@ void test::rigid2D::spring_buckling(void)
 	fea::Model model;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
-	typedef fea::analysis::Type solver;
 	typedef fea::mesh::joints::Type joint;
 	typedef fea::mesh::elements::Type element;
 	//nodes
@@ -53,7 +51,7 @@ void test::rigid2D::spring_buckling(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(1, dof::Translation_1, -P);
 	//setup
-	model.analysis()->type(solver::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->active(true);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(1000);
 	model.analysis()->solver_static_nonlinear()->attempt_max(1);

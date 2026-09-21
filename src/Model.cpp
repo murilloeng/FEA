@@ -93,8 +93,6 @@ namespace fea
 		setup();
 		m_analysis->solver()->solve();
 	}
-
-	//analysis
 	void Model::check(void)
 	{
 		m_mesh->merge();

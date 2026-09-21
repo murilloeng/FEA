@@ -22,7 +22,6 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Test
@@ -48,7 +47,6 @@ void test::beam2D::inelastic::cantilever_bending(void)
 	materials::Uniaxial material;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
-	typedef fea::analysis::Type solver;
 	//points
 	model.geometry()->create_point(0, 0, 0);
 	model.geometry()->create_point(L, 0, 0);
@@ -84,7 +82,7 @@ void test::beam2D::inelastic::cantilever_bending(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(1, dof::Rotation_3, sy * W);
 	//setup
-	model.analysis()->type(solver::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->active(true);
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

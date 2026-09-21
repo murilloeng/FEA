@@ -40,6 +40,9 @@ namespace fea
 			double framerate(double);
 			double framerate(void) const;
 
+			//plot
+			static void plot(const char*);
+
 		private:
 			//setup
 			void setup_glfw(void);

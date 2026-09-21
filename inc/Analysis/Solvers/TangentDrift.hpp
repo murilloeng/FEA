@@ -36,6 +36,9 @@ namespace fea
 			double dof_max(double);
 			double dof_max(void) const;
 
+			double dof_shift(double);
+			double dof_shift(void) const;
+
 			double tolerance(double);
 			double tolerance(void) const;
 
@@ -57,6 +60,7 @@ namespace fea
 			uint32_t m_tests;
 			double m_dof_min;
 			double m_dof_max;
+			double m_dof_shift;
 			double m_tolerance;
 
 			//friends

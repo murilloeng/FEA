@@ -26,7 +26,6 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Type.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //data
@@ -78,7 +77,7 @@ void test::truss3D::pyramid(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(0, fea::mesh::nodes::DOF::Translation_3, -P);
 	//setup
-	model.analysis()->type(fea::analysis::Type::StaticNonlinear);
+	model.analysis()->solver_static_nonlinear()->active(true);
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->stability(true);
