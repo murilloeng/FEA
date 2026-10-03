@@ -30,14 +30,13 @@ namespace fea
 		}
 
 		//data
-		bool Solver::active(void) const
+		void Solver::enable(void)
 		{
-			return m_analysis->m_solver == this;
+			m_analysis->m_solver = this;
 		}
-		bool Solver::active(bool active)
+		void Solver::disable(void)
 		{
-			m_analysis->m_solver = active ? this : nullptr;
-			return active;
+			m_analysis->m_solver = nullptr;
 		}
 
 		WatchDOF& Solver::watch_dof(void)

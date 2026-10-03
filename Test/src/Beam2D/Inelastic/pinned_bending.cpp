@@ -87,7 +87,7 @@ void test::beam2D::inelastic::pinned_bending(void)
 	model.boundary()->load_case(0)->create_load_node(0, dof::Rotation_3, -sy * W);
 	model.boundary()->load_case(0)->create_load_node(1, dof::Rotation_3, +sy * W);
 	//setup
-	model.analysis()->solver_static_nonlinear()->active(true);
+	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

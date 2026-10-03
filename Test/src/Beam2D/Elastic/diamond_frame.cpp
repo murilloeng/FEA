@@ -119,7 +119,7 @@ void test::beam2D::elastic::diamond_frame(void)
 	model.boundary()->create_dependency(10, dof::Translation_1, 11, dof::Translation_1);
 	model.boundary()->create_dependency(10, dof::Translation_2, 11, dof::Translation_2);
 	//setup
-	model.analysis()->solver_static_nonlinear()->active(true);
+	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

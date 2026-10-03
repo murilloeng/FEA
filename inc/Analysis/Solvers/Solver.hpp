@@ -35,8 +35,8 @@ namespace fea
 
 		public:
 			//data
-			bool active(bool);
-			bool active(void) const;
+			void enable(void);
+			void disable(void);
 
 			WatchDOF& watch_dof(void);
 

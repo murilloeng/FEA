@@ -90,7 +90,7 @@ void test::beam2D::inelastic::pinned_force(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(2, dof::Translation_2, -4 * sy * W / L);
 	//setup
-	model.analysis()->solver_static_nonlinear()->active(true);
+	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

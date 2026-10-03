@@ -52,7 +52,7 @@ void test::beam3D::test(void)
 	((fea::mesh::elements::Beam3D*) model.mesh()->element(0))->material(&material);
 	((fea::mesh::elements::Beam3D*) model.mesh()->element(0))->major_axis(s2.data());
 	//solver
-	model.analysis()->solver_tangent_drift()->active(true);
+	model.analysis()->solver_tangent_drift()->enable();
 	model.analysis()->solver_tangent_drift()->type(fea::analysis::TangentDrift::Type::InternalForce);
 	//solve
 	model.solve();

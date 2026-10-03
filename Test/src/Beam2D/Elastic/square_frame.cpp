@@ -123,7 +123,7 @@ void test::beam2D::elastic::square_frame(void)
 	model.boundary()->load_case(0)->create_load_node( 9, dof::Translation_2, +2 * E * I / L / L);
 	model.boundary()->load_case(0)->create_load_node(13, dof::Translation_2, -2 * E * I / L / L);
 	//setup
-	model.analysis()->solver_static_nonlinear()->active(true);
+	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

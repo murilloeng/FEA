@@ -143,7 +143,7 @@ void test::beam2D::elastic::honeycomb_grid(void)
 		model.boundary()->load_case(0)->load_node(i)->time_function(time_function);
 	}
 	//setup
-	model.analysis()->solver_static_nonlinear()->active(true);
+	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->attempt_max(1);

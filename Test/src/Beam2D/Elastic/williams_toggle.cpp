@@ -103,7 +103,7 @@ void test::beam2D::elastic::williams_toggle(void)
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(0, dof::Translation_2, -1);
 	//setup
-	model.analysis()->solver_static_nonlinear()->active(true);
+	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(false);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->step_size(5.00e-01);
