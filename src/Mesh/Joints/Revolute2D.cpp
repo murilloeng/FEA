@@ -1,4 +1,10 @@
 //FEA
+#include "FEA/inc/Model.hpp"
+
+#include "FEA/inc/Boundary/Boundary.hpp"
+
+#include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Joints/Revolute2D.hpp"
 
 namespace fea
@@ -26,7 +32,8 @@ namespace fea
 			}
 			void Revolute2D::create_dependencies(void) const
 			{
-				return;
+				m_mesh->model()->boundary()->create_dependency(m_nodes[0], nodes::DOF::Translation_1, m_nodes[1], nodes::DOF::Translation_1);
+				m_mesh->model()->boundary()->create_dependency(m_nodes[0], nodes::DOF::Translation_2, m_nodes[1], nodes::DOF::Translation_2);
 			}
 
 			//draw
