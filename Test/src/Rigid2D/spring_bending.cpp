@@ -66,4 +66,5 @@ void test::rigid2D::spring_bending(void)
 	});
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Rigid 2D/Spring Bending/plot.gp");
 }

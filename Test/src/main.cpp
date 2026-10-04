@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::honeycomb_grid();
+		test::rigid2D::spring_bending();
 	}
 	catch(const std::exception& exception)
 	{
