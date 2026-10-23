@@ -131,7 +131,7 @@ void test::beam2D::inelastic::morpho_plastic_half(void)
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(9);
 	model.analysis()->solver_static_nonlinear()->convergence().tolerance(1.00e-05);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
-	model.analysis()->solver_static_nonlinear()->convergence().type(math::solvers::Convergence::Type::Fixed);
+	model.analysis()->solver_static_nonlinear()->convergence().type_set(math::solvers::Convergence::Type::Fixed);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::LoadControl);
 	//solve
 	model.solve();
