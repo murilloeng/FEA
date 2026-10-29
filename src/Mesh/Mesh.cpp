@@ -186,6 +186,7 @@ namespace fea
 			m_nodes.clear();
 			m_joints.clear();
 			m_elements.clear();
+			m_counter_constraints = m_counter_dependencies = 0;
 		}
 		void Mesh::check(void)
 		{
