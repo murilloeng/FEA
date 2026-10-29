@@ -1,5 +1,4 @@
 //std
-#include <cstring>
 #include <stdexcept>
 
 //Math
@@ -22,7 +21,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Frame::Frame(void) : m_major_axis{0, 0, 1}, m_section{nullptr}
+			Frame::Frame(void) : m_section{nullptr}
 			{
 				return;
 			}
@@ -34,22 +33,6 @@ namespace fea
 			}
 
 			//data
-			const double* Frame::major_axis(void) const
-			{
-				return m_major_axis;
-			}
-			const double* Frame::major_axis(const double* major_axis)
-			{
-				return (const double*) memcpy(m_major_axis, major_axis, 3 * sizeof(double));
-			}
-			const double* Frame::major_axis(double s1, double s2, double s3)
-			{
-				m_major_axis[0] = s1;
-				m_major_axis[1] = s2;
-				m_major_axis[2] = s3;
-				return m_major_axis;
-			}
-
 			const sections::Section* Frame::section(void) const
 			{
 				return m_section;
@@ -62,11 +45,19 @@ namespace fea
 			//analysis
 			void Frame::check(void)
 			{
+				//data
+				Mechanic::check();
+				const math::Vec3 z1 = node(0)->position_ref();
+				const math::Vec3 z2 = node(1)->position_ref();
+				//check
 				if(!m_section)
 				{
 					throw std::runtime_error("Error: Frame element has an unset section!");
 				}
-				Mechanic::check();
+				if((z2 - z1).norm() == 0)
+				{
+					throw std::runtime_error("Error: Frame element has zero length!");
+				}
 			}
 			void Frame::setup(void)
 			{
@@ -74,7 +65,7 @@ namespace fea
 				Mechanic::setup();
 				const math::Vec3 z1 = node(0)->position_ref();
 				const math::Vec3 z2 = node(1)->position_ref();
-				//length
+				//setup
 				m_Lr = (z2 - z1).norm();
 			}
 

@@ -108,6 +108,13 @@ namespace fea
 			{
 				throw std::runtime_error("Error: Support's node is out of range!");
 			}
+			for(const Support* support : m_boundary->supports())
+			{
+				if(support != this && support->m_node == m_node && support->m_dof == m_dof)
+				{
+					throw std::runtime_error("Error: Support is redundant!");
+				}
+			}
 		}
 		void Support::setup(void)
 		{

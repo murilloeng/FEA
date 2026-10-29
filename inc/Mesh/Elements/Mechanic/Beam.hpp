@@ -34,8 +34,13 @@ namespace fea
 
 				math::quadrature::Quadrature& quadrature(void);
 
+				const double* major_axis(void) const;
+				const double* major_axis(const double*);
+				const double* major_axis(double, double, double);
+
 			protected:
 				//analysis
+				void check(void) override;
 				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
@@ -43,6 +48,7 @@ namespace fea
 				//data
 				static bool m_shear;
 				static bool m_mixed;
+				double m_major_axis[3];
 				static uint32_t m_draw_mesh;
 				std::vector<points::Section> m_points;
 				math::quadrature::Quadrature m_quadrature;

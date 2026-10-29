@@ -86,6 +86,10 @@ namespace fea
 		{
 			//mapping
 			dof_triplet_count();
+			delete[] m_rows_map;
+			delete[] m_cols_map;
+			delete[] m_rows_triplet;
+			delete[] m_cols_triplet;
 			int32_t* rm = m_rows_map = new int32_t[m_dof_triplet];
 			int32_t* cm = m_cols_map = new int32_t[m_dof_unknow + 1];
 			int32_t* rt = m_rows_triplet = new int32_t[m_dof_triplet];
@@ -343,7 +347,7 @@ namespace fea
 				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fd[load->m_dof_index] += s * item->value() * load->value() * load->time_function(t);
+					if(load->m_dof_index < m_dof_unknow) fd[load->m_dof_index] += s * item->value() * load->value() * load->time_function(t);
 				}
 			}
 		}
@@ -386,7 +390,7 @@ namespace fea
 				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					fr[load->m_dof_index] += s * item->value() * load->value();
+					if(load->m_dof_index < m_dof_unknow) fr[load->m_dof_index] += s * item->value() * load->value();
 				}
 			}
 		}

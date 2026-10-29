@@ -92,6 +92,7 @@ namespace fea
 		check();
 		setup();
 		m_analysis->solver()->solve();
+		m_mesh->split();
 	}
 	void Model::check(void)
 	{

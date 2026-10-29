@@ -9,6 +9,7 @@ namespace fea
 {
 	namespace mesh
 	{
+		class Mesh;
 		namespace nodes
 		{
 			enum class DOF : uint32_t;
@@ -81,6 +82,7 @@ namespace fea
 			std::vector<mesh::nodes::DOF> m_dof;
 
 			//friends
+			friend class fea::mesh::Mesh;
 			friend class fea::boundary::Boundary;
 			friend class fea::analysis::Assembler;
 		};

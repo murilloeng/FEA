@@ -1,5 +1,6 @@
 //std
 #include <ranges>
+#include <algorithm>
 #include <stdexcept>
 
 //gmsh

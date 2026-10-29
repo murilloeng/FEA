@@ -83,7 +83,7 @@ namespace fea
 		}
 		void Solver::draw_rotations(float* rotations_data, float scale) const
 		{
-			memset(rotations_data, 0, 3 * m_analysis->model()->mesh()->nodes().size() * sizeof(double));
+			memset(rotations_data, 0, 3 * m_analysis->model()->mesh()->nodes().size() * sizeof(float));
 		}
 
 		//analysis

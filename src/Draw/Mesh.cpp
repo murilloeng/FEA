@@ -10,7 +10,6 @@
 
 //Canvas
 #include "Canvas/inc/Vertices/Model3D.hpp"
-#include "Canvas/inc/Cameras/BoundingBox.hpp"
 
 namespace fea
 {

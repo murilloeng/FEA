@@ -75,6 +75,7 @@ namespace fea
 			void check(void);
 			void setup(void);
 			void merge(void);
+			void split(void);
 			void update(void);
 			void restore(void);
 			void compute(void);
@@ -83,6 +84,8 @@ namespace fea
 
 			//data
 			static Model* m_model;
+			uint32_t m_counter_constraints;
+			uint32_t m_counter_dependencies;
 			std::vector<nodes::Node*> m_nodes;
 			std::vector<joints::Joint*> m_joints;
 			std::vector<elements::Element*> m_elements;

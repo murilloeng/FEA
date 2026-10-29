@@ -36,10 +36,10 @@ namespace fea
 			uint32_t Beam3D::stress_set(void) const
 			{
 				return m_shear ?
-					1 << uint32_t(materials::Stress::Type::s11):
 					1 << uint32_t(materials::Stress::Type::s11)|
 					1 << uint32_t(materials::Stress::Type::s12)|
-					1 << uint32_t(materials::Stress::Type::s13);
+					1 << uint32_t(materials::Stress::Type::s13):
+					1 << uint32_t(materials::Stress::Type::s11);
 			}
 			uint32_t Beam3D::dof_set(uint32_t) const
 			{

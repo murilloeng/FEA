@@ -24,6 +24,8 @@
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss3D.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Constraints/Constraint.hpp"
+#include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
 
 namespace fea
 {
@@ -32,6 +34,8 @@ namespace fea
 		//constructor
 		Mesh::Mesh(void)
 		{
+			m_counter_constraints = 0;
+			m_counter_dependencies = 0;
 			nodes::Node::m_mesh = this;
 			joints::Joint::m_mesh = this;
 			elements::Element::m_mesh = this;
@@ -196,11 +200,38 @@ namespace fea
 		}
 		void Mesh::merge(void)
 		{
+			//setup
+			split();
+			m_counter_constraints = m_model->boundary()->m_constraints.size();
+			m_counter_dependencies = m_model->boundary()->m_dependencies.size();
+			//merge
 			for(const joints::Joint* joint : m_joints)
 			{
 				joint->create_constraints();
 				joint->create_dependencies();
 			}
+			//update
+			m_counter_constraints = m_model->boundary()->m_constraints.size() - m_counter_constraints;
+			m_counter_dependencies = m_model->boundary()->m_dependencies.size() - m_counter_dependencies;
+		}
+		void Mesh::split(void)
+		{
+			//data
+			std::vector<boundary::Constraint*>& constraints = m_model->boundary()->m_constraints;
+			std::vector<boundary::Dependency*>& dependencies = m_model->boundary()->m_dependencies;
+			//split
+			for(uint32_t i = 0; i < m_counter_constraints; i++)
+			{
+				delete constraints[constraints.size() - i - 1];
+			}
+			for(uint32_t i = 0; i < m_counter_dependencies; i++)
+			{
+				delete dependencies[dependencies.size() - i - 1];
+			}
+			//update
+			constraints.erase(constraints.end() - m_counter_constraints, constraints.end());
+			dependencies.erase(dependencies.end() - m_counter_dependencies, dependencies.end());
+			m_counter_constraints = m_counter_dependencies = 0;
 		}
 		void Mesh::update(void)
 		{

@@ -10,6 +10,7 @@ namespace fea
 	class Model;
 	namespace mesh
 	{
+		class Mesh;
 		namespace nodes
 		{
 			enum class DOF : uint32_t;
@@ -96,6 +97,7 @@ namespace fea
 
 			//friends
 			friend class fea::Model;
+			friend class fea::mesh::Mesh;
 			friend class fea::analysis::Assembler;
 		};
 	}

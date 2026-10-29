@@ -1,12 +1,11 @@
 //std
 #include <cmath>
+#include <algorithm>
 
 //Math
 #include "Math/inc/Miscellaneous/util.hpp"
 
 //FEA
-#include "FEA/inc/Model.hpp"
-
 #include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Boundary.hpp"
 
