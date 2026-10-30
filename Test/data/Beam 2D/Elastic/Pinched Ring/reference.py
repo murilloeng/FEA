@@ -36,7 +36,7 @@ def ring(q, sign):
 	_, x, y = shoot(m)
 	return sign * (1 + y), sign * (x - 1)
 
-for sign, name, q_max in ((+1, "compression", 6), (-1, "tension", 20)):
+for sign, name, q_max in ((+1, "compression", 10), (-1, "tension", 20)):
 	v, u = ring(1e-4, sign)
 	print("%s, linear limit: v / lambda = %.6f (exact %.6f), u / lambda = %.6f (exact %.6f)" % (name, v / 1e-4, np.pi / 8 - 1 / np.pi, u / 1e-4, 1 / np.pi - 1 / 4))
 	with open(os.path.join(here, "reference-%s.dat" % name), "w") as file:
