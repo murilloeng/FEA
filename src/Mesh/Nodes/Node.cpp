@@ -74,7 +74,7 @@ namespace fea
 			double Node::state(DOF dof) const
 			{
 				//data
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint8_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const double t = m_mesh->model()->analysis()->solver()->time_new();
 				const double* x = m_mesh->model()->analysis()->solver()->state_new();
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
@@ -86,7 +86,7 @@ namespace fea
 			double Node::velocity(DOF dof) const
 			{
 				//data
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint8_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const double t = m_mesh->model()->analysis()->solver()->time_new();
 				const double* v = m_mesh->model()->analysis()->solver()->velocity_new();
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
@@ -98,7 +98,7 @@ namespace fea
 			double Node::acceleration(DOF dof) const
 			{
 				//data
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint8_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const double t = m_mesh->model()->analysis()->solver()->time_new();
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				const double* a = m_mesh->model()->analysis()->solver()->acceleration_new();
@@ -111,7 +111,7 @@ namespace fea
 			double Node::state(DOF dof, uint32_t step) const
 			{
 				//data
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint8_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				const double* x = dynamic_cast<math::solvers::Incremental*>(m_mesh->model()->analysis()->solver())->state_data();
 				//return
@@ -120,7 +120,7 @@ namespace fea
 			double Node::velocity(DOF dof, uint32_t step) const
 			{
 				//data
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint8_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				const double* v = dynamic_cast<math::solvers::Incremental*>(m_mesh->model()->analysis()->solver())->velocity_data();
 				//return
@@ -129,7 +129,7 @@ namespace fea
 			double Node::acceleration(DOF dof, uint32_t step) const
 			{
 				//data
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
+				const uint8_t id = math::bit_index(m_dof_set, 1 << uint32_t(dof));
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				const double* a = dynamic_cast<math::solvers::Incremental*>(m_mesh->model()->analysis()->solver())->acceleration_data();
 				//return
@@ -167,7 +167,7 @@ namespace fea
 				for(uint32_t i = 0; i < 3; i++)
 				{
 					m_position_new[i] = m_position_ref[i];
-					const uint32_t id = math::bit_index(m_dof_set, ib << i);
+					const uint8_t id = math::bit_index(m_dof_set, ib << i);
 					if((m_dof_set & ib << i) && m_dof_indexes[id] < nu) m_position_new[i] += xd[m_dof_indexes[id] + step * nu];
 				}
 				//return

@@ -24,7 +24,8 @@ namespace fea
 	namespace analysis
 	{
 		//constructor
-		TangentDrift::TangentDrift(void) : m_type{Type::InternalForce}, m_tests{10000}, m_dof_min{-1}, m_dof_max{+1}, m_dof_shift{1e-5}, m_tolerance{1e-05}
+		TangentDrift::TangentDrift(void) : 
+			m_type{Type::InternalForce}, m_tests{10000}, m_dof_min{-1}, m_dof_max{+1}, m_dof_shift{1e-5}, m_tolerance{1e-05}
 		{
 			return;
 		}
@@ -126,7 +127,7 @@ namespace fea
 			//quaternions
 			for(mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
 			{
-				if(node->quaternion_new()) math::Quat(node->quaternion_new()).randu();
+				if(node->quaternion_old()) math::Quat(node->quaternion_old()).randu();
 			}
 		}
 

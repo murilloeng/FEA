@@ -9,6 +9,7 @@
 
 //Math
 #include "Math/inc/Validation/Validator.hpp"
+#include "Math/inc/Solvers/Continuation.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -47,6 +48,7 @@ void test::beam2D::elastic::lee_frame(void)
 	sections::Generic section;
 	materials::Uniaxial material;
 	math::validation::Validator validator;
+	typedef math::solvers::Continuation::Type continuation;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	//nodes
@@ -87,6 +89,7 @@ void test::beam2D::elastic::lee_frame(void)
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(12);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(3.00e+00);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
+	model.analysis()->solver_static_nonlinear()->continuation().type(continuation::ArcLengthCylindrical);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
 	//solve
 	model.solve();
@@ -100,6 +103,7 @@ void test::beam2D::elastic::lee_frame(void)
 	validator.create_item();
 	validator.item(0)->tolerance(1.20e-01);
 	validator.item(1)->tolerance(1.20e-01);
+	validator.item(1)->adjuster_numeric([](double& x1, double&){ x1 = -x1; });
 	validator.item(0)->load_numeric("Test/data/Beam 2D/Elastic/Lee Frame/data.txt", 0, 3);
 	validator.item(1)->load_numeric("Test/data/Beam 2D/Elastic/Lee Frame/data.txt", 1, 3);
 	validator.item(0)->load_reference("Test/data/Beam 2D/Elastic/Lee Frame/reference-u.dat", 0, 1);
@@ -108,4 +112,5 @@ void test::beam2D::elastic::lee_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Lee Frame/plot.gp");
 }

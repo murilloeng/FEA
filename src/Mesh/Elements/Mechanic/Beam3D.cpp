@@ -236,25 +236,29 @@ namespace fea
 				const double G = m_material->shear_modulus();
 				const double E = m_material->elastic_modulus();
 				//shear
-				const double u2 = G * A22 * m_Lr * m_Lr / (G * A22 * m_Lr * m_Lr + 12 * E * I22);
-				const double u3 = G * A33 * m_Lr * m_Lr / (G * A33 * m_Lr * m_Lr + 12 * E * I33);
+				const double q2 = G * A22 * m_Lr * m_Lr;
+				const double q3 = G * A33 * m_Lr * m_Lr;
+				const double w2 = !m_shear ? 0 : E * I33 / q2;
+				const double w3 = !m_shear ? 0 : E * I22 / q3;
+				const double m2 = !m_shear ? 1 : 1 / (1 + 12 * w2);
+				const double m3 = !m_shear ? 1 : 1 / (1 + 12 * w3);
 				//force
 				m_fl[0] = E * A / m_Lr * m_dl[0];
 				m_fl[3] = G * J / m_Lr * m_dl[3];
-				m_fl[1] = 6 * E * I22 * u2 / m_Lr / m_Lr * (2 * m_dl[1] / m_Lr - m_dl[5]);
-				m_fl[2] = 6 * E * I33 * u3 / m_Lr / m_Lr * (2 * m_dl[2] / m_Lr + m_dl[4]);
-				m_fl[4] = E * I33 / m_Lr * ((1 + 3 * u3) * m_dl[4] + 6 * u3 * m_dl[2] / m_Lr);
-				m_fl[5] = E * I22 / m_Lr * ((1 + 3 * u2) * m_dl[5] - 6 * u2 * m_dl[1] / m_Lr);
+				m_fl[1] = 6 * E * I33 * m2 / m_Lr / m_Lr * (2 * m_dl[1] / m_Lr - m_dl[5]);
+				m_fl[2] = 6 * E * I22 * m3 / m_Lr / m_Lr * (2 * m_dl[2] / m_Lr + m_dl[4]);
+				m_fl[4] = E * I22 / m_Lr * ((1 + 3 * m3) * m_dl[4] + 6 * m3 * m_dl[2] / m_Lr);
+				m_fl[5] = E * I33 / m_Lr * ((1 + 3 * m2) * m_dl[5] - 6 * m2 * m_dl[1] / m_Lr);
 				//stiffness
 				m_Kl.zeros();
 				m_Kl[0 + 6 * 0] = E * A / m_Lr;
 				m_Kl[3 + 6 * 3] = G * J / m_Lr;
-				m_Kl[4 + 6 * 4] = E * I33 * (1 + 3 * u3) / m_Lr;
-				m_Kl[5 + 6 * 5] = E * I22 * (1 + 3 * u2) / m_Lr;
-				m_Kl[1 + 6 * 1] = 12 * E * I22 * u2 / m_Lr / m_Lr / m_Lr;
-				m_Kl[2 + 6 * 2] = 12 * E * I33 * u3 / m_Lr / m_Lr / m_Lr;
-				m_Kl[1 + 6 * 5] = m_Kl[5 + 6 * 1] = -6 * E * I22 * u2 / m_Lr / m_Lr;
-				m_Kl[2 + 6 * 4] = m_Kl[4 + 6 * 2] = +6 * E * I33 * u3 / m_Lr / m_Lr;
+				m_Kl[4 + 6 * 4] = E * I22 * (1 + 3 * m3) / m_Lr;
+				m_Kl[5 + 6 * 5] = E * I33 * (1 + 3 * m2) / m_Lr;
+				m_Kl[1 + 6 * 1] = 12 * E * I33 * m2 / m_Lr / m_Lr / m_Lr;
+				m_Kl[2 + 6 * 2] = 12 * E * I22 * m3 / m_Lr / m_Lr / m_Lr;
+				m_Kl[1 + 6 * 5] = m_Kl[5 + 6 * 1] = -6 * E * I33 * m2 / m_Lr / m_Lr;
+				m_Kl[2 + 6 * 4] = m_Kl[4 + 6 * 2] = +6 * E * I22 * m3 / m_Lr / m_Lr;
 			}
 			void Beam3D::compute_CR_plastic(void)
 			{

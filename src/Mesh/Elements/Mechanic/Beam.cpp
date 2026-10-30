@@ -92,12 +92,12 @@ namespace fea
 			{
 				//data
 				Frame::setup();
-				math::Vec3 s2(m_major_axis);
 				const math::Vec3 z1 = node(0)->position_ref();
 				const math::Vec3 z2 = node(1)->position_ref();
 				//projection
+				const math::Vec3 s2(m_major_axis);
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;
-				(s2 -= s1.inner(s2) * s1).normalize();
+				math::Vec3{m_major_axis} = (s2 - s1.inner(s2) * s1).unit();
 				//points
 				if(materials::Mechanic::inelastic())
 				{

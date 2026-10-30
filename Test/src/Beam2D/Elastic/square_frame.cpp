@@ -36,14 +36,11 @@
 
 //data
 static const uint32_t ne = 5;
-static const double b = 1.00e-01;
-static const double h = 1.00e-01;
+static const double A = 1.00e+01;
+static const double I = 1.00e-05;
 static const double L = 1.00e+00;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
-
-static const double A = b * h;
-static const double I = b * h * h * h / 12;
 
 //reference: doi.org/10.1002/nme.1620170113
 
@@ -155,4 +152,5 @@ void test::beam2D::elastic::square_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Square Frame/plot.gp");
 }

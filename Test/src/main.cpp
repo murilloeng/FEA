@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::rigid2D::spring_bending();
+		test::beam2D::elastic::williams_toggle();
 	}
 	catch(const std::exception& exception)
 	{

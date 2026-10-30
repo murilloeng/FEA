@@ -36,14 +36,11 @@
 
 //data
 static const uint32_t ne = 5;
-static const double b = 1.00e-01;
-static const double h = 1.00e-01;
+static const double A = 1.00e+01;
+static const double I = 1.00e-05;
 static const double L = 1.00e+00;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
-
-static const double A = b * h;
-static const double I = b * h * h * h / 12;
 
 //reference: doi.org/10.1002/nme.1620170113
 
@@ -121,7 +118,7 @@ void test::beam2D::elastic::diamond_frame(void)
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(true);
-	model.analysis()->solver_static_nonlinear()->step_max(500);
+	model.analysis()->solver_static_nonlinear()->step_max(1000);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(4);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(1.00e+01);
@@ -141,6 +138,7 @@ void test::beam2D::elastic::diamond_frame(void)
 	validator.create_item();
 	validator.create_item();
 	validator.create_item();
+	validator.item(2)->adjuster_reference([](double&, double& x2){ x2 -= M_PI_4; });
 	validator.item(0)->load_numeric("Test/data/Beam 2D/Elastic/Diamond Frame/data-tension.txt", 3, 0);
 	validator.item(1)->load_numeric("Test/data/Beam 2D/Elastic/Diamond Frame/data-tension.txt", 3, 1);
 	validator.item(2)->load_numeric("Test/data/Beam 2D/Elastic/Diamond Frame/data-tension.txt", 3, 2);
@@ -151,4 +149,5 @@ void test::beam2D::elastic::diamond_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Elastic/Diamond Frame/plot.gp");
 }
