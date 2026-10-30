@@ -20,6 +20,11 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 
+//static
+const fea::mesh::nodes::DOF dt3 = fea::mesh::nodes::DOF::Rotation_3;
+const fea::mesh::nodes::DOF du1 = fea::mesh::nodes::DOF::Translation_1;
+const fea::mesh::nodes::DOF du2 = fea::mesh::nodes::DOF::Translation_2;
+
 namespace fea
 {
 	namespace mesh
@@ -88,9 +93,13 @@ namespace fea
 			void Beam2D::stiffness_CR(double* K) const
 			{
 				//data
-				const math::Vec2 x1 = node(0)->position_new();
-				const math::Vec2 x2 = node(1)->position_new();
+				const math::Vec2 z1 = node(0)->position();
+				const math::Vec2 z2 = node(1)->position();
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//direction
+				const math::Vec2 x1 = z1 + u1;
+				const math::Vec2 x2 = z2 + u2;
 				const double Ln = (x2 - x1).norm();
 				const double cn = (x2[0] - x1[0]) / Ln;
 				const double sn = (x2[1] - x1[1]) / Ln;
@@ -119,9 +128,13 @@ namespace fea
 			void Beam2D::internal_force_CR(double* f) const
 			{
 				//data
-				const math::Vec2 x1 = node(0)->position_new();
-				const math::Vec2 x2 = node(1)->position_new();
+				const math::Vec2 z1 = node(0)->position();
+				const math::Vec2 z2 = node(1)->position();
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//directions
+				const math::Vec2 x1 = z1 + u1;
+				const math::Vec2 x2 = z2 + u2;
 				const double Ln = (x2 - x1).norm();
 				const double cn = (x2[0] - x1[0]) / Ln;
 				const double sn = (x2[1] - x1[1]) / Ln;
@@ -195,15 +208,18 @@ namespace fea
 			void Beam2D::compute_CR_state(void)
 			{
 				//data
-				const math::Vec2 z1 = node(0)->position_ref();
-				const math::Vec2 z2 = node(1)->position_ref();
-				const math::Vec2 x1 = node(0)->position_new();
-				const math::Vec2 x2 = node(1)->position_new();
+				const double t1 = node(0)->state(dt3);
+				const double t2 = node(1)->state(dt3);
+				const math::Vec2 z1 = node(0)->position();
+				const math::Vec2 z2 = node(1)->position();
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//directions
-				const double L0 = (z2 - z1).norm();
+				const math::Vec2 x1 = z1 + u1;
+				const math::Vec2 x2 = z2 + u2;
 				const double Ln = (x2 - x1).norm();
 				const math::Vec2 sn = (x2 - x1) / Ln;
-				const math::Vec2 s0 = (z2 - z1) / L0;
+				const math::Vec2 s0 = (z2 - z1) / m_Lr;
 				//rigid rotation
 				const double cr_old = cos(m_tr_old);
 				const double sr_old = sin(m_tr_old);
@@ -213,10 +229,8 @@ namespace fea
 				const double sr_inc = sr_new * cr_old - cr_new * sr_old;
 				//state
 				m_tr_new = m_tr_old + atan2(sr_inc, cr_inc);
-				const double t1 = node(0)->state(nodes::DOF::Rotation_3);
-				const double t2 = node(1)->state(nodes::DOF::Rotation_3);
 				//local state
-				m_dl[0] = Ln - L0;
+				m_dl[0] = Ln - m_Lr;
 				m_dl[1] = t1 - m_tr_new;
 				m_dl[2] = t2 - m_tr_new;
 			}

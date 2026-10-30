@@ -81,8 +81,8 @@ namespace fea
 			{
 				//data
 				Frame::check();
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
 				//check
 				const math::Vec3 s2(m_major_axis);
 				const math::Vec3 s1 = (z2 - z1).unit();
@@ -92,8 +92,8 @@ namespace fea
 			{
 				//data
 				Frame::setup();
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
 				//projection
 				const math::Vec3 s2(m_major_axis);
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;

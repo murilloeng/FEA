@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::williams_toggle();
+		test::beam2D::elastic::square_frame();
 	}
 	catch(const std::exception& exception)
 	{

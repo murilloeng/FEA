@@ -68,8 +68,8 @@ namespace fea
 			for(const mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
 			{
 				//data
+				const double* z = node->position();
 				const uint32_t index = node->index();
-				const double* z = node->position_ref();
 				//position
 				for(uint32_t i = 0; i < 3; i++)
 				{

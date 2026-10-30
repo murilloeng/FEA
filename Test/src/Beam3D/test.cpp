@@ -39,8 +39,8 @@ void test::beam3D::test(void)
 	model.mesh()->create_node(math::randu(), math::randu(), math::randu());
 	//triad
 	math::Vec3 s2, s3;
-	const math::Vec3 z1 = model.mesh()->node(0)->position_ref();
-	const math::Vec3 z2 = model.mesh()->node(1)->position_ref();
+	const math::Vec3 z1 = model.mesh()->node(0)->position();
+	const math::Vec3 z2 = model.mesh()->node(1)->position();
 	(z2 - z1).unit().triad(s2, s3);
 	//elements
 	section.width(w);

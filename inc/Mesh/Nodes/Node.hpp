@@ -63,11 +63,9 @@ namespace fea
 				const double* quaternion_old(void) const;
 				const double* quaternion_new(void) const;
 
-				const double* position(uint32_t);
-				const double* position_new(void) const;
-				const double* position_ref(void) const;
-				const double* position_ref(const double*);
-				const double* position_ref(double, double, double);
+				const double* position(void) const;
+				const double* position(const double*);
+				const double* position(double, double, double);
 
 			private:
 				//analysis
@@ -81,11 +79,7 @@ namespace fea
 				uint32_t m_index;
 				uint32_t m_dof_set;
 				static Mesh* m_mesh;
-				double m_position_ref[3];
-				double m_position_new[3];
-				double m_rotation_new[3];
-				double* m_quaternion_old;
-				double* m_quaternion_new;
+				double m_position[3];
 				std::vector<uint32_t> m_dof_indexes;
 
 				//friends

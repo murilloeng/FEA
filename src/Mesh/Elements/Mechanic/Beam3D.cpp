@@ -14,6 +14,14 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam3D.hpp"
 
+//static
+const fea::mesh::nodes::DOF dt1 = fea::mesh::nodes::DOF::Rotation_1;
+const fea::mesh::nodes::DOF dt2 = fea::mesh::nodes::DOF::Rotation_2;
+const fea::mesh::nodes::DOF dt3 = fea::mesh::nodes::DOF::Rotation_3;
+const fea::mesh::nodes::DOF du1 = fea::mesh::nodes::DOF::Translation_1;
+const fea::mesh::nodes::DOF du2 = fea::mesh::nodes::DOF::Translation_2;
+const fea::mesh::nodes::DOF du3 = fea::mesh::nodes::DOF::Translation_3;
+
 namespace fea
 {
 	namespace mesh
@@ -86,12 +94,12 @@ namespace fea
 			void Beam3D::stiffness_CR(double* K) const
 			{
 				//data
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
-				const math::Vec3 x1 = node(0)->position_new();
-				const math::Vec3 x2 = node(1)->position_new();
-				const math::Vec3 t1 = node(0)->rotation_new();
-				const math::Vec3 t2 = node(1)->rotation_new();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
+				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
+				const math::Vec3 t1 = {node(0)->state(dt1), node(0)->state(dt2), node(0)->state(dt3)};
+				const math::Vec3 t2 = {node(1)->state(dt1), node(1)->state(dt2), node(1)->state(dt3)};
 				//axes
 				const math::Vec3 s2 = m_major_axis;
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;
@@ -101,6 +109,8 @@ namespace fea
 				const math::Quat q1 = node(0)->quaternion_new();
 				const math::Quat q2 = node(1)->quaternion_new();
 				//data
+				const math::Vec3 x1 = z1 + u1;
+				const math::Vec3 x2 = z2 + u2;
 				const math::Quat qr = q1 * q0;
 				const math::Mat3 Rr = qr.rotation();
 				const math::Mat3 Rt = Rr.transpose();
@@ -206,10 +216,10 @@ namespace fea
 			void Beam3D::compute_CR_state(void)
 			{
 				//data
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
-				const math::Vec3 x1 = node(0)->position_new();
-				const math::Vec3 x2 = node(1)->position_new();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
+				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
 				//axes
 				const math::Vec3 s2 = m_major_axis;
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;
@@ -219,6 +229,8 @@ namespace fea
 				const math::Quat q1 = node(0)->quaternion_new();
 				const math::Quat q2 = node(1)->quaternion_new();
 				//local state
+				const math::Vec3 x1 = z1 + u1;
+				const math::Vec3 x2 = z2 + u2;
 				const math::Quat qr = q1 * q0;
 				m_dl.span(3, 0, 3, 1) = (qr.conjugate() * q2 * q0).pseudo();
 				m_dl.span(0, 0, 3, 1) = qr.conjugate(x2 - x1) - math::Vec3(m_Lr, 0, 0);
@@ -267,12 +279,12 @@ namespace fea
 			void Beam3D::compute_CR_kinematic(void) const
 			{
 				//data
-				const math::Vec3 z1 = node(0)->position_ref();
-				const math::Vec3 z2 = node(1)->position_ref();
-				const math::Vec3 x1 = node(0)->position_new();
-				const math::Vec3 x2 = node(1)->position_new();
-				const math::Vec3 t1 = node(0)->rotation_new();
-				const math::Vec3 t2 = node(1)->rotation_new();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
+				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
+				const math::Vec3 t1 = {node(0)->state(dt1), node(0)->state(dt2), node(0)->state(dt3)};
+				const math::Vec3 t2 = {node(1)->state(dt1), node(1)->state(dt2), node(1)->state(dt3)};
 				//axes
 				const math::Vec3 s2 = m_major_axis;
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;
@@ -282,6 +294,8 @@ namespace fea
 				const math::Quat q1 = node(0)->quaternion_new();
 				const math::Quat q2 = node(1)->quaternion_new();
 				//data
+				const math::Vec3 x1 = z1 + u1;
+				const math::Vec3 x2 = z2 + u2;
 				const math::Quat qr = q1 * q0;
 				const math::Mat3 Xr = (x2 - x1).spin();
 				const math::Mat3 T1 = t1.rotation_gradient();

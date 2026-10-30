@@ -42,8 +42,8 @@ namespace fea
 			void Rigid2D::create_constraints(void) const
 			{
 				//data
-				const double* z0 = m_mesh->node(m_nodes[0])->position_ref();
-				const double* z1 = m_mesh->node(m_nodes[1])->position_ref();
+				const double* z0 = m_mesh->node(m_nodes[0])->position();
+				const double* z1 = m_mesh->node(m_nodes[1])->position();
 				const uint32_t nc = m_mesh->model()->boundary()->constraints().size();
 				//constraints
 				m_mesh->model()->boundary()->create_constraint(
