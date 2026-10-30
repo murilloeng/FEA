@@ -38,7 +38,7 @@ static const double E = 7.20e+02;
 static const double w = 3.00e+00;
 static const double h = 2.00e+00;
 
-//reference: doi.org/10.1061/JMCEA3.0000966
+//Reference: doi.org/10.1061/JMCEA3.0000966
 
 void test::beam3D::elastic::lee_frame(void)
 {

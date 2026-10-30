@@ -45,7 +45,7 @@ static const double t = 1.00e-03;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
 
-//reference: doi.org/10.1002/nme.6820
+//Reference: doi.org/10.1002/nme.6820
 
 static double time_function(double t)
 {

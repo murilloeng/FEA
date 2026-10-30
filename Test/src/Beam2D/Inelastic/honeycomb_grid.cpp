@@ -48,7 +48,8 @@ static const double v = 3.00e-01;
 static const double E = 2.10e+11;
 static const double K = 2.10e+11;
 static const double sy = 4.00e+08;
-//reference: doi.org/10.1002/nme.6820
+
+//Reference: doi.org/10.1002/nme.6820
 
 static double time_function(double t)
 {

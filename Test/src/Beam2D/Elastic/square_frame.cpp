@@ -42,7 +42,7 @@ static const double L = 1.00e+00;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
 
-//reference: doi.org/10.1002/nme.1620170113
+//Reference: doi.org/10.1002/nme.1620170113
 
 void test::beam2D::elastic::square_frame(void)
 {
@@ -95,6 +95,10 @@ void test::beam2D::elastic::square_frame(void)
 	//generate
 	model.geometry()->generate_mesh();
 	//elements
+	section.area(A);
+	section.inertia(1, I);
+	material.poisson_ratio(v);
+	material.elastic_modulus(E);
 	for(fea::mesh::elements::Element* element : model.mesh()->elements())
 	{
 		((fea::mesh::elements::Beam2D*) element)->section(&section);
@@ -109,10 +113,6 @@ void test::beam2D::elastic::square_frame(void)
 	model.boundary()->create_support(11, dof::Translation_2);
 	model.boundary()->create_support(15, dof::Translation_2);
 	//loads
-	section.area(A);
-	section.inertia(1, I);
-	material.poisson_ratio(v);
-	material.elastic_modulus(E);
 	model.boundary()->create_load_case();
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->load_case(0)->create_load_node( 1, dof::Translation_2, -2 * E * I / L / L);

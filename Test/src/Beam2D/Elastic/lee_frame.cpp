@@ -39,7 +39,7 @@ static const double E = 7.20e+02;
 static const double A = 6.00e+00;
 static const double I = 2.00e+00;
 
-//reference: doi.org/10.1061/JMCEA3.0000966
+//Reference: doi.org/10.1061/JMCEA3.0000966
 
 void test::beam2D::elastic::lee_frame(void)
 {
@@ -61,6 +61,10 @@ void test::beam2D::elastic::lee_frame(void)
 		model.mesh()->create_node(L * i / ne, L, 0);
 	}
 	//elements
+	section.area(A);
+	section.inertia(1, I);
+	material.poisson_ratio(v);
+	material.elastic_modulus(E);
 	for(uint32_t i = 0; i < 2 * ne; i++)
 	{
 		model.mesh()->create_element(fea::mesh::elements::Type::Beam2D, {i, i + 1});
@@ -74,10 +78,6 @@ void test::beam2D::elastic::lee_frame(void)
 	model.boundary()->create_support(2 * ne, dof::Translation_1);
 	model.boundary()->create_support(2 * ne, dof::Translation_2);
 	//loads
-	section.area(A);
-	section.inertia(1, I);
-	material.poisson_ratio(v);
-	material.elastic_modulus(E);
 	model.boundary()->create_load_combination(0, false, 1);
 	model.boundary()->create_load_case(12, dof::Translation_2, -1);
 	//setup

@@ -42,7 +42,7 @@ static const double L = 1.00e+00;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
 
-//reference: doi.org/10.1002/nme.1620170113
+//Reference: doi.org/10.1002/nme.1620170113
 
 void test::beam2D::elastic::diamond_frame(void)
 {

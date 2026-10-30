@@ -53,14 +53,7 @@ namespace fea
 	}
 	void Model::save_results(const char* path) const
 	{
-		//data
-		std::filesystem::path dir = std::filesystem::path(path);
-		//create
-		save((dir / std::string("Model.txt")).c_str());
-		std::filesystem::create_directories(dir / std::string("Nodes"));
-		std::filesystem::create_directories(dir / std::string("Solver"));
-		std::filesystem::create_directories(dir / std::string("Elements"));
-		std::filesystem::create_directories(dir / std::string("Supports"));
+		save((std::filesystem::path(path) / std::string("Model.txt")).c_str());
 	}
 
 	//data

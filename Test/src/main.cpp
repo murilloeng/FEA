@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::square_frame();
+		test::beam2D::elastic::pinched_ring();
 	}
 	catch(const std::exception& exception)
 	{

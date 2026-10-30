@@ -54,7 +54,7 @@ static const double R0 = 4.00e-04;
 static const double sy = E * ey;
 static const double K = E * Ep / (E - Ep);
 
-//reference: doi.org/10.48550/arXiv.2412.06022
+//Reference: doi.org/10.48550/arXiv.2412.06022
 
 static double time_function(double t)
 {
