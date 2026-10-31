@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::elastic::pinched_ring();
+		test::beam2D::inelastic::pinned_bending();
 	}
 	catch(const std::exception& exception)
 	{

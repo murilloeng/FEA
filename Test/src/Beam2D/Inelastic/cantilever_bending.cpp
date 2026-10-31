@@ -1,8 +1,14 @@
+//std
+#include <cmath>
+
 //Sections
 #include "Sections/inc/Rectangle.hpp"
 
 //Materials
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
+
+//Math
+#include "Math/inc/Validation/Validator.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
@@ -39,12 +45,40 @@ static const double E = 2.10e+11;
 static const double K = 0.00e+00;
 static const double sy = 2.50e+08;
 
+static const double I = w * h * h * h / 12;
+static const double My = sy * w * h * h / 6;
+static const double ky = 2 * sy / E / h;
+
+//reference: elastic-perfectly-plastic rectangle, k = M / EI for M <= My and k = ky / sqrt(3 - 2 M / My)
+//for My <= M < Mp = 1.5 My (e.g. Lubliner, Plasticity Theory, sec. 4.4)
+static double curvature(double M)
+{
+	return M <= My ? M / E / I : ky / sqrt(3 - 2 * M / My);
+}
+
+//tip moment M = p Mp: uniform curvature, the axis is an exact circular arc
+static double function_t3(double p)
+{
+	return curvature(1.5 * My * p) * L;
+}
+static double function_u1(double p)
+{
+	const double t = function_t3(p);
+	return t == 0 ? 0 : L * (sin(t) / t - 1);
+}
+static double function_u2(double p)
+{
+	const double t = function_t3(p);
+	return t == 0 ? 0 : L * (1 - cos(t)) / t;
+}
+
 void test::beam2D::inelastic::cantilever_bending(void)
 {
 	//data
 	fea::Model model;
 	sections::Rectangle section;
 	materials::Uniaxial material;
+	math::validation::Validator validator;
 	//types
 	typedef fea::mesh::nodes::DOF dof;
 	//points
@@ -88,6 +122,7 @@ void test::beam2D::inelastic::cantilever_bending(void)
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_3);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::ArcLengthCylindrical);
 	//solve
 	model.solve();
 	//save
@@ -95,6 +130,19 @@ void test::beam2D::inelastic::cantilever_bending(void)
 	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 2D/Inelastic/Cantilever Bending/data.txt", {
 		{1, dof::Translation_1}, {1, dof::Translation_2}, {1, dof::Rotation_3}
 	});
+	//validator
+	validator.create_item();
+	validator.create_item();
+	validator.create_item();
+	validator.item(0)->function(function_u1);
+	validator.item(1)->function(function_u2);
+	validator.item(2)->function(function_t3);
+	validator.item(0)->load_numeric("Test/data/Beam 2D/Inelastic/Cantilever Bending/data.txt", 3, 0);
+	validator.item(1)->load_numeric("Test/data/Beam 2D/Inelastic/Cantilever Bending/data.txt", 3, 1);
+	validator.item(2)->load_numeric("Test/data/Beam 2D/Inelastic/Cantilever Bending/data.txt", 3, 2);
+	//validate
+	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 2D/Inelastic/Cantilever Bending/plot.gp");
 }
