@@ -57,6 +57,12 @@ namespace fea
 				void compute_TL(void);
 				void compute_CR(void);
 
+				//compute TL
+				void compute_TL_state(void);
+				void compute_TL_elastic(void);
+				void compute_TL_strains_hessian(double*) const;
+				void compute_TL_strains_gradient(double*) const;
+
 				//compute CR
 				void compute_CR_state(void);
 				void compute_CR_elastic(void);

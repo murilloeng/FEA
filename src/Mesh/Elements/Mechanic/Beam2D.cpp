@@ -3,6 +3,7 @@
 
 //Math
 #include "Math/inc/Linear/Vec2.hpp"
+#include "Math/inc/Miscellaneous/rotations.hpp"
 
 //Canvas
 #include "Canvas/inc/Math/vec2.hpp"
@@ -115,9 +116,15 @@ namespace fea
 				math::Matrix(K, 6, 6) = B.transpose() * math::Matrix(m_Kl, 3, 3) * B;
 				math::Matrix(K, 6, 6) += m_fl[0] / Ln * b.outer() + (m_fl[1] + m_fl[2]) / Ln / Ln * (a.outer(b) + b.outer(a));
 			}
-			void Beam2D::stiffness_TL(double*) const
+			void Beam2D::stiffness_TL(double* K) const
 			{
-				return;
+				double B[18], H[36];
+				compute_TL_strains_hessian(H);
+				compute_TL_strains_gradient(B);
+				const math::Matrix Bm(B, 3, 6);
+				const math::Matrix Hm(H, 6, 6);
+				const math::Matrix Kl(m_Kl, 3, 3);
+				math::Matrix(K, 6, 6) = m_Lr * (Bm.transpose() * Kl * Bm + Hm);
 			}
 
 			//forces
@@ -146,9 +153,11 @@ namespace fea
 				f[3] = +cn * m_fl[0] + sn * (m_fl[1] + m_fl[2]) / Ln;
 				f[4] = +sn * m_fl[0] - cn * (m_fl[1] + m_fl[2]) / Ln;
 			}
-			void Beam2D::internal_force_TL(double*) const
+			void Beam2D::internal_force_TL(double* f) const
 			{
-				return;
+				double B[18];
+				compute_TL_strains_gradient(B);
+				math::Vector(f, 6) = m_Lr * math::Matrix(B, 3, 6).transpose() * math::Vector(m_fl, 3);
 			}
 
 			//energies
@@ -166,7 +175,7 @@ namespace fea
 			}
 			double Beam2D::internal_energy_TL(void) const
 			{
-				return 0;
+				return m_Lr * math::Matrix(m_Kl, 3, 3).bilinear(m_dl) / 2;
 			}
 			double Beam2D::kinetic_energy(void) const
 			{
@@ -201,7 +210,163 @@ namespace fea
 			}
 			void Beam2D::compute_TL(void)
 			{
-				return;
+				compute_TL_state();
+				compute_TL_elastic();
+			}
+
+			//compute TL
+			void Beam2D::compute_TL_state(void)
+			{
+				//data
+				const double t1 = node(0)->state(dt3);
+				const double t2 = node(1)->state(dt3);
+				const math::Vec2 z1 = node(0)->position();
+				const math::Vec2 z2 = node(1)->position();
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
+				//rotation
+				const double dz1 = z2[0] - z1[0];
+				const double dz2 = z2[1] - z1[1];
+				const double a1 = atan2(dz2, dz1) + t1;
+				const double a2 = atan2(dz2, dz1) + t2;
+				//rotation
+				const double kp = a2 - a1;
+				const double fk = math::fn(kp, 1) / math::fn(kp, 2) / 2;
+				const double b1 = (z2[0] + u2[0] - z1[0] - u1[0]) / m_Lr;
+				const double b2 = (z2[1] + u2[1] - z1[1] - u1[1]) / m_Lr;
+				//functions
+				const double g1 = fk * cos(a1) - kp / 2 * sin(a1);
+				const double g2 = fk * sin(a1) + kp / 2 * cos(a1);
+				//strains
+				m_dl[2] = kp / m_Lr;
+				m_dl[1] = g1 * b2 - g2 * b1;
+				m_dl[0] = g1 * b1 + g2 * b2 - 1;
+			}
+			void Beam2D::compute_TL_elastic(void)
+			{
+				//material
+				const double G = m_material->shear_modulus();
+				const double E = m_material->elastic_modulus();
+				//section
+				const double A = m_section->area();
+				const double I33 = m_section->inertia(1);
+				const double A22 = m_shear ? m_section->shear_area(0) : 1e+5 * E * I33 / m_Lr / m_Lr / G;
+				//resultants
+				m_fl[0] = E * A * m_dl[0];
+				m_fl[1] = G * A22 * m_dl[1];
+				m_fl[2] = E * I33 * m_dl[2];
+				//stiffness
+				m_Kl[0] = E * A;
+				m_Kl[4] = G * A22;
+				m_Kl[8] = E * I33;
+				m_Kl[1] = m_Kl[2] = m_Kl[3] = 0;
+				m_Kl[5] = m_Kl[6] = m_Kl[7] = 0;
+			}
+			void Beam2D::compute_TL_strains_hessian(double* H) const
+			{
+				//data
+				const double t1 = node(0)->state(dt3);
+				const double t2 = node(1)->state(dt3);
+				const math::Vec2 z1 = node(0)->position();
+				const math::Vec2 z2 = node(1)->position();
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
+				//rotation
+				const double dz1 = z2[0] - z1[0];
+				const double dz2 = z2[1] - z1[1];
+				const double a1 = atan2(dz2, dz1) + t1;
+				const double a2 = atan2(dz2, dz1) + t2;
+				//rotation
+				const double kp = a2 - a1;
+				const double f1 = math::fn(kp, 1);
+				const double f2 = math::fn(kp, 2);
+				const double f3 = math::fn(kp, 3);
+				const double d2 = math::dfn(kp, 2);
+				const double d3 = math::dfn(kp, 3);
+				const double b1 = (z2[0] + u2[0] - z1[0] - u1[0]) / m_Lr;
+				const double b2 = (z2[1] + u2[1] - z1[1] - u1[1]) / m_Lr;
+				//rotation
+				const double qk = f1 / f2 / 2;
+				const double dq = -kp * f3 / f2 / 2;
+				const double hq = (kp * (f3 * d2 - f2 * d3) - f2 * f3) / f2 / f2 / 2;
+				//functions
+				const double g1 = qk * cos(a1) - kp / 2 * sin(a1);
+				const double g2 = qk * sin(a1) + kp / 2 * cos(a1);
+				//gradient 2
+				const double dg12 = dq * cos(a1) - sin(a1) / 2;
+				const double dg22 = dq * sin(a1) + cos(a1) / 2;
+				//gradient 1
+				const double dg11 = -g2 - dg12;
+				const double dg21 = +g1 - dg22;
+				//hessian 1
+				const double dg122 = hq * cos(a1);
+				const double dg222 = hq * sin(a1);
+				const double dg121 = -hq * cos(a1) - dq * sin(a1) - cos(a1) / 2;
+				const double dg221 = -hq * sin(a1) + dq * cos(a1) - sin(a1) / 2;
+				//hessian 2
+				const double dg111 = -dg21 - dg121;
+				const double dg211 = +dg11 - dg221;
+				const double dg112 = -dg22 - dg122;
+				const double dg212 = +dg12 - dg222;
+				//gradient
+				H[0 + 6 * 0] = H[0 + 6 * 1] = H[0 + 6 * 3] = H[0 + 6 * 4] = 0;
+				H[1 + 6 * 0] = H[1 + 6 * 1] = H[1 + 6 * 3] = H[1 + 6 * 4] = 0;
+				H[3 + 6 * 0] = H[3 + 6 * 1] = H[3 + 6 * 3] = H[3 + 6 * 4] = 0;
+				H[4 + 6 * 0] = H[4 + 6 * 1] = H[4 + 6 * 3] = H[4 + 6 * 4] = 0;
+				H[0 + 6 * 2] = H[2 + 6 * 0] = (-dg11 * m_fl[0] + dg21 * m_fl[1]) / m_Lr;
+				H[0 + 6 * 5] = H[5 + 6 * 0] = (-dg12 * m_fl[0] + dg22 * m_fl[1]) / m_Lr;
+				H[1 + 6 * 2] = H[2 + 6 * 1] = (-dg21 * m_fl[0] - dg11 * m_fl[1]) / m_Lr;
+				H[1 + 6 * 5] = H[5 + 6 * 1] = (-dg22 * m_fl[0] - dg12 * m_fl[1]) / m_Lr;
+				H[2 + 6 * 3] = H[3 + 6 * 2] = (+dg11 * m_fl[0] - dg21 * m_fl[1]) / m_Lr;
+				H[2 + 6 * 4] = H[4 + 6 * 2] = (+dg21 * m_fl[0] + dg11 * m_fl[1]) / m_Lr;
+				H[3 + 6 * 5] = H[5 + 6 * 3] = (+dg12 * m_fl[0] - dg22 * m_fl[1]) / m_Lr;
+				H[4 + 6 * 5] = H[5 + 6 * 4] = (+dg22 * m_fl[0] + dg12 * m_fl[1]) / m_Lr;
+				H[2 + 6 * 2] = (dg111 * b1 + dg211 * b2) * m_fl[0] + (dg111 * b2 - dg211 * b1) * m_fl[1];
+				H[2 + 6 * 5] = (dg112 * b1 + dg212 * b2) * m_fl[0] + (dg112 * b2 - dg212 * b1) * m_fl[1];
+				H[5 + 6 * 2] = (dg121 * b1 + dg221 * b2) * m_fl[0] + (dg121 * b2 - dg221 * b1) * m_fl[1];
+				H[5 + 6 * 5] = (dg122 * b1 + dg222 * b2) * m_fl[0] + (dg122 * b2 - dg222 * b1) * m_fl[1];
+			}
+			void Beam2D::compute_TL_strains_gradient(double* B) const
+			{
+				//data
+				const double t1 = node(0)->state(dt3);
+				const double t2 = node(1)->state(dt3);
+				const math::Vec2 z1 = node(0)->position();
+				const math::Vec2 z2 = node(1)->position();
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
+				//rotation
+				const double dz1 = z2[0] - z1[0];
+				const double dz2 = z2[1] - z1[1];
+				const double a1 = atan2(dz2, dz1) + t1;
+				const double a2 = atan2(dz2, dz1) + t2;
+				//rotation
+				const double kp = a2 - a1;
+				const double fk = math::fn(kp, 1) / math::fn(kp, 2) / 2;
+				const double b1 = (z2[0] + u2[0] - z1[0] - u1[0]) / m_Lr;
+				const double b2 = (z2[1] + u2[1] - z1[1] - u1[1]) / m_Lr;
+				const double df = -kp * math::fn(kp, 3) / math::fn(kp, 2) / 2;
+				//functions
+				const double g1 = fk * cos(a1) - kp / 2 * sin(a1);
+				const double g2 = fk * sin(a1) + kp / 2 * cos(a1);
+				//gradient 2
+				const double dg12 = df * cos(a1) - sin(a1) / 2;
+				const double dg22 = df * sin(a1) + cos(a1) / 2;
+				//gradient 1
+				const double dg11 = -g2 - dg12;
+				const double dg21 = +g1 - dg22;
+				//gradient
+				B[2 + 3 * 2] = -1 / m_Lr;
+				B[2 + 3 * 5] = +1 / m_Lr;
+				B[0 + 3 * 2] = dg11 * b1 + dg21 * b2;
+				B[1 + 3 * 2] = dg11 * b2 - dg21 * b1;
+				B[0 + 3 * 5] = dg12 * b1 + dg22 * b2;
+				B[1 + 3 * 5] = dg12 * b2 - dg22 * b1;
+				B[0 + 3 * 0] = B[1 + 3 * 1] = -g1 / m_Lr;
+				B[1 + 3 * 0] = B[0 + 3 * 4] = +g2 / m_Lr;
+				B[0 + 3 * 1] = B[1 + 3 * 3] = -g2 / m_Lr;
+				B[0 + 3 * 3] = B[1 + 3 * 4] = +g1 / m_Lr;
+				B[2 + 3 * 0] = B[2 + 3 * 1] = B[2 + 3 * 3] = B[2 + 3 * 4] = 0;
 			}
 
 			//compute CR
