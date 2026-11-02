@@ -16,6 +16,8 @@
 //FEA
 #include "FEA/inc/Model.hpp"
 
+#include "FEA/inc/Draw/Engine.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
@@ -55,6 +57,8 @@ void test::truss3D::pyramid(void)
 		model.mesh()->create_node(R * cos(t), R * sin(t), 0);
 	}
 	//elements
+	section.compute();
+	material.elastic_modulus(E);
 	for(uint32_t i = 0; i < n; i++)
 	{
 		model.mesh()->create_element(fea::mesh::elements::Type::Truss3D, {i + 1, 0});
@@ -70,8 +74,6 @@ void test::truss3D::pyramid(void)
 		model.boundary()->create_support(i + 1, fea::mesh::nodes::DOF::Translation_3);
 	}
 	//loads
-	section.compute();
-	material.elastic_modulus(E);
 	const double A = section.area();
 	const double P = n * E * A / 2 * pow(H / L, 3);
 	model.boundary()->create_load_combination(0, false, 1);
@@ -85,15 +87,20 @@ void test::truss3D::pyramid(void)
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(0);
 	model.analysis()->solver_static_nonlinear()->eigen_std().vectors(3);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::ArcLengthCylindrical);
 	//solve
 	model.solve();
 	//save
 	model.save_results("Test/data/Truss 3D/Pyramid");
 	model.analysis()->solver()->save("Test/data/Truss 3D/Pyramid/data.txt");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Truss 3D/Pyramid/data.txt", {{0, fea::mesh::nodes::DOF::Translation_3}});
 	//validator
 	validator.create_item();
 	validator.item(0)->function(function);
-	validator.item(0)->load_numeric("Test/data/Truss 3D/Pyramid/data.txt", 2, 3);
+	validator.item(0)->load_numeric("Test/data/Truss 3D/Pyramid/data.txt", 0, 1);
 	//validation
 	validator.validate();
+	//draw
+	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Truss 3D/Pyramid/plot.gp");
 }

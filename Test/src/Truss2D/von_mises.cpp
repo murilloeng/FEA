@@ -16,14 +16,14 @@
 //FEA
 #include "FEA/inc/Model.hpp"
 
+#include "FEA/inc/Draw/Engine.hpp"
+
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss2D.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
-#include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
@@ -78,15 +78,19 @@ void test::truss2D::von_mises(void)
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->eigen_std().vectors(2);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_2);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::ArcLengthCylindrical);
 	//solve
 	model.solve();
 	//save
 	model.save_results("Test/data/Truss 2D/von Mises");
-	model.analysis()->solver()->save("Test/data/Truss 2D/von Mises/data.txt");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Truss 2D/von Mises/data.txt", {{1, fea::mesh::nodes::DOF::Translation_2}});
 	//validator
 	validator.create_item();
 	validator.item(0)->function(function);
-	validator.item(0)->load_numeric("Test/data/Truss 2D/von Mises/data.txt", 1, 2);
+	validator.item(0)->load_numeric("Test/data/Truss 2D/von Mises/data.txt", 0, 1);
 	//validate
 	validator.validate();
+	//draw
+	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Truss 2D/von Mises/plot.gp");
 }

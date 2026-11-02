@@ -3,6 +3,8 @@
 
 //Math
 #include "Math/inc/Linear/Vec2.hpp"
+#include "Math/inc/Linear/Vector.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 #include "Math/inc/Miscellaneous/rotations.hpp"
 
 //Canvas

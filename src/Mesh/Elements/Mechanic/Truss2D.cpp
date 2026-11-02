@@ -1,5 +1,6 @@
 //Math
 #include "Math/inc/Linear/Vec2.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"

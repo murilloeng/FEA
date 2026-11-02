@@ -445,14 +445,14 @@ namespace fea
 		void Geometry::rotate_point(uint32_t index, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
 		{
 			//data
-			const math::Vec3 c{c1, c2, c3};
-			const math::Vec3 r{r1, r2, r3};
-			const double s = m_points[index]->m_size;
-			const math::Vec3 z = m_points[index]->m_position;
+			// const math::Vec3 c{c1, c2, c3};
+			// const math::Vec3 r{r1, r2, r3};
+			// const double s = m_points[index]->m_size;
+			// const math::Vec3 z(m_points[index]->m_position);
 			//position
-			const math::Vec3 x = c + (t * r).rotate(z - c);
+			// const math::Vec3 x = c + (t * r).rotate(z - c);
 			//transform
-			if(copy) create_point(x.data(), s); else m_points[index]->position(x.data());
+			// if(copy) create_point(x.data(), s); else m_points[index]->position(x.data());
 		}
 		void Geometry::rotate_curve(uint32_t index, double c1, double c2, double c3, double r1, double r2, double r3, double t, bool copy)
 		{

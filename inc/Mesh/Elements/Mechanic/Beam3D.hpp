@@ -2,6 +2,7 @@
 
 //Math
 #include "Math/inc/Linear/Vector.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"

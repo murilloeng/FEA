@@ -18,7 +18,6 @@
 
 //math
 #include "Math/inc/Linear/Vec3.hpp"
-#include "Math/inc/Linear/Quat.hpp"
 #include "Math/inc/Miscellaneous/bits.hpp"
 #include "Math/inc/Solvers/Incremental.hpp"
 
@@ -150,22 +149,6 @@ namespace fea
 			{
 				return m_position;
 			}
-			// const double* Node::position(uint32_t step)
-			// {
-			// 	//data
-			// 	const uint32_t ib = 1 << uint32_t(DOF::Translation_1);
-			// 	const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
-			// 	const double* xd = dynamic_cast<math::solvers::Incremental*>(m_mesh->model()->analysis()->solver())->state_data();
-			// 	//position
-			// 	for(uint32_t i = 0; i < 3; i++)
-			// 	{
-			// 		m_position_new[i] = m_position_ref[i];
-			// 		const uint8_t id = math::bit_index(m_dof_set, ib << i);
-			// 		if((m_dof_set & ib << i) && m_dof_indexes[id] < nu) m_position_new[i] += xd[m_dof_indexes[id] + step * nu];
-			// 	}
-			// 	//return
-			// 	return m_position_new;
-			// }
 			const double* Node::position(const double* position)
 			{
 				return (double*) memcpy(m_position, position, sizeof(m_position));

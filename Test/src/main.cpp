@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::beam2D::inelastic::pinned_bending();
+		test::truss3D::pyramid();
 	}
 	catch(const std::exception& exception)
 	{

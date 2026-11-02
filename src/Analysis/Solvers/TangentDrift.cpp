@@ -4,7 +4,8 @@
 #include <cstring>
 
 //Math
-#include "Math/inc/Linear/Quat.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
+#include "Math/inc/Linear/Vector.hpp"
 #include "Math/inc/Linear/Sparse.hpp"
 #include "Math/inc/Miscellaneous/util.hpp"
 
@@ -123,11 +124,6 @@ namespace fea
 			for(uint32_t i = 0; i < nu; i++)
 			{
 				x[i] = m_x_new[i] = d_min + (d_max - d_min) * rand() / RAND_MAX;
-			}
-			//quaternions
-			for(mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
-			{
-				if(node->quaternion_old()) math::Quat(node->quaternion_old()).randu();
 			}
 		}
 
