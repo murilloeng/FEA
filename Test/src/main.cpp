@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::truss3D::pyramid();
+		test::truss3D::single();
 	}
 	catch(const std::exception& exception)
 	{
