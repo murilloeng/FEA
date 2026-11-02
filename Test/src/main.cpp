@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::truss3D::single();
+		test::truss3D::space_truss();
 	}
 	catch(const std::exception& exception)
 	{
