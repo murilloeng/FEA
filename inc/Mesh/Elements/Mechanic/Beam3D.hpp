@@ -1,6 +1,7 @@
 #pragma once
 
 //Math
+#include "Math/inc/Linear/Vec3.hpp"
 #include "Math/inc/Linear/Vector.hpp"
 #include "Math/inc/Linear/Matrix.hpp"
 
@@ -23,6 +24,9 @@ namespace fea
 				~Beam3D(void);
 
 				//data
+				math::Vec3& major_axis(void);
+				const math::Vec3& major_axis(void) const;
+
 				uint32_t stress_set(void) const override;
 				uint32_t dof_set(uint32_t) const override;
 
@@ -53,6 +57,8 @@ namespace fea
 				double internal_energy(void) const override;
 
 				//analysis
+				void check(void) override;
+				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
 				void compute(void) override;
@@ -73,6 +79,8 @@ namespace fea
 				math::Matrix m_Kl;
 				math::Vector m_dl, m_fl;
 				static math::Matrix m_B;
+
+				math::Vec3 m_major_axis;
 
 				//friends
 				friend class fea::mesh::Mesh;

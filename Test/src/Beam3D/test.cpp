@@ -48,9 +48,9 @@ void test::beam3D::test(void)
 	section.compute();
 	material.elastic_modulus(E);
 	model.mesh()->create_element(fea::mesh::elements::Type::Beam3D, {0, 1});
+	((fea::mesh::elements::Beam3D*) model.mesh()->element(0))->major_axis() = s2;
 	((fea::mesh::elements::Beam3D*) model.mesh()->element(0))->section(&section);
 	((fea::mesh::elements::Beam3D*) model.mesh()->element(0))->material(&material);
-	((fea::mesh::elements::Beam3D*) model.mesh()->element(0))->major_axis(s2.data());
 	//solver
 	model.analysis()->solver_tangent_drift()->enable();
 	model.analysis()->solver_tangent_drift()->type(fea::analysis::TangentDrift::Type::InternalForce);

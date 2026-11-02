@@ -1,5 +1,5 @@
 //std
-#include <cstring>
+#include <stdexcept>
 
 //Math
 #include "Math/inc/Linear/Vec3.hpp"
@@ -28,7 +28,7 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Beam3D::Beam3D(void) : m_Kl(6, 6), m_dl(6), m_fl(6)
+			Beam3D::Beam3D(void) : m_Kl(6, 6), m_dl(6), m_fl(6), m_major_axis{0, 0, 1}
 			{
 				return;
 			}
@@ -40,6 +40,15 @@ namespace fea
 			}
 
 			//data
+			math::Vec3& Beam3D::major_axis(void)
+			{
+				return m_major_axis;
+			}
+			const math::Vec3& Beam3D::major_axis(void) const
+			{
+				return m_major_axis;
+			}
+
 			uint32_t Beam3D::stress_set(void) const
 			{
 				return m_shear ?
@@ -187,6 +196,28 @@ namespace fea
 			}
 
 			//analysis
+			void Beam3D::check(void)
+			{
+				//data
+				Beam::check();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
+				//check
+				const math::Vec3 s2 = m_major_axis;
+				const math::Vec3 s1 = (z2 - z1).unit();
+				if(s1.cross(s2).norm() < 1.00e-05) throw std::runtime_error("Error: Beam element major axis is parallel to length!");
+			}
+			void Beam3D::setup(void)
+			{
+				//data
+				Beam::setup();
+				const math::Vec3 z1 = node(0)->position();
+				const math::Vec3 z2 = node(1)->position();
+				//projection
+				const math::Vec3 s2 = m_major_axis;
+				const math::Vec3 s1 = (z2 - z1) / m_Lr;
+				m_major_axis = (s2 - s1.inner(s2) * s1).unit();
+			}
 			void Beam3D::update(void)
 			{
 				Beam::update();

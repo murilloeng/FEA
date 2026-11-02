@@ -75,7 +75,6 @@ void test::beam3D::elastic::cantilever_bending(void)
 	{
 		((fea::mesh::elements::Beam3D*) element)->section(&section);
 		((fea::mesh::elements::Beam3D*) element)->material(&material);
-		((fea::mesh::elements::Beam3D*) element)->major_axis(0, 0, 1);
 	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
