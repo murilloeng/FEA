@@ -39,7 +39,7 @@ namespace fea
 			//eigen
 			const uint32_t nv = m_eigen_std.vectors();
 			const uint32_t nu = m_analysis->assembler()->dof_unknow();
-			m_eigen_std.setup(nu, 1, nv, m_rows_map, m_cols_map, m_K, m_s, m_U);
+			m_eigen_std.setup(nu, 1, nv, m_rows_map, m_cols_map, m_K, m_eigenvalues, m_eigenvectors);
 			//system
 			m_system = [this](double* r, double* fe, double* K, double p, const double* x)
 			{
@@ -90,7 +90,7 @@ namespace fea
 				throw std::runtime_error("Error: Static Nonlinear solver stability computation failed!");
 			}
 			//stability
-			m_stability_data[m_step] = m_s[0] > 0;
+			m_stability_data[m_step] = m_eigenvalues[0] > 0;
 		}
 	}
 }

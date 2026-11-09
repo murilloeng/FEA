@@ -108,6 +108,10 @@ namespace fea
 		{
 			return 0;
 		}
+		uint32_t TangentDrift::energy_set(void) const
+		{
+			return 0;
+		}
 		uint32_t TangentDrift::tangent_set(void) const
 		{
 			return 1 << uint32_t(math::solvers::Solver::Tangent::K);

@@ -67,7 +67,7 @@ $(out_lib) : $(obj_lib)
 
 $(out_exe) : $(obj_exe)
 	@mkdir -p $(dir $@)
-	@g++ -o $(out_exe) $(obj_exe) $(out_lib) $(libMaterials) $(libSections) $(libMath) $(libCanvas) $(LIBS)
+	@g++ -fopenmp -o $(out_exe) $(obj_exe) $(out_lib) $(libMaterials) $(libSections) $(libMath) $(libCanvas) $(LIBS)
 	@echo 'linking - $(mode): $@'
 
 build/$(mode)/%.o : src/%.cpp build/$(mode)/%.d

@@ -47,6 +47,12 @@ namespace fea
 		{
 			return 1 << uint32_t(math::solvers::Solver::Force::fe);
 		}
+		uint32_t StaticLinear::energy_set(void) const
+		{
+			return 
+				1 << uint32_t(math::solvers::Solver::Energy::U)|
+				1 << uint32_t(math::solvers::Solver::Energy::V);
+		}
 		uint32_t StaticLinear::tangent_set(void) const
 		{
 			return 1 << uint32_t(math::solvers::Solver::Tangent::K);

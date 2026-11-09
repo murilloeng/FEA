@@ -23,6 +23,7 @@ namespace fea
 			//data
 			uint32_t state_set(void) const override;
 			uint32_t force_set(void) const override;
+			uint32_t energy_set(void) const override;
 			uint32_t tangent_set(void) const override;
 
 			//draw

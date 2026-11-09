@@ -58,8 +58,9 @@ namespace fea
 			void allocate(void) override;
 
 			//data
-			double *m_s, *m_U;
 			WatchDOF m_watch_dof;
+			double* m_eigenvalues;
+			double* m_eigenvectors;
 			uint32_t m_load_combination;
 			static Analysis* m_analysis;
 			math::eigen::SparseSymStd m_eigen_std;
