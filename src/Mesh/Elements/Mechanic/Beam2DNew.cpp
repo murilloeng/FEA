@@ -54,6 +54,15 @@ namespace fea
 				return m_curvature = curvature;
 			}
 
+			bool Beam2DNew::large_strains(void)
+			{
+				return m_large_strains;
+			}
+			bool Beam2DNew::large_strains(bool large_strains)
+			{
+				return m_large_strains = large_strains;
+			}
+
 			//data
 			uint32_t Beam2DNew::stress_set(void) const
 			{
@@ -191,6 +200,9 @@ namespace fea
 				data.m_index_edges += 2 * m_draw_mesh;
 				data.m_index_vertices += m_draw_mesh + 1;
 			}
+
+			//static
+			bool Beam2DNew::m_large_strains = false;
 		}
 	}
 }

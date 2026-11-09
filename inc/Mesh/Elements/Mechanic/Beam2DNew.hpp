@@ -23,6 +23,9 @@ namespace fea
 				double curvature(double);
 				double curvature(void) const;
 
+				static bool large_strains(void);
+				static bool large_strains(bool);
+
 			private:
 				//data
 				uint32_t stress_set(void) const override;
@@ -49,6 +52,7 @@ namespace fea
 
 				//data
 				double m_curvature;
+				static bool m_large_strains;
 
 				//friends
 				friend class fea::mesh::Mesh;
