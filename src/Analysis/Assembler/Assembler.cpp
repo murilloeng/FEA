@@ -54,6 +54,14 @@ namespace fea
 		}
 
 		//data
+		Compute& Assembler::compute(void)
+		{
+			return m_compute;
+		}
+		Request& Assembler::request(void)
+		{
+			return m_request;
+		}
 		uint32_t Assembler::dof_know(void) const
 		{
 			return m_dof_know;
@@ -265,7 +273,9 @@ namespace fea
 		{
 			dof_map();
 			dof_local();
+			m_request.setup();
 			m_compute.setup(m_dof_local);
+			m_compute.m_request = &m_request;
 			m_analysis->solver()->rows_map(m_rows_map);
 			m_analysis->solver()->cols_map(m_cols_map);
 		}

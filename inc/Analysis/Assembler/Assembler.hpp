@@ -32,6 +32,8 @@ namespace fea
 
 		public:
 			//data
+			Compute& compute(void);
+			Request& request(void);
 			uint32_t dof_know(void) const;
 			uint32_t dof_total(void) const;
 			uint32_t dof_unknow(void) const;

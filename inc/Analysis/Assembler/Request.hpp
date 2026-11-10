@@ -21,6 +21,9 @@ namespace fea
 			//destructor
 			~Request(void) = default;
 
+			//setup
+			void setup(void);
+
 		public:
 			//data
 			bool m_T, m_U, m_V;

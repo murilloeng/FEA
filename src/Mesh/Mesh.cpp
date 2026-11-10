@@ -28,6 +28,9 @@
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
 #include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
 
+#include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
+
 namespace fea
 {
 	namespace mesh
@@ -248,8 +251,11 @@ namespace fea
 		}
 		void Mesh::compute(void)
 		{
+			//data
+			analysis::Compute& compute = m_model->analysis()->assembler()->compute();
+			//compute
 			for(nodes::Node* node : m_nodes) node->compute();
-			// for(elements::Element* element : m_elements) element->compute();
+			for(elements::Element* element : m_elements) element->compute(compute);
 		}
 		void Mesh::dof_apply(void)
 		{

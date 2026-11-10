@@ -41,6 +41,9 @@ namespace fea
 			const uint32_t nu = m_analysis->assembler()->dof_unknow();
 			m_eigen_std.setup(nu, 1, nv, m_rows_map, m_cols_map, m_K, m_eigenvalues, m_eigenvectors);
 			//system
+			m_analysis->assembler()->request().m_f = true;
+			m_analysis->assembler()->request().m_K = true;
+			m_analysis->assembler()->request().m_U = true;
 			m_system = [this](double* r, double* fe, double* K, const double* x, double p)
 			{
 				m_analysis->model()->compute();

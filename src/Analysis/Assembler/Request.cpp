@@ -12,5 +12,12 @@ namespace fea
 		{
 			return;
 		}
+
+		//setup
+		void Request::setup(void)
+		{
+			m_T = m_U = m_V = false;
+			m_f = m_K = m_C = m_M = false;
+		}
 	}
 }
