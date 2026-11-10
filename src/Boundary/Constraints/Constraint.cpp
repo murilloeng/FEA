@@ -12,8 +12,8 @@
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 namespace fea
 {

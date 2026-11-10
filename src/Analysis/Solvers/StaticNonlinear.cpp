@@ -6,7 +6,7 @@
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler.hpp"
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 namespace fea

@@ -5,7 +5,9 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler.hpp"
+
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
+
 #include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
 #include "FEA/inc/Analysis/Solvers/TangentDrift.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"

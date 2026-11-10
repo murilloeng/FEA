@@ -21,7 +21,7 @@
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler.hpp"
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Test

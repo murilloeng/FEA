@@ -9,8 +9,8 @@
 #include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Incremental.hpp"
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 namespace fea
 {

@@ -25,8 +25,8 @@
 #include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 namespace fea
 {
@@ -265,6 +265,7 @@ namespace fea
 		{
 			dof_map();
 			dof_local();
+			m_compute.setup(m_dof_local);
 			m_analysis->solver()->rows_map(m_rows_map);
 			m_analysis->solver()->cols_map(m_cols_map);
 		}

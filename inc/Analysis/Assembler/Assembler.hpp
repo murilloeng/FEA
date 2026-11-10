@@ -4,6 +4,10 @@
 #include <vector>
 #include <cstdint>
 
+//FEA
+#include "FEA/inc/Analysis/Assembler/Compute.hpp"
+#include "FEA/inc/Analysis/Assembler/Request.hpp"
+
 namespace fea
 {
 	class Model;
@@ -80,6 +84,8 @@ namespace fea
 			int32_t* m_rows_triplet;
 			int32_t* m_cols_triplet;
 
+			Compute m_compute;
+			Request m_request;
 			uint32_t m_dof_know;
 			uint32_t m_dof_local;
 			uint32_t m_dof_total;
