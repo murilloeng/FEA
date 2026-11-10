@@ -35,22 +35,10 @@ namespace fea
 
 				uint32_t dof_set(uint32_t) const override;
 
-				//tangents
-				void inertia(double*) const override;
-				void damping(double*) const override;
-				void stiffness(double*) const override;
-
-				//forces
-				void internal_force(double*) const override;
-
-				//energies
-				double kinetic_energy(void) const override;
-				double internal_energy(void) const override;
-
 			private:
 				//analysis
 				void check(void) override;
-				void compute(void) override;
+				void compute(analysis::Compute&) override;
 
 				//data
 				nodes::DOF m_dof;

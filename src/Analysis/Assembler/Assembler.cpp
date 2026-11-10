@@ -278,7 +278,7 @@ namespace fea
 			//elements
 			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->inertia(m_local_matrix);
+				// element->inertia(m_local_matrix);
 				assemble_matrix(M, m_local_matrix, element->m_dof_indexes);
 			}
 		}
@@ -289,7 +289,7 @@ namespace fea
 			//elements
 			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->damping(m_local_matrix);
+				// element->damping(m_local_matrix);
 				assemble_matrix(C, m_local_matrix, element->m_dof_indexes);
 			}
 		}
@@ -300,7 +300,7 @@ namespace fea
 			//elements
 			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->stiffness(m_local_matrix);
+				// element->stiffness(m_local_matrix);
 				assemble_matrix(K, m_local_matrix, element->m_dof_indexes);
 			}
 			//constraints
@@ -318,18 +318,18 @@ namespace fea
 		void Assembler::assemble_kinetic_energy(double& K) const
 		{
 			K = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			{
-				K += element->kinetic_energy();
-			}
+			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			// {
+			// 	// K += element->kinetic_energy();
+			// }
 		}
 		void Assembler::assemble_internal_energy(double& U) const
 		{
 			U = 0;
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			{
-				U += element->internal_energy();
-			}
+			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			// {
+			// 	// U += element->internal_energy();
+			// }
 		}
 
 		void Assembler::assemble_dead_force(double* fd, bool cleanup, double s) const
@@ -363,7 +363,7 @@ namespace fea
 			//elements
 			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->internal_force(m_local_vector);
+				// element->internal_force(m_local_vector);
 				assemble_vector(fi, m_local_vector, element->m_dof_indexes, s);
 			}
 			//constraints

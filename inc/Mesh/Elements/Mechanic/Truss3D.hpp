@@ -21,17 +21,8 @@ namespace fea
 				//data
 				uint32_t dof_set(uint32_t) const override;
 
-				//tangents
-				void inertia(double*) const override;
-				void damping(double*) const override;
-				void stiffness(double*) const override;
-
-				//forces
-				void internal_force(double*) const override;
-
-				//energies
-				double kinetic_energy(void) const override;
-				double internal_energy(void) const override;
+				//analysis
+				void compute(analysis::Compute&) override;
 
 				//friends
 				friend class fea::mesh::Mesh;

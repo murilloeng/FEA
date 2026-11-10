@@ -10,6 +10,8 @@
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Assembler/Request.hpp"
+#include "FEA/inc/Analysis/Assembler/Compute.hpp"
 
 namespace fea
 {
@@ -71,46 +73,6 @@ namespace fea
 				return 1 << uint32_t(m_dof);
 			}
 
-			//tangents
-			void Nodal::inertia(double* M) const
-			{
-				M[0] = m_inertia;
-			}
-			void Nodal::damping(double* C) const
-			{
-				C[0] = m_damping;
-			}
-			void Nodal::stiffness(double* K) const
-			{
-				K[0] = m_stiffness;
-			}
-
-			//forces
-			void Nodal::internal_force(double* f) const
-			{
-				//data
-				const double x = m_mesh->model()->analysis()->solver()->state_new() ? node(0)->state(m_dof) : 0;
-				const double v = m_mesh->model()->analysis()->solver()->velocity_new() ? node(0)->velocity(m_dof) : 0;
-				//force
-				f[0] = m_damping * v + m_stiffness * x;
-			}
-
-			//energies
-			double Nodal::kinetic_energy(void) const
-			{
-				//data
-				const double v = m_mesh->model()->analysis()->solver()->velocity_new() ? node(0)->velocity(m_dof) : 0;
-				//return
-				return m_inertia * v * v / 2;
-			}
-			double Nodal::internal_energy(void) const
-			{
-				//data
-				const double x = m_mesh->model()->analysis()->solver()->state_new() ? node(0)->state(m_dof) : 0;
-				//return
-				return m_stiffness * x * x / 2;
-			}
-
 			//analysis
 			void Nodal::check(void)
 			{
@@ -124,9 +86,22 @@ namespace fea
 					throw std::runtime_error("Error: Nodal element dof is unset!");
 				}
 			}
-			void Nodal::compute(void)
+			void Nodal::compute(analysis::Compute& compute)
 			{
-				return;
+				//data
+				const double M = m_inertia;
+				const double C = m_damping;
+				const double K = m_stiffness;
+				const double x = node(0)->state(m_dof);
+				const double v = node(0)->velocity(m_dof);
+				//tangents
+				if(compute.m_request->m_M) compute.m_M[0] = M;
+				if(compute.m_request->m_C) compute.m_C[0] = C;
+				if(compute.m_request->m_K) compute.m_K[0] = K;
+				//internal energy
+				if(compute.m_request->m_U) compute.m_U = K * x * x / 2;
+				//internal force
+				if(compute.m_request->m_f) compute.m_f[0] = K * x + C * v;
 			}
 		}
 	}

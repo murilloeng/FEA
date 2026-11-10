@@ -249,7 +249,7 @@ namespace fea
 		void Mesh::compute(void)
 		{
 			for(nodes::Node* node : m_nodes) node->compute();
-			for(elements::Element* element : m_elements) element->compute();
+			// for(elements::Element* element : m_elements) element->compute();
 		}
 		void Mesh::dof_apply(void)
 		{

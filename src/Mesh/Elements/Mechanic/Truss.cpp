@@ -1,22 +1,12 @@
 //std
 #include <stdexcept>
 
-//Math
-#include "Math/inc/Linear/Vec3.hpp"
-
 //Materials
 #include "Materials/inc/Mechanic/Stress.hpp"
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
 
 //FEA
-#include "FEA/inc/Mesh/Nodes/DOF.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss.hpp"
-
-//static
-const fea::mesh::nodes::DOF du1 = fea::mesh::nodes::DOF::Translation_1;
-const fea::mesh::nodes::DOF du2 = fea::mesh::nodes::DOF::Translation_2;
-const fea::mesh::nodes::DOF du3 = fea::mesh::nodes::DOF::Translation_3;
 
 namespace fea
 {
@@ -83,29 +73,6 @@ namespace fea
 			void Truss::restore(void)
 			{
 				m_point.restore();
-			}
-			void Truss::compute(void)
-			{
-				//data
-				const double A = m_section->area();
-				const math::Vec3 z1 = node(0)->position();
-				const math::Vec3 z2 = node(1)->position();
-				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
-				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
-				//positions
-				const math::Vec3 x1 = z1 + u1;
-				const math::Vec3 x2 = z2 + u2;
-				//strain
-				m_Ln = (x2 - x1).norm();
-				m_em = elements::strain_measure(m_strain_measure, m_Ln / m_Lr);
-				m_eh = elements::strain_hessian(m_strain_measure, m_Ln / m_Lr);
-				m_eg = elements::strain_gradient(m_strain_measure, m_Ln / m_Lr);
-				//material
-				double s, C;
-				((materials::Uniaxial*) m_material)->return_mapping(s, C, m_em, m_sr, m_point);
-				//compute
-				m_f = s * A * m_eg;
-				m_K = (C * m_eg * m_eg + s * m_eh) * A / m_Lr;
 			}
 
 			//static

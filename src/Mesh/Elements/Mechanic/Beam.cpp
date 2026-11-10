@@ -33,15 +33,6 @@ namespace fea
 				return m_shear = shear;
 			}
 
-			bool Beam::mixed(void)
-			{
-				return m_mixed;
-			}
-			bool Beam::mixed(bool mixed)
-			{
-				return m_mixed = mixed;
-			}
-
 			uint32_t Beam::draw_mesh(void)
 			{
 				return m_draw_mesh;
@@ -106,7 +97,6 @@ namespace fea
 
 			//static
 			bool Beam::m_shear = false;
-			bool Beam::m_mixed = false;
 			uint32_t Beam::m_draw_mesh = 20;
 		}
 	}

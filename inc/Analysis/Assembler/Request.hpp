@@ -24,7 +24,7 @@ namespace fea
 		public:
 			//data
 			bool m_T, m_U, m_V;
-			bool m_fi, m_fe, m_K, m_C, m_M;
+			bool m_f, m_K, m_C, m_M;
 
 			//friends
 			friend class fea::analysis::Assembler;

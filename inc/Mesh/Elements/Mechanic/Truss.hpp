@@ -39,12 +39,9 @@ namespace fea
 				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
-				void compute(void) override;
 
 				//data
-				double m_f, m_K;
-				double m_Ln, m_sr;
-				double m_em, m_eg, m_eh;
+				double m_sr;
 				materials::Point m_point;
 				static StrainMeasure m_strain_measure;
 			};

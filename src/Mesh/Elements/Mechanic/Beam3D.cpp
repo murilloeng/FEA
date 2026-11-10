@@ -69,85 +69,27 @@ namespace fea
 			}
 
 			//tangents
-			void Beam3D::inertia(double* M) const
-			{
-				m_formulation == Formulation::Corotational ? inertia_CR(M) : inertia_TL(M);
-			}
-			void Beam3D::inertia_CR(double* M) const
+			void Beam3D::inertia_CR(double*) const
 			{
 				return;
 			}
-			void Beam3D::inertia_TL(double* M) const
+			void Beam3D::inertia_TL(double*) const
 			{
 				return;
 			}
 
-			void Beam3D::damping(double* C) const
-			{
-				m_formulation == Formulation::Corotational ? damping_CR(C) : damping_TL(C);
-			}
-			void Beam3D::damping_CR(double* C) const
+			void Beam3D::damping_CR(double*) const
 			{
 				return;
 			}
-			void Beam3D::damping_TL(double* C) const
+			void Beam3D::damping_TL(double*) const
 			{
 				return;
 			}
 
-			void Beam3D::stiffness(double* K) const
-			{
-				m_formulation == Formulation::Corotational ? stiffness_CR(K) : stiffness_TL(K);
-			}
 			void Beam3D::stiffness_CR(double* K) const
 			{
-				// //data
-				// const math::Vec3 z1 = node(0)->position();
-				// const math::Vec3 z2 = node(1)->position();
-				// const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
-				// const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
-				// const math::Vec3 t1 = {node(0)->state(dt1), node(0)->state(dt2), node(0)->state(dt3)};
-				// const math::Vec3 t2 = {node(1)->state(dt1), node(1)->state(dt2), node(1)->state(dt3)};
-				// //axes
-				// const math::Vec3 s2 = m_major_axis;
-				// const math::Vec3 s1 = (z2 - z1) / m_Lr;
-				// const math::Vec3 s3 = (z2 - z1).cross(s2) / m_Lr;
-				// //quaternions
-				// const math::Quat q0(s1, s2, s3);
-				// const math::Quat q1 = node(0)->quaternion_new();
-				// const math::Quat q2 = node(1)->quaternion_new();
-				// //data
-				// const math::Vec3 x1 = z1 + u1;
-				// const math::Vec3 x2 = z2 + u2;
-				// const math::Quat qr = q1 * q0;
-				// const math::Mat3 Rr = qr.rotation();
-				// const math::Mat3 Rt = Rr.transpose();
-				// const math::Mat3 Xr = (x2 - x1).spin();
-				// const math::Mat3 T1 = t1.rotation_gradient();
-				// const math::Mat3 T2 = t2.rotation_gradient();
-				// const math::Vec3 tl = qr.conjugate(q2 * q0).pseudo();
-				// const math::Mat3 Ti = tl.rotation_gradient_inverse();
-				// //material stiffness
-				// compute_CR_kinematic();
-				// math::Matrix(K, 12, 12) = m_B.transpose() * m_Kl * m_B;
-				// //geometric stiffness
-				// const math::Vec3 nl = m_fl.data() + 0;
-				// const math::Vec3 ml = m_fl.data() + 3;
-				// const math::Vec3 mp = Ti.transpose() * ml;
-				// const math::Mat3 Hl = tl.rotation_hessian_inverse(ml, true);
-				// math::Matrix(K, 12, 12).span(0, 3) += Rr * nl.spin() * Rt * T1;
-				// math::Matrix(K, 12, 12).span(6, 3) -= Rr * nl.spin() * Rt * T1;
-				// math::Matrix(K, 12, 12).span(9, 9) += t2.rotation_hessian(Rr * mp, true);
-				// math::Matrix(K, 12, 12).span(3, 0) -= T1.transpose() * Rr * nl.spin() * Rt;
-				// math::Matrix(K, 12, 12).span(3, 6) += T1.transpose() * Rr * nl.spin() * Rt;
-				// math::Matrix(K, 12, 12).span(3, 3) += T1.transpose() * Rr * Hl * Ti * Rt * T1;
-				// math::Matrix(K, 12, 12).span(9, 3) -= T2.transpose() * Rr * Hl * Ti * Rt * T1;
-				// math::Matrix(K, 12, 12).span(3, 9) -= T1.transpose() * Rr * Hl * Ti * Rt * T2;
-				// math::Matrix(K, 12, 12).span(9, 9) += T2.transpose() * Rr * Hl * Ti * Rt * T2;
-				// math::Matrix(K, 12, 12).span(9, 3) -= T2.transpose() * Rr * mp.spin() * Rt * T1;
-				// math::Matrix(K, 12, 12).span(3, 3) += T1.transpose() * Rr * mp.spin() * Rt * T1;
-				// math::Matrix(K, 12, 12).span(3, 3) += T1.transpose() * Xr * Rr * nl.spin() * Rt * T1;
-				// math::Matrix(K, 12, 12).span(3, 3) -= t1.rotation_hessian(Rr * mp + Xr * Rr * nl, true);
+				return;
 			}
 			void Beam3D::stiffness_TL(double* K) const
 			{
@@ -157,16 +99,11 @@ namespace fea
 			//forces
 			void Beam3D::internal_force_CR(double* f) const
 			{
-				compute_CR_kinematic();
-				math::Vector(f, 12) = m_B.transpose() * m_fl;
+				return;
 			}
 			void Beam3D::internal_force_TL(double* fi) const
 			{
 				return;
-			}
-			void Beam3D::internal_force(double* fi) const
-			{
-				m_formulation == Formulation::Corotational ? internal_force_CR(fi) : internal_force_TL(fi);
 			}
 
 			//energies
@@ -185,14 +122,6 @@ namespace fea
 			double Beam3D::internal_energy_TL(void) const
 			{
 				return 0;
-			}
-			double Beam3D::kinetic_energy(void) const
-			{
-				return m_formulation == Formulation::Corotational ? kinetic_energy_CR() : kinetic_energy_TL();
-			}
-			double Beam3D::internal_energy(void) const
-			{
-				return m_formulation == Formulation::Corotational ? internal_energy_CR() : internal_energy_TL();
 			}
 
 			//analysis
@@ -226,9 +155,9 @@ namespace fea
 			{
 				Beam::restore();
 			}
-			void Beam3D::compute(void)
+			void Beam3D::compute(analysis::Compute&)
 			{
-				m_formulation == Formulation::Corotational ? compute_CR() : compute_TL();
+				return;
 			}
 
 			//compute

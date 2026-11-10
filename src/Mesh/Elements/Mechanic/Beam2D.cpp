@@ -63,10 +63,6 @@ namespace fea
 			}
 
 			//tangents
-			void Beam2D::inertia(double* M) const
-			{
-				m_formulation == Formulation::Corotational ? inertia_CR(M) : inertia_TL(M);
-			}
 			void Beam2D::inertia_CR(double*) const
 			{
 				return;
@@ -76,10 +72,6 @@ namespace fea
 				return;
 			}
 
-			void Beam2D::damping(double* C) const
-			{
-				m_formulation == Formulation::Corotational ? damping_CR(C) : damping_TL(C);
-			}
 			void Beam2D::damping_CR(double*) const
 			{
 				return;
@@ -89,10 +81,6 @@ namespace fea
 				return;
 			}
 
-			void Beam2D::stiffness(double* K) const
-			{
-				m_formulation == Formulation::Corotational ? stiffness_CR(K) : stiffness_TL(K);
-			}
 			void Beam2D::stiffness_CR(double* K) const
 			{
 				//data
@@ -130,10 +118,6 @@ namespace fea
 			}
 
 			//forces
-			void Beam2D::internal_force(double* f) const
-			{
-				m_formulation == Formulation::Corotational ? internal_force_CR(f) : internal_force_TL(f);
-			}
 			void Beam2D::internal_force_CR(double* f) const
 			{
 				//data
@@ -179,14 +163,6 @@ namespace fea
 			{
 				return m_Lr * math::Matrix(m_Kl, 3, 3).bilinear(m_dl) / 2;
 			}
-			double Beam2D::kinetic_energy(void) const
-			{
-				return m_formulation == Formulation::Corotational ? kinetic_energy_CR() : kinetic_energy_TL();
-			}
-			double Beam2D::internal_energy(void) const
-			{
-				return m_formulation == Formulation::Corotational ? internal_energy_CR() : internal_energy_TL();
-			}
 
 			//analysis
 			void Beam2D::update(void)
@@ -199,7 +175,7 @@ namespace fea
 				Beam::restore();
 				m_tr_new = m_tr_old;
 			}
-			void Beam2D::compute(void)
+			void Beam2D::compute(analysis::Compute& compute)
 			{
 				m_formulation == Formulation::Corotational ? compute_CR() : compute_TL();
 			}

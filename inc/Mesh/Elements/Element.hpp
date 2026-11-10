@@ -22,6 +22,7 @@ namespace fea
 	}
 	namespace analysis
 	{
+		class Compute;
 		class Assembler;
 	}
 }
@@ -54,25 +55,13 @@ namespace fea
 				nodes::Node* node(uint32_t, uint32_t);
 				virtual uint32_t dof_set(uint32_t) const = 0;
 
-				//tangents
-				virtual void inertia(double*) const = 0;
-				virtual void damping(double*) const = 0;
-				virtual void stiffness(double*) const = 0;
-
-				//forces
-				virtual void internal_force(double*) const = 0;
-
-				//energies
-				virtual double kinetic_energy(void) const = 0;
-				virtual double internal_energy(void) const = 0;
-
 			protected:
 				//analysis
 				virtual void check(void);
 				virtual void setup(void);
 				virtual void update(void);
 				virtual void restore(void);
-				virtual void compute(void) = 0;
+				virtual void compute(analysis::Compute&) = 0;
 
 				//draw
 				virtual void draw_setup(draw::Data&) const;

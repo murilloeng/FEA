@@ -33,35 +33,29 @@ namespace fea
 				//tangents
 				void inertia_CR(double*) const;
 				void inertia_TL(double*) const;
-				void inertia(double*) const override;
 
 				void damping_CR(double*) const;
 				void damping_TL(double*) const;
-				void damping(double*) const override;
 
 				void stiffness_CR(double*) const;
 				void stiffness_TL(double*) const;
-				void stiffness(double*) const override;
 
 				//forces
 				void internal_force_CR(double*) const;
 				void internal_force_TL(double*) const;
-				void internal_force(double*) const override;
 
 				//energies
 				double kinetic_energy_CR(void) const;
 				double kinetic_energy_TL(void) const;
 				double internal_energy_CR(void) const;
 				double internal_energy_TL(void) const;
-				double kinetic_energy(void) const override;
-				double internal_energy(void) const override;
 
 				//analysis
 				void check(void) override;
 				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
-				void compute(void) override;
+				void compute(analysis::Compute&) override;
 
 				//compute
 				void compute_CR(void);

@@ -7,6 +7,7 @@ namespace fea
 {
 	namespace analysis
 	{
+		class Request;
 		class Assembler;
 	}
 }
@@ -30,8 +31,8 @@ namespace fea
 		
 		public:
 			//data
-			double m_T, m_U, m_V;
-			double *m_x, *m_fi, *m_fe, *m_K, *m_C, *m_M;
+			const Request* m_request;
+			double m_T, m_U, m_V, *m_x, *m_f, *m_K, *m_C, *m_M;
 
 			//friends
 			friend class fea::analysis::Assembler;

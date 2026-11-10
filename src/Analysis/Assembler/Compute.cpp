@@ -7,9 +7,8 @@ namespace fea
 	{
 		//constructor
 		Compute::Compute(void) : 
-			m_T{0}, m_U{0}, m_V{0},
-			m_fi{nullptr}, m_fe{nullptr}, 
-			m_K{nullptr}, m_C{nullptr}, m_M{nullptr}
+			m_request{nullptr}, m_T{0}, m_U{0}, m_V{0},
+			m_x{nullptr}, m_f{nullptr}, m_K{nullptr}, m_C{nullptr}, m_M{nullptr}
 		{
 			return;
 		}
@@ -24,8 +23,7 @@ namespace fea
 		void Compute::cleanup(void)
 		{
 			double** data[] = {
-				&m_fi, &m_fe, 
-				&m_K, &m_C, &m_M
+				&m_x, &m_f, &m_K, &m_C, &m_M
 			};
 			for(double** ptr : data)
 			{
@@ -37,8 +35,7 @@ namespace fea
 		{
 			cleanup();
 			m_x = new double[nd];
-			m_fi = new double[nd];
-			m_fe = new double[nd];
+			m_f = new double[nd];
 			m_K = new double[nd * nd];
 			m_C = new double[nd * nd];
 			m_M = new double[nd * nd];
