@@ -50,7 +50,6 @@ namespace fea
 		virtual void setup(void);
 		virtual void update(void);
 		virtual void restore(void);
-		virtual void compute(void);
 
 	protected:
 		//data

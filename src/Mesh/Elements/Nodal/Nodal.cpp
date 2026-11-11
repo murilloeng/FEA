@@ -101,7 +101,7 @@ namespace fea
 				//internal energy
 				if(compute.m_request->m_U) compute.m_U = K * x * x / 2;
 				//internal force
-				if(compute.m_request->m_f) compute.m_f[0] = K * x + C * v;
+				if(compute.m_request->m_fi) compute.m_f[0] = K * x + C * v;
 			}
 		}
 	}

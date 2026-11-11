@@ -111,8 +111,4 @@ namespace fea
 	{
 		m_mesh->restore();
 	}
-	void Model::compute(void)
-	{
-		m_mesh->compute();
-	}
 }

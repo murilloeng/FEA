@@ -11,20 +11,20 @@ namespace fea
 		{
 		private:
 			//constructor
-			StaticLinear(void);
+			StaticLinear(void) = default;
 
 			//destructor
-			~StaticLinear(void);
+			~StaticLinear(void) = default;
 
 		public:
 			//solve
 			void solve(void) override;
 
 			//data
-			uint32_t state_set(void) const override;
-			uint32_t force_set(void) const override;
-			uint32_t energy_set(void) const override;
-			uint32_t tangent_set(void) const override;
+			uint32_t states_set(void) const override;
+			uint32_t forces_set(void) const override;
+			uint32_t energies_set(void) const override;
+			uint32_t tangents_set(void) const override;
 
 			//draw
 			uint32_t draw_steps(void) const override;

@@ -34,7 +34,6 @@ namespace fea
 	{
 		//constructor
 		Assembler::Assembler(void) : 
-			m_local_state{nullptr}, m_local_vector{nullptr}, m_local_matrix{nullptr},
 			m_rows_map{nullptr}, m_cols_map{nullptr}, m_rows_triplet{nullptr}, m_cols_triplet{nullptr},
 			m_dof_know{0}, m_dof_local{0}, m_dof_total{0}, m_dof_unknow{0}, m_dof_triplet{0}, m_dof_dependent{0}
 		{
@@ -46,9 +45,6 @@ namespace fea
 		{
 			delete[] m_rows_map;
 			delete[] m_cols_map;
-			delete[] m_local_state;
-			delete[] m_local_vector;
-			delete[] m_local_matrix;
 			delete[] m_rows_triplet;
 			delete[] m_cols_triplet;
 		}
@@ -196,13 +192,6 @@ namespace fea
 			{
 				m_dof_local = std::max(std::size_t(m_dof_local), constraint->m_dof_indexes.size());
 			}
-			//allocate
-			delete[] m_local_state;
-			delete[] m_local_vector;
-			delete[] m_local_matrix;
-			m_local_state = new double[m_dof_local];
-			m_local_vector = new double[m_dof_local];
-			m_local_matrix = new double[m_dof_local * m_dof_local];
 		}
 
 		void Assembler::dof_triplet_count(void)
@@ -268,140 +257,90 @@ namespace fea
 			}
 		}
 
-		//analysis
-		void Assembler::setup(void)
-		{
-			dof_map();
-			dof_local();
-			m_request.setup();
-			m_compute.setup(m_dof_local);
-			m_compute.m_request = &m_request;
-			m_analysis->solver()->rows_map(m_rows_map);
-			m_analysis->solver()->cols_map(m_cols_map);
-		}
-
 		//assemble
-		void Assembler::assemble_inertia(double* M) const
+		void Assembler::assemble(void)
 		{
-			//setup
-			memset(M, 0, m_cols_map[m_dof_unknow] * sizeof(double));
-			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			{
-				// element->inertia(m_local_matrix);
-				assemble_matrix(M, m_local_matrix, element->m_dof_indexes);
-			}
+			assemble_loads();
+			assemble_elements();
+			assemble_constraints();
 		}
-		void Assembler::assemble_damping(double* C) const
+		void Assembler::assemble_loads(void)
 		{
-			//setup
-			memset(C, 0, m_cols_map[m_dof_unknow] * sizeof(double));
-			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			{
-				// element->damping(m_local_matrix);
-				assemble_matrix(C, m_local_matrix, element->m_dof_indexes);
-			}
-		}
-		void Assembler::assemble_stiffness(double* K) const
-		{
-			//setup
-			memset(K, 0, m_cols_map[m_dof_unknow] * sizeof(double));
-			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			{
-				// element->stiffness(m_local_matrix);
-				assemble_matrix(K, m_local_matrix, element->m_dof_indexes);
-			}
-			//constraints
-			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
-			{
-				constraint->state(m_local_state);
-				constraint->m_hessian(m_local_matrix, m_local_state);
-				constraint->m_gradient(m_local_vector, m_local_state);
-				assemble_matrix(K, m_local_vector, constraint->m_dof_indexes, constraint->m_dof_index);
-				assemble_matrix(K, m_local_vector, constraint->m_dof_index, constraint->m_dof_indexes);
-				assemble_matrix(K, m_local_matrix, constraint->m_dof_indexes, m_analysis->solver()->state_new(constraint->m_dof_index));
-			}
-		}
-
-		void Assembler::assemble_kinetic_energy(double& K) const
-		{
-			K = 0;
-			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			// {
-			// 	// K += element->kinetic_energy();
-			// }
-		}
-		void Assembler::assemble_internal_energy(double& U) const
-		{
-			U = 0;
-			// for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
-			// {
-			// 	// U += element->internal_energy();
-			// }
-		}
-
-		void Assembler::assemble_dead_force(double* fd, bool cleanup, double s) const
-		{
-			//setup
-			if(cleanup) memset(fd, 0, m_dof_unknow * sizeof(double));
-			if(m_analysis->solver()->load_combination() == UINT32_MAX) return;
 			//data
-			const double t = m_analysis->solver()->time_new();
+			double& V = m_analysis->solver()->m_V;
+			double* fe = m_analysis->solver()->m_fe;
+			double* fd = m_analysis->solver()->m_fd;
+			const double t = m_analysis->solver()->m_t_new;
 			const uint32_t index = m_analysis->solver()->load_combination();
+			//combination
+			if(index == UINT32_MAX) return;
 			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
 			//load cases
+			const double p = m_analysis->solver()->m_p_new;
 			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
-				if(!item->fixed()) continue;
+				double* f = m_request.m_ft || !item->fixed() ? fe : fd;
 				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
-					if(load->m_dof_index < m_dof_unknow) fd[load->m_dof_index] += s * item->value() * load->value() * load->time_function(t);
+					const double iv = item->value();
+					const double lv = load->value();
+					const double nd = load->node()->state(load->dof());
+					const double Vp = m_request.m_ft || item->fixed() ? 1 : p;
+					const double lt = m_request.m_ft || item->fixed() ? load->time_function(t) : 1;
+					if(load->m_dof_index < m_dof_unknow)
+					{
+						f[load->m_dof_index] += iv * lv * lt;
+						if(m_request.m_V) V -= Vp * iv * lv * lt * nd;
+;					}
 				}
 			}
 		}
-		void Assembler::assemble_external_force(double* fe, bool cleanup, double s) const
+		void Assembler::assemble_elements(void)
 		{
-			return;
-		}
-		void Assembler::assemble_internal_force(double* fi, bool cleanup, double s) const
-		{
-			//setup
-			if(cleanup) memset(fi, 0, m_dof_unknow * sizeof(double));
-			//elements
-			for(const mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			double& T = m_analysis->solver()->m_T;
+			double& U = m_analysis->solver()->m_U;
+			double* K = m_analysis->solver()->m_K;
+			double* C = m_analysis->solver()->m_C;
+			double* M = m_analysis->solver()->m_M;
+			double* fi = m_analysis->solver()->m_fi;
+			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
 			{
-				// element->internal_force(m_local_vector);
-				assemble_vector(fi, m_local_vector, element->m_dof_indexes, s);
+				node->compute();
 			}
-			//constraints
+			for(mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
+			{
+				element->compute(m_compute);
+				if(m_request.m_T) T += m_compute.m_T;
+				if(m_request.m_U) U += m_compute.m_U;
+				if(m_request.m_K) assemble_matrix(K, m_compute.m_K, element->m_dof_indexes);
+				if(m_request.m_C) assemble_matrix(C, m_compute.m_C, element->m_dof_indexes);
+				if(m_request.m_M) assemble_matrix(M, m_compute.m_M, element->m_dof_indexes);
+				if(m_request.m_fi) assemble_vector(fi, m_compute.m_f, element->m_dof_indexes);
+			}
+		}
+		void Assembler::assemble_constraints(void)
+		{
+			double* K = m_analysis->solver()->m_K;
+			double* fi = m_analysis->solver()->m_fi;
+			double* xn = m_analysis->solver()->m_x_new;
 			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
-				constraint->state(m_local_state);
-				constraint->m_gradient(m_local_vector, m_local_state);
-				constraint->m_function(fi[constraint->m_dof_index], m_local_state);
-				assemble_vector(fi, m_local_vector, constraint->m_dof_indexes, s * m_analysis->solver()->state_new(constraint->m_dof_index));
-				fi[constraint->m_dof_index] *= s;
-			}
-		}
-		void Assembler::assemble_reference_force(double* fr, bool cleanup, double s) const
-		{
-			//setup
-			if(cleanup) memset(fr, 0, m_dof_unknow * sizeof(double));
-			if(m_analysis->solver()->load_combination() == UINT32_MAX) return;
-			//data
-			const uint32_t index = m_analysis->solver()->load_combination();
-			const boundary::LoadCombination* load_combination = m_analysis->m_model->m_boundary->m_load_combinations[index];
-			//load cases
-			for(const boundary::LoadItem* item : load_combination->load_items())
-			{
-				if(item->fixed()) continue;
-				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
-				for(const boundary::loads::Node* load : load_case->loads_nodes())
+				constraint->state(m_compute.m_x);
+				double& fc = fi[constraint->m_dof_index];
+				const double pc = xn[constraint->m_dof_index];
+				if(m_request.m_fi)
 				{
-					if(load->m_dof_index < m_dof_unknow) fr[load->m_dof_index] += s * item->value() * load->value();
+					constraint->m_function(fc, m_compute.m_x);
+					constraint->m_gradient(m_compute.m_f, m_compute.m_x);
+					assemble_vector(fi, m_compute.m_f, constraint->m_dof_indexes, pc);
+				}
+				if(m_request.m_K)
+				{
+					constraint->m_hessian(m_compute.m_K, m_compute.m_x);
+					assemble_matrix(K, m_compute.m_K, constraint->m_dof_indexes, pc);
+					assemble_matrix(K, m_compute.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
+					assemble_matrix(K, m_compute.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
 				}
 			}
 		}
@@ -459,6 +398,18 @@ namespace fea
 					S(dof_index, dof_indexes[i]) += s * Ae[i];
 				}
 			}
+		}
+
+		//analysis
+		void Assembler::setup(void)
+		{
+			dof_map();
+			dof_local();
+			m_request.setup();
+			m_compute.setup(m_dof_local);
+			m_compute.m_request = &m_request;
+			m_analysis->solver()->rows_map(m_rows_map);
+			m_analysis->solver()->cols_map(m_cols_map);
 		}
 
 		//static

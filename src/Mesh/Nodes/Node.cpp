@@ -75,7 +75,8 @@ namespace fea
 				const double* x = m_mesh->model()->analysis()->solver()->state_new();
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
-				return (~m_dof_set & 1 << uint32_t(dof)) && x ? 0 :
+				return 
+					(~m_dof_set & 1 << uint32_t(dof)) || !x ? 0 :
 					m_dof_indexes[id] < nu ? x[m_dof_indexes[id]] : 
 					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->state(t);
 			}
@@ -87,7 +88,8 @@ namespace fea
 				const double* v = m_mesh->model()->analysis()->solver()->velocity_new();
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				//return
-				return (~m_dof_set & 1 << uint32_t(dof)) && v ? 0 :
+				return 
+					(~m_dof_set & 1 << uint32_t(dof)) || !v ? 0 :
 					m_dof_indexes[id] < nu ? v[m_dof_indexes[id]] : 
 					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->velocity(t);
 			}
@@ -99,7 +101,8 @@ namespace fea
 				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
 				const double* a = m_mesh->model()->analysis()->solver()->acceleration_new();
 				//return
-				return (~m_dof_set & 1 << uint32_t(dof)) && a ? 0 :
+				return 
+					(~m_dof_set & 1 << uint32_t(dof)) || !a ? 0 :
 					m_dof_indexes[id] < nu ? a[m_dof_indexes[id]] : 
 					m_mesh->model()->boundary()->support(m_dof_indexes[id] - nu)->acceleration(t);
 			}

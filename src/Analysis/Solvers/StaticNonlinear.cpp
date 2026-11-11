@@ -13,16 +13,14 @@ namespace fea
 {
 	namespace analysis
 	{
-		//constructor
-		StaticNonlinear::StaticNonlinear(void)
+		//data
+		uint32_t StaticNonlinear::forces_set(void) const
 		{
-			return;
-		}
-
-		//destructor
-		StaticNonlinear::~StaticNonlinear(void)
-		{
-			return;
+			return 
+				1 << uint32_t(math::solvers::Solver::Force::r)|
+				1 << uint32_t(math::solvers::Solver::Force::fi)|
+				1 << uint32_t(math::solvers::Solver::Force::fe)|
+				1 << uint32_t(math::solvers::Solver::Force::fd);
 		}
 
 		//analysis
@@ -41,17 +39,15 @@ namespace fea
 			const uint32_t nu = m_analysis->assembler()->dof_unknow();
 			m_eigen_std.setup(nu, 1, nv, m_rows_map, m_cols_map, m_K, m_eigenvalues, m_eigenvectors);
 			//system
-			m_analysis->assembler()->request().m_f = true;
-			m_analysis->assembler()->request().m_K = true;
 			m_analysis->assembler()->request().m_U = true;
-			m_system = [this](double* r, double* fe, double* K, const double* x, double p)
+			m_analysis->assembler()->request().m_V = true;
+			m_analysis->assembler()->request().m_K = true;
+			m_analysis->assembler()->request().m_fi = true;
+			m_system = [this](double*, double*, double*, const double*, double)
 			{
-				m_analysis->model()->compute();
-				m_analysis->assembler()->assemble_stiffness(K);
-				m_analysis->assembler()->assemble_dead_force(r, true);
-				m_analysis->assembler()->assemble_internal_force(r, false, -1);
-				m_analysis->assembler()->assemble_reference_force(r, false, p);
-				m_analysis->assembler()->assemble_reference_force(fe, true, 1);
+				reset();
+				m_analysis->assembler()->assemble();
+				for(uint32_t i = 0; i < m_size; i++) m_r[i] = m_p_new * m_fe[i] + m_fd[i] - m_fi[i];
 			};
 			//callbacks
 			m_callback_update = [this](void){ m_analysis->model()->update(); };

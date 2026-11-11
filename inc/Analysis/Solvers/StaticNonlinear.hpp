@@ -14,10 +14,13 @@ namespace fea
 		{
 		private:
 			//constructor
-			StaticNonlinear(void);
+			StaticNonlinear(void) = default;
 
 			//destructor
-			~StaticNonlinear(void);
+			~StaticNonlinear(void) = default;
+
+			//data
+			uint32_t forces_set(void) const override;
 
 			//analysis
 			void check(void) override;

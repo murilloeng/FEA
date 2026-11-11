@@ -44,17 +44,10 @@ namespace fea
 			void apply_acceleration(const double*) const;
 
 			//assemble
-			void assemble_inertia(double*) const;
-			void assemble_damping(double*) const;
-			void assemble_stiffness(double*) const;
-
-			void assemble_kinetic_energy(double&) const;
-			void assemble_internal_energy(double&) const;
-
-			void assemble_dead_force(double*, bool = true, double = 1) const;
-			void assemble_external_force(double*, bool = true, double = 1) const;
-			void assemble_internal_force(double*, bool = true, double = 1) const;
-			void assemble_reference_force(double*, bool = true, double = 1) const;
+			void assemble(void);
+			void assemble_loads(void);
+			void assemble_elements(void);
+			void assemble_constraints(void);
 
 			void assemble_vector(double*, const double*, const std::vector<uint32_t>&, double = 1) const;
 
@@ -77,10 +70,6 @@ namespace fea
 			void setup(void);
 
 			//data
-			double* m_local_state;
-			double* m_local_vector;
-			double* m_local_matrix;
-
 			int32_t* m_rows_map;
 			int32_t* m_cols_map;
 			int32_t* m_rows_triplet;

@@ -249,14 +249,6 @@ namespace fea
 			for(nodes::Node* node : m_nodes) node->restore();
 			for(elements::Element* element : m_elements) element->restore();
 		}
-		void Mesh::compute(void)
-		{
-			//data
-			analysis::Compute& compute = m_model->analysis()->assembler()->compute();
-			//compute
-			for(nodes::Node* node : m_nodes) node->compute();
-			for(elements::Element* element : m_elements) element->compute(compute);
-		}
 		void Mesh::dof_apply(void)
 		{
 			for(const elements::Element* element : m_elements)

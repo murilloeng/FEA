@@ -15,7 +15,6 @@ namespace test
 			void pinched_ring(void);
 			void diamond_frame(void);
 			void honeycomb_grid(void);
-			void rigid_rotation(void);
 			void euler_cantilever(void);
 			void simply_supported(void);
 			void cantilever_force(void);

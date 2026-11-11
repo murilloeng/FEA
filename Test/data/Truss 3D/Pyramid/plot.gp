@@ -12,6 +12,6 @@ H = 0.1
 p(u) = -(1 + u / H) * (2 + u / H) * u / H
 
 plot\
-	'Test/data/Truss 3D/Pyramid/data.txt' using ($1 + H) : ($4 == 0 ? $2 : NaN) with lines linestyle 3 notitle,\
-	'Test/data/Truss 3D/Pyramid/data.txt' using ($1 + H) : ($4 == 1 ? $2 : NaN) with lines linestyle 2 title 'Numeric',\
+	'Test/data/Truss 3D/Pyramid/data.txt' using ($1 + H) : ($6 == 0 ? $2 : NaN) with lines linestyle 3 notitle,\
+	'Test/data/Truss 3D/Pyramid/data.txt' using ($1 + H) : ($6 == 1 ? $2 : NaN) with lines linestyle 2 title 'Numeric',\
 	p(x - H) with points linestyle 1 pointtype 7 title 'Exact'

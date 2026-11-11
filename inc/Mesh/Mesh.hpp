@@ -78,7 +78,6 @@ namespace fea
 			void split(void);
 			void update(void);
 			void restore(void);
-			void compute(void);
 			void dof_apply(void);
 			void dof_setup(uint32_t&);
 

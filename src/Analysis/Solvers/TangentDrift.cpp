@@ -100,19 +100,19 @@ namespace fea
 		}
 
 		//data
-		uint32_t TangentDrift::state_set(void) const
+		uint32_t TangentDrift::states_set(void) const
 		{
 			return 1 << uint32_t(math::solvers::Solver::State::x);
 		}
-		uint32_t TangentDrift::force_set(void) const
+		uint32_t TangentDrift::forces_set(void) const
+		{
+			return 1 << uint32_t(math::solvers::Solver::Force::r);
+		}
+		uint32_t TangentDrift::energies_set(void) const
 		{
 			return 0;
 		}
-		uint32_t TangentDrift::energy_set(void) const
-		{
-			return 0;
-		}
-		uint32_t TangentDrift::tangent_set(void) const
+		uint32_t TangentDrift::tangents_set(void) const
 		{
 			return 1 << uint32_t(math::solvers::Solver::Tangent::K);
 		}
@@ -134,89 +134,89 @@ namespace fea
 		//solve
 		void TangentDrift::solve_stiffness(void)
 		{
-			//data
-			const int32_t* c = m_cols_map;
-			const int32_t* r = m_rows_map;
-			const uint32_t nu = m_analysis->assembler()->dof_unknow();
-			std::function<void(double*, const double*)> function = [this, nu] (double* f, const double* x) {
-				memcpy(m_x_new, x, nu * sizeof(double));
-				m_analysis->model()->compute();
-				m_analysis->assembler()->assemble_internal_force(f);
-			};
-			//solve
-			double* x = new double[nu];
-			double* Ka = new double[c[nu]];
-			double* Kr = new double[c[nu]];
-			double* Kn = new double[nu * nu];
-			for(uint32_t test = 0; test < m_tests; test++)
-			{
-				compute_state(x);
-				m_analysis->model()->compute();
-				m_analysis->assembler()->assemble_stiffness(Ka);
-				math::ndiff(function, Kn, x, nu, nu, m_dof_shift);
-				for(uint32_t i = 0; i < nu; i++)
-				{
-					for(int32_t j = c[i]; j < c[i + 1]; j++)
-					{
-						Kr[j] = Ka[j] - Kn[r[j] + nu * i];
-					}
-				}
-				if(math::Sparse(Kr, r, c, nu, nu).norm() < m_tolerance * math::Sparse(Ka, r, c, nu, nu).norm())
-				{
-					printf("Stiffness Test: %d Status: OK! Error: %+.2e\n", test, math::Sparse(Kr, r, c, nu, nu).norm());
-				}
-				else
-				{
-					math::Matrix(Kn, nu, nu).print("Kn", m_tolerance);
-					math::Sparse(Ka, r, c, nu, nu).print("Ka", true, m_tolerance);
-					math::Sparse(Kr, r, c, nu, nu).print("Kr", true, m_tolerance);
-					break;
-				}
-			}
-			//delete
-			delete[] x;
-			delete[] Ka;
-			delete[] Kn;
-			delete[] Kr;
+			// //data
+			// const int32_t* c = m_cols_map;
+			// const int32_t* r = m_rows_map;
+			// const uint32_t nu = m_analysis->assembler()->dof_unknow();
+			// std::function<void(double*, const double*)> function = [this, nu] (double* f, const double* x) {
+			// 	memcpy(m_x_new, x, nu * sizeof(double));
+			// 	m_analysis->model()->compute();
+			// 	m_analysis->assembler()->assemble_internal_force(f);
+			// };
+			// //solve
+			// double* x = new double[nu];
+			// double* Ka = new double[c[nu]];
+			// double* Kr = new double[c[nu]];
+			// double* Kn = new double[nu * nu];
+			// for(uint32_t test = 0; test < m_tests; test++)
+			// {
+			// 	compute_state(x);
+			// 	m_analysis->model()->compute();
+			// 	m_analysis->assembler()->assemble_stiffness(Ka);
+			// 	math::ndiff(function, Kn, x, nu, nu, m_dof_shift);
+			// 	for(uint32_t i = 0; i < nu; i++)
+			// 	{
+			// 		for(int32_t j = c[i]; j < c[i + 1]; j++)
+			// 		{
+			// 			Kr[j] = Ka[j] - Kn[r[j] + nu * i];
+			// 		}
+			// 	}
+			// 	if(math::Sparse(Kr, r, c, nu, nu).norm() < m_tolerance * math::Sparse(Ka, r, c, nu, nu).norm())
+			// 	{
+			// 		printf("Stiffness Test: %d Status: OK! Error: %+.2e\n", test, math::Sparse(Kr, r, c, nu, nu).norm());
+			// 	}
+			// 	else
+			// 	{
+			// 		math::Matrix(Kn, nu, nu).print("Kn", m_tolerance);
+			// 		math::Sparse(Ka, r, c, nu, nu).print("Ka", true, m_tolerance);
+			// 		math::Sparse(Kr, r, c, nu, nu).print("Kr", true, m_tolerance);
+			// 		break;
+			// 	}
+			// }
+			// //delete
+			// delete[] x;
+			// delete[] Ka;
+			// delete[] Kn;
+			// delete[] Kr;
 		}
 		void TangentDrift::solve_internal_force(void)
 		{
-			//data
-			const uint32_t nu = m_analysis->assembler()->dof_unknow();
-			std::function<void(double*, const double*)> function = [this, nu] (double* U, const double* x) {
-				memcpy(m_x_new, x, nu * sizeof(double));
-				m_analysis->model()->compute();
-				m_analysis->assembler()->assemble_internal_energy(*U);
-			};
-			//solve
-			double* x = new double[nu];
-			double* fa = new double[nu];
-			double* fn = new double[nu];
-			double* fr = new double[nu];
-			for(uint32_t test = 0; test < m_tests; test++)
-			{
-				compute_state(x);
-				m_analysis->model()->compute();
-				m_analysis->assembler()->assemble_internal_force(fa);
-				math::ndiff(function, fn, x, 1, nu, m_dof_shift);
-				for(uint32_t i = 0; i < nu; i++) fr[i] = fa[i] - fn[i];
-				if(math::Vector(fr, nu).norm() < m_tolerance * math::Vector(fa, nu).norm())
-				{
-					printf("Internal Force Test: %d Status: OK! Error: %+.2e\n", test, math::Vector(fr, nu).norm());
-				}
-				else
-				{
-					math::Vector(fn, nu).print("fn", m_tolerance);
-					math::Vector(fa, nu).print("fa", m_tolerance);
-					math::Vector(fr, nu).print("fr", m_tolerance);
-					break;
-				}
-			}
-			//delete
-			delete[] x;
-			delete[] fa;
-			delete[] fn;
-			delete[] fr;
+			// //data
+			// const uint32_t nu = m_analysis->assembler()->dof_unknow();
+			// std::function<void(double*, const double*)> function = [this, nu] (double* U, const double* x) {
+			// 	memcpy(m_x_new, x, nu * sizeof(double));
+			// 	m_analysis->model()->compute();
+			// 	m_analysis->assembler()->assemble_internal_energy(*U);
+			// };
+			// //solve
+			// double* x = new double[nu];
+			// double* fa = new double[nu];
+			// double* fn = new double[nu];
+			// double* fr = new double[nu];
+			// for(uint32_t test = 0; test < m_tests; test++)
+			// {
+			// 	compute_state(x);
+			// 	m_analysis->model()->compute();
+			// 	m_analysis->assembler()->assemble_internal_force(fa);
+			// 	math::ndiff(function, fn, x, 1, nu, m_dof_shift);
+			// 	for(uint32_t i = 0; i < nu; i++) fr[i] = fa[i] - fn[i];
+			// 	if(math::Vector(fr, nu).norm() < m_tolerance * math::Vector(fa, nu).norm())
+			// 	{
+			// 		printf("Internal Force Test: %d Status: OK! Error: %+.2e\n", test, math::Vector(fr, nu).norm());
+			// 	}
+			// 	else
+			// 	{
+			// 		math::Vector(fn, nu).print("fn", m_tolerance);
+			// 		math::Vector(fa, nu).print("fa", m_tolerance);
+			// 		math::Vector(fr, nu).print("fr", m_tolerance);
+			// 		break;
+			// 	}
+			// }
+			// //delete
+			// delete[] x;
+			// delete[] fa;
+			// delete[] fn;
+			// delete[] fr;
 		}
 	}
 }

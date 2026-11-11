@@ -70,7 +70,7 @@ namespace fea
 					compute.m_U = sn * sn / E / 2 * A * m_Lr;
 				}
 				//internal force
-				if(compute.m_request->m_f)
+				if(compute.m_request->m_fi)
 				{
 					compute.m_f[0] = -fn * (x2[0] - x1[0]) / Ln;
 					compute.m_f[1] = -fn * (x2[1] - x1[1]) / Ln;

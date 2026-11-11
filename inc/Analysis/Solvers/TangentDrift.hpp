@@ -43,10 +43,10 @@ namespace fea
 			double tolerance(void) const;
 
 			//data
-			uint32_t state_set(void) const override;
-			uint32_t force_set(void) const override;
-			uint32_t energy_set(void) const override;
-			uint32_t tangent_set(void) const override;
+			uint32_t states_set(void) const override;
+			uint32_t forces_set(void) const override;
+			uint32_t energies_set(void) const override;
+			uint32_t tangents_set(void) const override;
 
 		private:
 			//compute

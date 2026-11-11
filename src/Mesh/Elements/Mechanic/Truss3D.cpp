@@ -47,8 +47,8 @@ namespace fea
 				const double A = m_section->area();
 				const math::Vec3 z1 = node(0)->position();
 				const math::Vec3 z2 = node(1)->position();
-				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2)};
-				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2)};
+				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
+				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
 				//strain
 				const math::Vec3 x1 = z1 + u1;
 				const math::Vec3 x2 = z2 + u2;
@@ -69,7 +69,7 @@ namespace fea
 					compute.m_U = sn * sn / E / 2 * A * m_Lr;
 				}
 				//internal force
-				if(compute.m_request->m_f)
+				if(compute.m_request->m_fi)
 				{
 					compute.m_f[0] = -fn * (x2[0] - x1[0]) / Ln;
 					compute.m_f[1] = -fn * (x2[1] - x1[1]) / Ln;
