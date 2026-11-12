@@ -25,7 +25,7 @@ namespace fea
 				uint32_t dimension(void) const override;
 
 				//integration
-				uint32_t points(void) const;
+				uint32_t points(void) const override;
 				void point(double&, double*, uint32_t) const override;
 			};
 		}

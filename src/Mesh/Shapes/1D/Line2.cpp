@@ -34,7 +34,7 @@ namespace fea
 				N[0] = (1 - r) / 2;
 				N[1] = (1 + r) / 2;
 			}
-			void Line2::gradient(double* B, const double* p) const
+			void Line2::gradient(double* B, const double*) const
 			{
 				//gradient
 				B[0] = -1.0 / 2;

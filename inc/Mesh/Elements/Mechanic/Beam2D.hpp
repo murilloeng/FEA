@@ -1,5 +1,8 @@
 #pragma once
 
+//Math
+#include "Math/inc/Linear/Mat3.hpp"
+
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
 
@@ -16,61 +19,35 @@ namespace fea
 				Beam2D(void);
 
 				//destructor
-				~Beam2D(void);
+				~Beam2D(void) = default;
 
+			public:
+				//data
+				double curvature(double);
+				double curvature(void) const;
+
+				static bool large_strains(void);
+				static bool large_strains(bool);
+
+			private:
 				//data
 				uint32_t stress_set(void) const override;
 				uint32_t dof_set(uint32_t) const override;
-
-				//tangents
-				void inertia_CR(double*) const;
-				void inertia_TL(double*) const;
-
-				void damping_CR(double*) const;
-				void damping_TL(double*) const;
-
-				void stiffness_CR(double*) const;
-				void stiffness_TL(double*) const;
-
-				//forces
-				void internal_force_CR(double*) const;
-				void internal_force_TL(double*) const;
-
-				//energies
-				double kinetic_energy_CR(void) const;
-				double kinetic_energy_TL(void) const;
-				double internal_energy_CR(void) const;
-				double internal_energy_TL(void) const;
-
-				//analysis
-				void update(void) override;
-				void restore(void) override;
-				void compute(analysis::Compute&) override;
-
-				//compute
-				void compute_TL(void);
-				void compute_CR(void);
-
-				//compute TL
-				void compute_TL_state(void);
-				void compute_TL_elastic(void);
-				void compute_TL_strains_hessian(double*) const;
-				void compute_TL_strains_gradient(double*) const;
-
-				//compute CR
-				void compute_CR_state(void);
-				void compute_CR_elastic(void);
-				void compute_CR_plastic(void);
-				void compute_CR_plastic_length(double*, double);
-				void compute_CR_plastic_section(double*, double);
 
 				//draw
 				void draw_setup(draw::Data&) const override;
 				void draw_update(draw::Data&) const override;
 
+				//analysis
+				void setup(void) override;
+				void compute(analysis::Compute&) override;
+
+				void internal_force(double* f) const;
+
 				//data
-				double m_tr_old, m_tr_new;
-				double m_dl[3], m_fl[3], m_Kl[9];
+				math::Mat3 m_Ks;
+				double m_curvature;
+				static bool m_large_strains;
 
 				//friends
 				friend class fea::mesh::Mesh;

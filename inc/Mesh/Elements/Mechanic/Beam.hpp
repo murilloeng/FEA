@@ -5,6 +5,7 @@
 
 //FEA
 #include "FEA/inc/Mesh/Points/Section.hpp"
+#include "FEA/inc/Mesh/Shapes/1D/Line.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Frame.hpp"
 
 namespace fea
@@ -40,6 +41,8 @@ namespace fea
 				//data
 				static bool m_shear;
 				static uint32_t m_draw_mesh;
+
+				shapes::Line* m_shape;
 				std::vector<points::Section> m_points;
 				math::quadrature::Quadrature m_quadrature;
 			};

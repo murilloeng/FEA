@@ -22,7 +22,6 @@
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam3D.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss2D.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss3D.hpp"
-#include "FEA/inc/Mesh/Elements/Mechanic/Beam2DNew.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
@@ -169,8 +168,7 @@ namespace fea
 				[](elements::Element*& element){ element = new elements::Beam2D; },
 				[](elements::Element*& element){ element = new elements::Beam3D; },
 				[](elements::Element*& element){ element = new elements::Truss2D; },
-				[](elements::Element*& element){ element = new elements::Truss3D; },
-				[](elements::Element*& element){ element = new elements::Beam2DNew; }
+				[](elements::Element*& element){ element = new elements::Truss3D; }
 			};
 			//create
 			fabric[uint32_t(type)](element);

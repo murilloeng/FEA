@@ -15,7 +15,7 @@ int main(void)
 {
 	try
 	{
-		test::truss3D::space_truss();
+		test::beam2D::elastic::pinched_ring();
 	}
 	catch(const std::exception& exception)
 	{
