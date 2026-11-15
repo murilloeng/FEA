@@ -1,11 +1,6 @@
 //std
 #include <cmath>
-
-//Math
-#include "Math/inc/Linear/Vec2.hpp"
-#include "Math/inc/Linear/Vec3.hpp"
-#include "Math/inc/Linear/Vector.hpp"
-#include "Math/inc/Linear/Matrix.hpp"
+#include <cstring>
 
 //Canvas
 #include "Canvas/inc/Math/vec2.hpp"
@@ -91,104 +86,80 @@ namespace fea
 				const double E = m_material->elastic_modulus();
 				const double K = m_shear ? G * S : p * E * I / m_Lr / m_Lr;
 				//setup
+				const double* z1 = node(0)->position();
+				const double* z2 = node(1)->position();
+				m_q0 = atan2(z2[1] - z1[1], z2[0] - z1[0]);
+				m_a0 = {cos(m_q0), sin(m_q0)};
 				m_Ks = {{E * A, 0, 0}, {0, K, 0}, {0, 0, E * I}};
-				
 			}
 			void Beam2D::compute(analysis::Compute& compute)
 			{
 				//data
-				math::Vec3 es, ss;
-				math::Vector f(compute.m_f, 6);
-				math::Matrix K(compute.m_K, 6, 6);
+				math::MatrixFixed<3, 4> L;
+				math::MatrixFixed<4, 6> N;
+				math::MatrixFixed<4, 4> dL;
+				math::VectorFixed<3> es, ss;
 				const double t1 = node(0)->state(dt3);
 				const double t2 = node(1)->state(dt3);
-				math::Matrix L(3, 4, math::Mode::zeros);
-				math::Matrix N(4, 6, math::Mode::zeros);
-				math::Matrix dL(4, 4, math::Mode::zeros);
-				const math::Vec2 z1 = node(0)->position();
-				const math::Vec2 z2 = node(1)->position();
-				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
-				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
+				const double qn = m_q0 + (t1 + t2) / 2;
+				const math::VectorFixed<2> u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::VectorFixed<2> u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//compute
-				compute.reset();
-				const double q0 = (z2 - z1).direction();
-				for(uint32_t k = 0; k < m_quadrature.order(); k++)
+				const double cn = cos(qn), sn = sin(qn);
+				const math::VectorFixed<2> an = {cn, sn};
+				const math::VectorFixed<2> bn = {-sn, cn};
+				const math::VectorFixed<2> xp = m_a0 + (u2 - u1) / m_Lr;
+				//strains
+				es[1] = xp.inner(bn);
+				es[0] = xp.inner(an) - 1;
+				es[2] = (t2 - t1) / m_Lr;
+				//stresses
+				ss = m_Ks * es;
+				//compute
+				compute_N(N);
+				compute_L(L, an, bn, es);
+				if(compute.m_request->m_U)
 				{
-					//point
-					const double sk = m_quadrature.point(k);
-					const double wk = m_quadrature.weight(k);
-					//data
-					const double dN1 = -1 / m_Lr;
-					const double dN2 = +1 / m_Lr;
-					const double N1 = (1 - sk) / 2;
-					const double N2 = (1 + sk) / 2;
-					const double qn = q0 + N1 * t1 + N2 * t2;
-					const math::Vec2 a0 = {cos(q0), sin(q0)};
-					const math::Vec2 an = {cos(qn), sin(qn)};
-					const math::Vec2 bn = {-sin(qn), cos(qn)};
-					//strains
-					es[2] = dN1 * t1 + dN2 * t2;
-					es[1] = (a0 + dN1 * u1 + dN2 * u2).inner(bn);
-					es[0] = (a0 + dN1 * u1 + dN2 * u2).inner(an) - 1;
-					//kinematics
-					L(2, 3) = 1;
-					L(0, 0) = an[0];
-					L(0, 1) = an[1];
-					L(1, 0) = bn[0];
-					L(1, 1) = bn[1];
-					L(0, 2) = es[1];
-					L(1, 2) = -(1 + es[0]);
-					//kinematics
-					ss = m_Ks * es;
-					dL(2, 2) = -(1 + es[0]) * ss[0] - es[1] * ss[1];
-					dL(0, 2) = dL(2, 0) = ss[0] * bn[0] - ss[1] * an[0];
-					dL(1, 2) = dL(2, 1) = ss[0] * bn[1] - ss[1] * an[1];
-					//interpolation
-					N(2, 2) = N1;
-					N(2, 5) = N2;
-					N(0, 0) = N(1, 1) = N(3, 2) = dN1;
-					N(0, 3) = N(1, 4) = N(3, 5) = dN2;
-					//compute
-					if(compute.m_request->m_U) compute.m_U += wk * m_Lr / 2 * m_Ks.bilinear(es, es) / 2;
-					if(compute.m_request->m_fi) f += wk * m_Lr / 2 * N.transpose() * L.transpose() * ss;
-					if(compute.m_request->m_K) K += wk * m_Lr / 2 * N.transpose() * (L.transpose() * m_Ks * L + dL) * N;
+					compute.m_U = m_Lr * m_Ks.bilinear(es) / 2;
+				}
+				if(compute.m_request->m_fi)
+				{
+					const math::MatrixFixed<6, 1> f = m_Lr * N.transpose() * L.transpose() * ss;
+					memcpy(compute.m_f, f.data(), 6 * sizeof(double));
+				}
+				if(compute.m_request->m_K)
+				{
+					compute_dL(dL, an, bn, es, ss);
+					const math::MatrixFixed<6, 6> K = m_Lr * N.transpose() * (L.transpose() * m_Ks * L + dL) * N;
+					memcpy(compute.m_K, K.data(), 36 * sizeof(double));
 				}
 			}
 
-			void Beam2D::internal_force(double* ptr) const
+			void Beam2D::compute_N(math::MatrixFixed<4, 6>& N) const
 			{
-				// //data
-				// math::Vec3 es, ss;
-				// math::Vector f(ptr, 6);
-				// const double t1 = node(0)->state(dt3);
-				// const double t2 = node(1)->state(dt3);
-				// const math::Vec2 z1 = node(0)->position();
-				// const math::Vec2 z2 = node(1)->position();
-				// const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
-				// const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
-				// //compute
-				// const double q0 = (z2 - z1).direction();
-				// for(uint32_t k = 0; k < m_quadrature.order(); k++)
-				// {
-				// 	//point
-				// 	const double sk = m_quadrature.point(k);
-				// 	const double wk = m_quadrature.weight(k);
-				// 	//data
-				// 	const double dN1 = -1 / m_Lr;
-				// 	const double dN2 = +1 / m_Lr;
-				// 	const double N1 = (1 - sk) / 2;
-				// 	const double N2 = (1 + sk) / 2;
-				// 	const double qn = q0 + N1 * t1 + N2 * t2;
-				// 	const math::Vec2 a0 = {cos(q0), sin(q0)};
-				// 	const math::Vec2 an = {cos(qn), sin(qn)};
-				// 	const math::Vec2 bn = {-sin(qn), cos(qn)};
-				// 	//strains
-				// 	es[2] = dN1 * t1 + dN2 * t2;
-				// 	es[1] = (a0 + dN1 * u1 + dN2 * u2).inner(bn);
-				// 	es[0] = (a0 + dN1 * u1 + dN2 * u2).inner(an) - 1;
-				// 	//compute
-				// 	// f += wk * m_Lr / 2 * N.transpose() * L.transpose() * ss;
-				// }
+				N.zeros();
+				N(2, 2) = 1.0 / 2;
+				N(2, 5) = 1.0 / 2;
+				N(0, 0) = N(1, 1) = N(3, 2) = -1 / m_Lr;
+				N(0, 3) = N(1, 4) = N(3, 5) = +1 / m_Lr;
+			}
+			void Beam2D::compute_L(math::MatrixFixed<3, 4>& L, const vec2& an, const vec2& bn, const vec3& es) const
+			{
+				L.zeros();
+				L(2, 3) = 1;
+				L(0, 0) = an[0];
+				L(0, 1) = an[1];
+				L(1, 0) = bn[0];
+				L(1, 1) = bn[1];
+				L(0, 2) = es[1];
+				L(1, 2) = -(1 + es[0]);
+			}
+			void Beam2D::compute_dL(math::MatrixFixed<4, 4>& dL, const vec2& an, const vec2& bn, const vec3& es, const vec3& ss) const
+			{
+				dL.zeros();
+				dL(2, 2) = -(1 + es[0]) * ss[0] - es[1] * ss[1];
+				dL(0, 2) = dL(2, 0) = ss[0] * bn[0] - ss[1] * an[0];
+				dL(1, 2) = dL(2, 1) = ss[0] * bn[1] - ss[1] * an[1];
 			}
 
 			//draw

@@ -1,7 +1,7 @@
 #pragma once
 
 //Math
-#include "Math/inc/Linear/Mat3.hpp"
+#include "Math/inc/Linear/VectorFixed.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
@@ -20,6 +20,10 @@ namespace fea
 
 				//destructor
 				~Beam2D(void) = default;
+
+				//types
+				typedef math::VectorFixed<2> vec2;
+				typedef math::VectorFixed<3> vec3;
 
 			public:
 				//data
@@ -42,12 +46,16 @@ namespace fea
 				void setup(void) override;
 				void compute(analysis::Compute&) override;
 
-				void internal_force(double* f) const;
+				void compute_N(math::MatrixFixed<4, 6>&) const;
+				void compute_L(math::MatrixFixed<3, 4>&, const vec2&, const vec2&, const vec3&) const;
+				void compute_dL(math::MatrixFixed<4, 4>&, const vec2&, const vec2&, const vec3&, const vec3&) const;
 
 				//data
-				math::Mat3 m_Ks;
+				double m_q0;
 				double m_curvature;
+				math::VectorFixed<2> m_a0;
 				static bool m_large_strains;
+				math::MatrixFixed<3, 3> m_Ks;
 
 				//friends
 				friend class fea::mesh::Mesh;
