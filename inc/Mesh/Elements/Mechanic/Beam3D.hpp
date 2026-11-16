@@ -1,9 +1,9 @@
 #pragma once
 
 //Math
-#include "Math/inc/Linear/Vec3.hpp"
-#include "Math/inc/Linear/Vector.hpp"
 #include "Math/inc/Linear/Matrix.hpp"
+#include "Math/inc/Linear/VectorN.hpp"
+#include "Math/inc/Linear/MatrixN.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
@@ -70,9 +70,9 @@ namespace fea
 				void compute_CR_plastic_section(double*, double, double);
 
 				//data
-				math::Matrix m_Kl;
-				math::Vector m_dl, m_fl;
-				static math::Matrix m_B;
+				math::MatrixN m_Kl;
+				math::VectorN m_dl, m_fl;
+				static math::MatrixN m_B;
 
 				math::Vec3 m_major_axis;
 

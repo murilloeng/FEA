@@ -95,20 +95,20 @@ namespace fea
 			void Beam2D::compute(analysis::Compute& compute)
 			{
 				//data
-				math::MatrixFixed<3, 4> L;
-				math::MatrixFixed<4, 6> N;
-				math::MatrixFixed<4, 4> dL;
-				math::VectorFixed<3> es, ss;
+				math::Vec3 es, ss;
+				math::Matrix<3, 4> L;
+				math::Matrix<4, 6> N;
+				math::Matrix<4, 4> dL;
 				const double t1 = node(0)->state(dt3);
 				const double t2 = node(1)->state(dt3);
 				const double qn = m_q0 + (t1 + t2) / 2;
-				const math::VectorFixed<2> u1 = {node(0)->state(du1), node(0)->state(du2)};
-				const math::VectorFixed<2> u2 = {node(1)->state(du1), node(1)->state(du2)};
+				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
+				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//compute
 				const double cn = cos(qn), sn = sin(qn);
-				const math::VectorFixed<2> an = {cn, sn};
-				const math::VectorFixed<2> bn = {-sn, cn};
-				const math::VectorFixed<2> xp = m_a0 + (u2 - u1) / m_Lr;
+				const math::Vec2 an = {cn, sn};
+				const math::Vec2 bn = {-sn, cn};
+				const math::Vec2 xp = m_a0 + (u2 - u1) / m_Lr;
 				//strains
 				es[1] = xp.inner(bn);
 				es[0] = xp.inner(an) - 1;
@@ -124,13 +124,13 @@ namespace fea
 				}
 				if(compute.m_request->m_fi)
 				{
-					const math::MatrixFixed<6, 1> f = m_Lr * N.transpose() * L.transpose() * ss;
+					const math::Vec6 f = m_Lr * N.transpose() * L.transpose() * ss;
 					memcpy(compute.m_f, f.data(), 6 * sizeof(double));
 				}
 				if(compute.m_request->m_K)
 				{
 					compute_dL(dL, an, bn, es, ss);
-					const math::MatrixFixed<6, 6> K = m_Lr * N.transpose() * (L.transpose() * m_Ks * L + dL) * N;
+					const math::Mat6 K = m_Lr * N.transpose() * (L.transpose() * m_Ks * L + dL) * N;
 					memcpy(compute.m_K, K.data(), 36 * sizeof(double));
 				}
 			}
@@ -145,9 +145,9 @@ namespace fea
 				{
 					ss.zeros();
 					m_Ks.zeros();
-					math::MatrixFixed<2, 2> Kp;
-					math::MatrixFixed<2, 3> Ap;
-					math::VectorFixed<2> ep, sp;
+					math::Matrix<2, 2> Kp;
+					math::Matrix<2, 3> Ap;
+					math::Vector<2> ep, sp;
 					for(points::Section& point : m_points)
 					{
 						for(points::Fiber& fiber : point.fibers())
@@ -172,7 +172,7 @@ namespace fea
 				}
 			}
 
-			void Beam2D::compute_N(math::MatrixFixed<4, 6>& N) const
+			void Beam2D::compute_N(math::Matrix<4, 6>& N) const
 			{
 				N.zeros();
 				N(2, 2) = 1.0 / 2;
@@ -180,7 +180,7 @@ namespace fea
 				N(0, 0) = N(1, 1) = N(3, 2) = -1 / m_Lr;
 				N(0, 3) = N(1, 4) = N(3, 5) = +1 / m_Lr;
 			}
-			void Beam2D::compute_L(math::MatrixFixed<3, 4>& L, const vec2& an, const vec2& bn, const vec3& es) const
+			void Beam2D::compute_L(math::Matrix<3, 4>& L, const vec2& an, const vec2& bn, const vec3& es) const
 			{
 				L.zeros();
 				L(2, 3) = 1;
@@ -191,7 +191,7 @@ namespace fea
 				L(0, 2) = es[1];
 				L(1, 2) = -(1 + es[0]);
 			}
-			void Beam2D::compute_dL(math::MatrixFixed<4, 4>& dL, const vec2& an, const vec2& bn, const vec3& es, const vec3& ss) const
+			void Beam2D::compute_dL(math::Matrix<4, 4>& dL, const vec2& an, const vec2& bn, const vec3& es, const vec3& ss) const
 			{
 				dL.zeros();
 				dL(2, 2) = -(1 + es[0]) * ss[0] - es[1] * ss[1];

@@ -7,7 +7,7 @@
 #include <gmsh.h>
 
 //Math
-#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 #include "Math/inc/Miscellaneous/BoundingBox.hpp"
 
 //FEA
@@ -644,8 +644,8 @@ namespace fea
 			{
 				for(uint32_t j = 0; j < i; j++)
 				{
-					const math::Vec3 xi = m_points[i]->m_position;
-					const math::Vec3 xj = m_points[j]->m_position;
+					const math::Vec3 xi(m_points[i]->m_position);
+					const math::Vec3 xj(m_points[j]->m_position);
 					if((xj - xi).norm() < 1e-5 * r)
 					{
 						l1.push_back(i);

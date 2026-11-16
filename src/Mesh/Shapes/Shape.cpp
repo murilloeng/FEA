@@ -25,7 +25,7 @@
 #include "FEA/inc/Mesh/Shapes/3D/Tetrahedron10.hpp"
 
 //Math
-#include "Math/inc/Linear/Matrix.hpp"
+#include "Math/inc/Linear/MatrixN.hpp"
 #include "Math/inc/Miscellaneous/util.hpp"
 
 namespace fea
@@ -80,16 +80,16 @@ namespace fea
 						shapes[i]->function(N, p);
 						shapes[i]->gradient(Ba, p);
 						math::ndiff([shapes, i] (double* N, const double* p) { shapes[i]->function(N, p); }, Bn, p, nv, nd, 1e-5);
-						math::Matrix(Be, nv, nd) = math::Matrix(Ba, nv, nd) - math::Matrix(Bn, nv, nd);
-						if(math::Matrix(Be, nv, nd).norm() < 1e-5 * math::Matrix(Ba, nv, nd).norm())
+						math::MatrixN(Be, nv, nd) = math::MatrixN(Ba, nv, nd) - math::MatrixN(Bn, nv, nd);
+						if(math::MatrixN(Be, nv, nd).norm() < 1e-5 * math::MatrixN(Ba, nv, nd).norm())
 						{
 							printf("Shape: \"%s\" Test: %d Status: OK\n", names[i], j);
 						}
 						else
 						{
-							math::Matrix(Bn, nv, nd).print("Numeric:");
-							math::Matrix(Ba, nv, nd).print("Analytic:");
-							math::Matrix(Be, nv, nd).print("Error:", 1e-5);
+							math::MatrixN(Bn, nv, nd).print("Numeric:");
+							math::MatrixN(Ba, nv, nd).print("Analytic:");
+							math::MatrixN(Be, nv, nd).print("Error:", 1e-5);
 							throw std::runtime_error("Error: Shape test failed!");
 						}
 					}

@@ -2,8 +2,7 @@
 #include <stdexcept>
 
 //Math
-#include "Math/inc/Linear/Vec3.hpp"
-#include "Math/inc/Linear/Mat3.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //Materials
 #include "Materials/inc/Mechanic/Stress.hpp"
@@ -129,8 +128,8 @@ namespace fea
 			{
 				//data
 				Beam::check();
-				const math::Vec3 z1 = node(0)->position();
-				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
 				//check
 				const math::Vec3 s2 = m_major_axis;
 				const math::Vec3 s1 = (z2 - z1).unit();
@@ -140,8 +139,8 @@ namespace fea
 			{
 				//data
 				Beam::setup();
-				const math::Vec3 z1 = node(0)->position();
-				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
 				//projection
 				const math::Vec3 s2 = m_major_axis;
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;
@@ -280,7 +279,7 @@ namespace fea
 			}
 
 			//static
-			math::Matrix Beam3D::m_B(6, 12);
+			math::MatrixN Beam3D::m_B(6, 12);
 		}
 	}
 }

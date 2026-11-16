@@ -1,7 +1,7 @@
 #pragma once
 
 //Math
-#include "Math/inc/Linear/VectorFixed.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
@@ -22,8 +22,8 @@ namespace fea
 				~Beam2D(void) = default;
 
 				//types
-				typedef math::VectorFixed<2> vec2;
-				typedef math::VectorFixed<3> vec3;
+				typedef math::Vector<2> vec2;
+				typedef math::Vector<3> vec3;
 
 			public:
 				//data
@@ -48,16 +48,16 @@ namespace fea
 
 				void compute_ss(vec3&, const vec3&);
 
-				void compute_N(math::MatrixFixed<4, 6>&) const;
-				void compute_L(math::MatrixFixed<3, 4>&, const vec2&, const vec2&, const vec3&) const;
-				void compute_dL(math::MatrixFixed<4, 4>&, const vec2&, const vec2&, const vec3&, const vec3&) const;
+				void compute_N(math::Matrix<4, 6>&) const;
+				void compute_L(math::Matrix<3, 4>&, const vec2&, const vec2&, const vec3&) const;
+				void compute_dL(math::Matrix<4, 4>&, const vec2&, const vec2&, const vec3&, const vec3&) const;
 
 				//data
 				double m_q0;
 				double m_curvature;
-				math::VectorFixed<2> m_a0;
+				math::Vector<2> m_a0;
 				static bool m_large_strains;
-				math::MatrixFixed<3, 3> m_Ks;
+				math::Matrix<3, 3> m_Ks;
 
 				//friends
 				friend class fea::mesh::Mesh;

@@ -1,5 +1,5 @@
 //Math
-#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //Materials
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
@@ -45,8 +45,8 @@ namespace fea
 			{
 				//data
 				const double A = m_section->area();
-				const math::Vec3 z1 = node(0)->position();
-				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
 				const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
 				const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
 				//strain

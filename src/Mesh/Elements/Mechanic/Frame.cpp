@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 //Math
-#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //Canvas
 #include "Canvas/inc/Vertices/Model3D.hpp"
@@ -47,8 +47,8 @@ namespace fea
 			{
 				//data
 				Mechanic::check();
-				const math::Vec3 z1 = node(0)->position();
-				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
 				//check
 				if(!m_section)
 				{
@@ -63,8 +63,8 @@ namespace fea
 			{
 				//data
 				Mechanic::setup();
-				const math::Vec3 z1 = node(0)->position();
-				const math::Vec3 z2 = node(1)->position();
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
 				//setup
 				m_Lr = (z2 - z1).norm();
 			}

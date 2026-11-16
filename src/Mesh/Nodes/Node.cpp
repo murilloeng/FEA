@@ -17,7 +17,7 @@
 #include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 //math
-#include "Math/inc/Linear/Vec3.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 #include "Math/inc/Miscellaneous/bits.hpp"
 #include "Math/inc/Solvers/Incremental.hpp"
 

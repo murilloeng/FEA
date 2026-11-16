@@ -1,6 +1,3 @@
-//Math
-#include "Math/inc/Linear/Vec3.hpp"
-
 //FEA
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
