@@ -46,6 +46,8 @@ namespace fea
 				void setup(void) override;
 				void compute(analysis::Compute&) override;
 
+				void compute_ss(vec3&, const vec3&);
+
 				void compute_N(math::MatrixFixed<4, 6>&) const;
 				void compute_L(math::MatrixFixed<3, 4>&, const vec2&, const vec2&, const vec3&) const;
 				void compute_dL(math::MatrixFixed<4, 4>&, const vec2&, const vec2&, const vec3&, const vec3&) const;

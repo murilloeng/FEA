@@ -114,7 +114,7 @@ namespace fea
 				es[0] = xp.inner(an) - 1;
 				es[2] = (t2 - t1) / m_Lr;
 				//stresses
-				ss = m_Ks * es;
+				compute_ss(ss, es);
 				//compute
 				compute_N(N);
 				compute_L(L, an, bn, es);
@@ -132,6 +132,43 @@ namespace fea
 					compute_dL(dL, an, bn, es, ss);
 					const math::MatrixFixed<6, 6> K = m_Lr * N.transpose() * (L.transpose() * m_Ks * L + dL) * N;
 					memcpy(compute.m_K, K.data(), 36 * sizeof(double));
+				}
+			}
+
+			void Beam2D::compute_ss(vec3& ss, const vec3& es)
+			{
+				if(!m_material->inelastic())
+				{
+					ss = m_Ks * es;
+				}
+				else
+				{
+					ss.zeros();
+					m_Ks.zeros();
+					math::MatrixFixed<2, 2> Kp;
+					math::MatrixFixed<2, 3> Ap;
+					math::VectorFixed<2> ep, sp;
+					for(points::Section& point : m_points)
+					{
+						for(points::Fiber& fiber : point.fibers())
+						{
+							//data
+							const double s2 = fiber.position(0);
+							//strains
+							ep[1] = es[1];
+							ep[0] = es[0] - s2 * es[2];
+							//kinematics
+							Ap.zeros();
+							Ap(0, 0) = 1;
+							Ap(1, 1) = 1;
+							Ap(0, 2) = -s2;
+							//return mapping
+							m_material->return_mapping(sp.data(), Kp.data(), ep.data(), fiber.material_point());
+							//resultants
+							ss += fiber.area() * Ap.transpose() * sp;
+							m_Ks += fiber.area() * Ap.transpose() * Kp * Ap;
+						}
+					}
 				}
 			}
 
