@@ -2,6 +2,7 @@
 
 //std
 #include <vector>
+#include <cstdio>
 #include <cstdint>
 #include <functional>
 

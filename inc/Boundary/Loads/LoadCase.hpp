@@ -2,9 +2,18 @@
 
 //std
 #include <vector>
+#include <cstdio>
+#include <cstdint>
 
 namespace fea
 {
+	namespace mesh
+	{
+		namespace nodes
+		{
+			enum class DOF : uint32_t;
+		}
+	}
 	namespace boundary
 	{
 		class Boundary;

@@ -1,6 +1,7 @@
 #pragma once
 
 //std
+#include <cstdio>
 #include <cstdint>
 
 namespace fea
@@ -10,6 +11,7 @@ namespace fea
 		class Mesh;
 		namespace nodes
 		{
+			class Node;
 			enum class DOF : uint32_t;
 		}
 	}
