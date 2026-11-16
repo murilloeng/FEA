@@ -1,6 +1,3 @@
-//std
-#include <cmath>
-
 //FEA
 #include "FEA/inc/Model.hpp"
 
@@ -13,7 +10,6 @@
 #include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
-#include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"

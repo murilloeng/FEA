@@ -2,14 +2,9 @@
 #include <stdexcept>
 
 //FEA
-#include "FEA/inc/Model.hpp"
-
-#include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
 
-#include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 #include "FEA/inc/Analysis/Assembler/Request.hpp"
 #include "FEA/inc/Analysis/Assembler/Compute.hpp"
 

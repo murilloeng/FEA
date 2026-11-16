@@ -1,6 +1,3 @@
-//std
-#include <cmath>
-
 //Test
 #include "FEA/Test/inc/Beam3D.hpp"
 

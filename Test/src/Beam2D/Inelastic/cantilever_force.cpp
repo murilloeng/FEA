@@ -8,7 +8,6 @@
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
 
 //Math
-#include "Math/inc/Quadrature/Rules.hpp"
 #include "Math/inc/Validation/Validator.hpp"
 
 //FEA
@@ -18,15 +17,10 @@
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 
-#include "FEA/inc/Geometry/Curve.hpp"
-#include "FEA/inc/Geometry/Geometry.hpp"
-
 #include "FEA/inc/Boundary/Boundary.hpp"
-#include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"

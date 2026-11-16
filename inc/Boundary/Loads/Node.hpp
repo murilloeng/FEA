@@ -4,7 +4,6 @@
 #include <cstdint>
 
 //FEA
-#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Boundary/Loads/Load.hpp"
 

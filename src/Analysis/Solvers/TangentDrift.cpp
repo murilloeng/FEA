@@ -1,21 +1,9 @@
 //std
-#include <cmath>
 #include <ctime>
+#include <cstdlib>
 #include <cstring>
 
-//Math
-#include "Math/inc/Linear/Sparse.hpp"
-#include "Math/inc/Linear/MatrixN.hpp"
-#include "Math/inc/Linear/VectorN.hpp"
-#include "Math/inc/Miscellaneous/util.hpp"
-
 //FEA
-#include "FEA/inc/Model.hpp"
-
-#include "FEA/inc/Mesh/Mesh.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
-#include "FEA/inc/Mesh/Elements/Element.hpp"
-
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 #include "FEA/inc/Analysis/Solvers/TangentDrift.hpp"

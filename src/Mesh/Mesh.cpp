@@ -8,14 +8,12 @@
 
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
-#include "FEA/inc/Mesh/Joints/Type.hpp"
 #include "FEA/inc/Mesh/Joints/Joint.hpp"
 #include "FEA/inc/Mesh/Joints/Rigid2D.hpp"
 #include "FEA/inc/Mesh/Joints/Rigid3D.hpp"
 #include "FEA/inc/Mesh/Joints/Revolute2D.hpp"
 #include "FEA/inc/Mesh/Joints/Revolute3D.hpp"
 
-#include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 #include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
@@ -26,9 +24,6 @@
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
 #include "FEA/inc/Boundary/Dependencies/Dependency.hpp"
-
-#include "FEA/inc/Analysis/Analysis.hpp"
-#include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 namespace fea
 {

@@ -4,7 +4,6 @@
 #include "FEA/inc/Draw/Mesh.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Joints/Joint.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 

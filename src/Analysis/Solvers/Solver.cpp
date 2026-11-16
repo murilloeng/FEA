@@ -1,6 +1,5 @@
 //std
 #include <cstring>
-#include <filesystem>
 
 //FEA
 #include "FEA/inc/Model.hpp"

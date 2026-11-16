@@ -1,5 +1,4 @@
 //FEA
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
 
 namespace fea

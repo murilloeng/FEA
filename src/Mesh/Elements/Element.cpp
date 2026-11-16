@@ -7,9 +7,6 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 
-//Math
-#include "Math/inc/Miscellaneous/bits.hpp"
-
 namespace fea
 {
 	namespace mesh

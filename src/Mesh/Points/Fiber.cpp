@@ -1,6 +1,3 @@
-//std
-#include <cstring>
-
 //FEA
 #include "FEA/inc/Mesh/Points/Fiber.hpp"
 

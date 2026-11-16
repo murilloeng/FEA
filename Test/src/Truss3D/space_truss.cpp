@@ -1,6 +1,3 @@
-//std
-#include <cmath>
-
 //Test
 #include "FEA/Test/inc/Truss3D.hpp"
 

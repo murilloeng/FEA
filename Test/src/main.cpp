@@ -5,11 +5,6 @@
 
 //Test
 #include "FEA/Test/inc/Beam2D.hpp"
-#include "FEA/Test/inc/Beam3D.hpp"
-#include "FEA/Test/inc/Truss2D.hpp"
-#include "FEA/Test/inc/Truss3D.hpp"
-#include "FEA/Test/inc/Rigid2D.hpp"
-#include "FEA/inc/Mesh/Shapes/Shape.hpp"
 
 int main(void)
 {

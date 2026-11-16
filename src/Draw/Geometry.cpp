@@ -1,18 +1,14 @@
 //FEA
-#include "FEA/inc/Model.hpp"
-
 #include "FEA/inc/Draw/Data.hpp"
 #include "FEA/inc/Draw/Draw.hpp"
 #include "FEA/inc/Draw/Geometry.hpp"
 
 #include "FEA/inc/Geometry/Point.hpp"
 #include "FEA/inc/Geometry/Curve.hpp"
-#include "FEA/inc/Geometry/Surface.hpp"
 #include "FEA/inc/Geometry/Geometry.hpp"
 
 //Canvas
 #include "Canvas/inc/Vertices/Model3D.hpp"
-#include "Canvas/inc/Cameras/BoundingBox.hpp"
 
 namespace fea
 {

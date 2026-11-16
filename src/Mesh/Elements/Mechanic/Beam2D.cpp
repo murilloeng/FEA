@@ -1,6 +1,5 @@
 //std
 #include <cmath>
-#include <cstring>
 
 //Canvas
 #include "Canvas/inc/Math/vec2.hpp"

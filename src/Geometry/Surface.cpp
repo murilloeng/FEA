@@ -1,9 +1,6 @@
 //std
 #include <stdexcept>
 
-//gmsh
-#include <gmsh.h>
-
 //FEA
 #include "FEA/inc/Geometry/Surface.hpp"
 #include "FEA/inc/Geometry/Geometry.hpp"

@@ -6,7 +6,6 @@
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
-#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
@@ -17,7 +16,6 @@
 #include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 //math
-#include "Math/inc/Linear/Matrix.hpp"
 #include "Math/inc/Miscellaneous/bits.hpp"
 #include "Math/inc/Solvers/Incremental.hpp"
 

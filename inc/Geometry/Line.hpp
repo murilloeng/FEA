@@ -1,8 +1,6 @@
 #pragma once
 
 //std
-#include <vector>
-#include <cstdio>
 #include <cstdint>
 
 //FEA

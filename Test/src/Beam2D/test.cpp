@@ -1,6 +1,3 @@
-//std
-#include <cmath>
-
 //Test
 #include "FEA/Test/inc/Beam2D.hpp"
 
@@ -17,7 +14,6 @@
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 

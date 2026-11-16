@@ -9,7 +9,6 @@
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Draw/Data.hpp"
-#include "FEA/inc/Draw/What.hpp"
 #include "FEA/inc/Draw/Colors.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"

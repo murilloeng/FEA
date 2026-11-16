@@ -2,9 +2,6 @@
 #include <cmath>
 #include <numeric>
 
-//Math
-#include "Math/inc/Miscellaneous/util.hpp"
-
 //Sections
 #include "Sections/inc/Rectangle.hpp"
 
@@ -18,7 +15,6 @@
 
 #include "FEA/inc/Mesh/Mesh.hpp"
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
-#include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Type.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam2D.hpp"
 
@@ -30,7 +26,6 @@
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Loads/Node.hpp"
 #include "FEA/inc/Boundary/Loads/LoadCase.hpp"
-#include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"

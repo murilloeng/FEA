@@ -1,9 +1,3 @@
-//std
-#include <cstring>
-#include <cstdlib>
-#include <cstdint>
-#include <stdexcept>
-
 //FEA
 #include "FEA/inc/Draw/Colors.hpp"
 
