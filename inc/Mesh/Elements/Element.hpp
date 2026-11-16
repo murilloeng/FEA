@@ -22,7 +22,7 @@ namespace fea
 	}
 	namespace analysis
 	{
-		class Compute;
+		class Data;
 		class Assembler;
 	}
 }
@@ -61,7 +61,7 @@ namespace fea
 				virtual void setup(void);
 				virtual void update(void);
 				virtual void restore(void);
-				virtual void compute(analysis::Compute&) = 0;
+				virtual void compute(analysis::Data&) = 0;
 
 				//draw
 				virtual void draw_setup(draw::Data&) const;

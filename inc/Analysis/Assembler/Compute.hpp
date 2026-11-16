@@ -16,14 +16,14 @@ namespace fea
 {
 	namespace analysis
 	{
-		class Compute
+		class Data
 		{
 		private:
 			//constructor
-			Compute(void);
+			Data(void);
 		
 			//destructor
-			~Compute(void);
+			~Data(void);
 
 		public:
 			//setup

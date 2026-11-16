@@ -41,7 +41,7 @@ namespace fea
 			}
 
 			//analysis
-			void Truss3D::compute(analysis::Compute& compute)
+			void Truss3D::compute(analysis::Data& data)
 			{
 				//data
 				const double A = m_section->area();
@@ -64,36 +64,36 @@ namespace fea
 				const double fn = sn * A * eg;
 				const double Kn = (Cn * eg * eg + sn * eh) * A / m_Lr;
 				//internal energy
-				if(compute.m_request->m_U)
+				if(data.m_request->m_U)
 				{
-					compute.m_U = sn * sn / E / 2 * A * m_Lr;
+					data.m_U = sn * sn / E / 2 * A * m_Lr;
 				}
 				//internal force
-				if(compute.m_request->m_fi)
+				if(data.m_request->m_f)
 				{
-					compute.m_f[0] = -fn * (x2[0] - x1[0]) / Ln;
-					compute.m_f[1] = -fn * (x2[1] - x1[1]) / Ln;
-					compute.m_f[2] = -fn * (x2[2] - x1[2]) / Ln;
-					compute.m_f[3] = +fn * (x2[0] - x1[0]) / Ln;
-					compute.m_f[4] = +fn * (x2[1] - x1[1]) / Ln;
-					compute.m_f[5] = +fn * (x2[2] - x1[2]) / Ln;
+					data.m_f[0] = -fn * (x2[0] - x1[0]) / Ln;
+					data.m_f[1] = -fn * (x2[1] - x1[1]) / Ln;
+					data.m_f[2] = -fn * (x2[2] - x1[2]) / Ln;
+					data.m_f[3] = +fn * (x2[0] - x1[0]) / Ln;
+					data.m_f[4] = +fn * (x2[1] - x1[1]) / Ln;
+					data.m_f[5] = +fn * (x2[2] - x1[2]) / Ln;
 				}
 				//stiffness
-				if(compute.m_request->m_K)
+				if(data.m_request->m_K)
 				{
 					const math::Vec3 t1 = (x2 - x1) / Ln;
-					compute.m_K[0 + 6 * 0] = compute.m_K[3 + 6 * 3] = +(Kn - fn / Ln) * t1[0] * t1[0] + fn / Ln;
-					compute.m_K[1 + 6 * 1] = compute.m_K[4 + 6 * 4] = +(Kn - fn / Ln) * t1[1] * t1[1] + fn / Ln;
-					compute.m_K[2 + 6 * 2] = compute.m_K[5 + 6 * 5] = +(Kn - fn / Ln) * t1[2] * t1[2] + fn / Ln;
-					compute.m_K[3 + 6 * 0] = compute.m_K[0 + 6 * 3] = -(Kn - fn / Ln) * t1[0] * t1[0] - fn / Ln;
-					compute.m_K[4 + 6 * 1] = compute.m_K[1 + 6 * 4] = -(Kn - fn / Ln) * t1[1] * t1[1] - fn / Ln;
-					compute.m_K[5 + 6 * 2] = compute.m_K[2 + 6 * 5] = -(Kn - fn / Ln) * t1[2] * t1[2] - fn / Ln;
-					compute.m_K[1 + 6 * 0] = compute.m_K[0 + 6 * 1] = compute.m_K[4 + 6 * 3] = compute.m_K[3 + 6 * 4] = +(Kn - fn / Ln) * t1[0] * t1[1];
-					compute.m_K[2 + 6 * 0] = compute.m_K[0 + 6 * 2] = compute.m_K[5 + 6 * 3] = compute.m_K[3 + 6 * 5] = +(Kn - fn / Ln) * t1[0] * t1[2];
-					compute.m_K[2 + 6 * 1] = compute.m_K[1 + 6 * 2] = compute.m_K[5 + 6 * 4] = compute.m_K[4 + 6 * 5] = +(Kn - fn / Ln) * t1[1] * t1[2];
-					compute.m_K[4 + 6 * 0] = compute.m_K[0 + 6 * 4] = compute.m_K[3 + 6 * 1] = compute.m_K[1 + 6 * 3] = -(Kn - fn / Ln) * t1[0] * t1[1];
-					compute.m_K[5 + 6 * 0] = compute.m_K[0 + 6 * 5] = compute.m_K[3 + 6 * 2] = compute.m_K[2 + 6 * 3] = -(Kn - fn / Ln) * t1[0] * t1[2];
-					compute.m_K[5 + 6 * 1] = compute.m_K[1 + 6 * 5] = compute.m_K[4 + 6 * 2] = compute.m_K[2 + 6 * 4] = -(Kn - fn / Ln) * t1[1] * t1[2];
+					data.m_K[0 + 6 * 0] = data.m_K[3 + 6 * 3] = +(Kn - fn / Ln) * t1[0] * t1[0] + fn / Ln;
+					data.m_K[1 + 6 * 1] = data.m_K[4 + 6 * 4] = +(Kn - fn / Ln) * t1[1] * t1[1] + fn / Ln;
+					data.m_K[2 + 6 * 2] = data.m_K[5 + 6 * 5] = +(Kn - fn / Ln) * t1[2] * t1[2] + fn / Ln;
+					data.m_K[3 + 6 * 0] = data.m_K[0 + 6 * 3] = -(Kn - fn / Ln) * t1[0] * t1[0] - fn / Ln;
+					data.m_K[4 + 6 * 1] = data.m_K[1 + 6 * 4] = -(Kn - fn / Ln) * t1[1] * t1[1] - fn / Ln;
+					data.m_K[5 + 6 * 2] = data.m_K[2 + 6 * 5] = -(Kn - fn / Ln) * t1[2] * t1[2] - fn / Ln;
+					data.m_K[1 + 6 * 0] = data.m_K[0 + 6 * 1] = data.m_K[4 + 6 * 3] = data.m_K[3 + 6 * 4] = +(Kn - fn / Ln) * t1[0] * t1[1];
+					data.m_K[2 + 6 * 0] = data.m_K[0 + 6 * 2] = data.m_K[5 + 6 * 3] = data.m_K[3 + 6 * 5] = +(Kn - fn / Ln) * t1[0] * t1[2];
+					data.m_K[2 + 6 * 1] = data.m_K[1 + 6 * 2] = data.m_K[5 + 6 * 4] = data.m_K[4 + 6 * 5] = +(Kn - fn / Ln) * t1[1] * t1[2];
+					data.m_K[4 + 6 * 0] = data.m_K[0 + 6 * 4] = data.m_K[3 + 6 * 1] = data.m_K[1 + 6 * 3] = -(Kn - fn / Ln) * t1[0] * t1[1];
+					data.m_K[5 + 6 * 0] = data.m_K[0 + 6 * 5] = data.m_K[3 + 6 * 2] = data.m_K[2 + 6 * 3] = -(Kn - fn / Ln) * t1[0] * t1[2];
+					data.m_K[5 + 6 * 1] = data.m_K[1 + 6 * 5] = data.m_K[4 + 6 * 2] = data.m_K[2 + 6 * 4] = -(Kn - fn / Ln) * t1[1] * t1[2];
 				}
 			}
 		}

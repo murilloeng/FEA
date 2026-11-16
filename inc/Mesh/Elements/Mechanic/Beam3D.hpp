@@ -55,7 +55,7 @@ namespace fea
 				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;
-				void compute(analysis::Compute&) override;
+				void compute(analysis::Data&) override;
 
 				//compute
 				void compute_CR(void);

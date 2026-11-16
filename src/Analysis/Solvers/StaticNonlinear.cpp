@@ -42,7 +42,7 @@ namespace fea
 			m_analysis->assembler()->request().m_U = true;
 			m_analysis->assembler()->request().m_V = true;
 			m_analysis->assembler()->request().m_K = true;
-			m_analysis->assembler()->request().m_fi = true;
+			m_analysis->assembler()->request().m_f = true;
 			m_system = [this](double*, double*, double*, const double*, double)
 			{
 				reset();

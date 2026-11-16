@@ -92,111 +92,80 @@ namespace fea
 				m_a0 = {cos(m_q0), sin(m_q0)};
 				m_Ks = {{E * A, 0, 0}, {0, K, 0}, {0, 0, E * I}};
 			}
-			void Beam2D::compute(analysis::Compute& compute)
+			void Beam2D::compute(analysis::Data& assembler_data)
 			{
 				//data
-				math::Vec3 es, ss;
-				math::Matrix<3, 4> L;
-				math::Matrix<4, 6> N;
-				math::Matrix<4, 4> dL;
+				Data data;
 				const double t1 = node(0)->state(dt3);
 				const double t2 = node(1)->state(dt3);
-				const double qn = m_q0 + (t1 + t2) / 2;
 				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
 				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//compute
+				const double qn = m_q0 + (t1 + t2) / 2;
 				const double cn = cos(qn), sn = sin(qn);
-				const math::Vec2 an = {cn, sn};
-				const math::Vec2 bn = {-sn, cn};
-				const math::Vec2 xp = m_a0 + (u2 - u1) / m_Lr;
+				const math::Vec2 dx = m_a0 + (u2 - u1) / m_Lr;
 				//strains
-				es[1] = xp.inner(bn);
-				es[0] = xp.inner(an) - 1;
-				es[2] = (t2 - t1) / m_Lr;
-				//stresses
-				compute_ss(ss, es);
+				data.m_an = {cn, sn};
+				data.m_bn = {-sn, cn};
+				data.m_es[2] = (t2 - t1) / m_Lr;
+				data.m_es[1] = dx.inner(data.m_bn);
+				data.m_es[0] = dx.inner(data.m_an) - 1;
 				//compute
-				compute_N(N);
-				compute_L(L, an, bn, es);
-				if(compute.m_request->m_U)
+				compute_N(data);
+				compute_L(data);
+				compute_ss(data);
+				if(assembler_data.m_request->m_U)
 				{
-					compute.m_U = m_Lr * m_Ks.bilinear(es) / 2;
+					assembler_data.m_U = m_Lr * m_Ks.bilinear(data.m_es) / 2;
 				}
-				if(compute.m_request->m_fi)
+				if(assembler_data.m_request->m_f)
 				{
-					const math::Vec6 f = m_Lr * N.transpose() * L.transpose() * ss;
-					memcpy(compute.m_f, f.data(), 6 * sizeof(double));
+					data.m_fe = m_Lr * data.m_N.transpose() * data.m_L.transpose() * data.m_ss;
+					data.m_fe.write(assembler_data.m_f);
 				}
-				if(compute.m_request->m_K)
+				if(assembler_data.m_request->m_K)
 				{
-					compute_dL(dL, an, bn, es, ss);
-					const math::Mat6 K = m_Lr * N.transpose() * (L.transpose() * m_Ks * L + dL) * N;
-					memcpy(compute.m_K, K.data(), 36 * sizeof(double));
+					compute_dL(data);
+					data.m_Ke = m_Lr * data.m_N.transpose() * (data.m_L.transpose() * m_Ks * data.m_L + data.m_dL) * data.m_N;
+					data.m_Ke.write(assembler_data.m_K);
 				}
 			}
 
-			void Beam2D::compute_ss(vec3& ss, const vec3& es)
+			void Beam2D::compute_N(Data& data) const
+			{
+				data.m_N.zeros();
+				data.m_N(2, 2) = 1.0 / 2;
+				data.m_N(2, 5) = 1.0 / 2;
+				data.m_N(0, 0) = data.m_N(1, 1) = data.m_N(3, 2) = -1 / m_Lr;
+				data.m_N(0, 3) = data.m_N(1, 4) = data.m_N(3, 5) = +1 / m_Lr;
+			}
+			void Beam2D::compute_L(Data& data) const
+			{
+				data.m_L.zeros();
+				data.m_L(2, 3) = 1;
+				data.m_L(0, 0) = data.m_an[0];
+				data.m_L(0, 1) = data.m_an[1];
+				data.m_L(1, 0) = data.m_bn[0];
+				data.m_L(1, 1) = data.m_bn[1];
+				data.m_L(0, 2) = data.m_es[1];
+				data.m_L(1, 2) = -(1 + data.m_es[0]);
+			}
+			void Beam2D::compute_dL(Data& data) const
+			{
+				data.m_dL.zeros();
+				data.m_dL(2, 2) = -(1 + data.m_es[0]) * data.m_ss[0] - data.m_es[1] * data.m_ss[1];
+				data.m_dL(0, 2) = data.m_dL(2, 0) = data.m_ss[0] * data.m_bn[0] - data.m_ss[1] * data.m_an[0];
+				data.m_dL(1, 2) = data.m_dL(2, 1) = data.m_ss[0] * data.m_bn[1] - data.m_ss[1] * data.m_an[1];
+			}
+			void Beam2D::compute_ss(Data& data) const
 			{
 				if(!m_material->inelastic())
 				{
-					ss = m_Ks * es;
+					data.m_ss = m_Ks * data.m_es;
 				}
 				else
 				{
-					ss.zeros();
-					m_Ks.zeros();
-					math::Matrix<2, 2> Kp;
-					math::Matrix<2, 3> Ap;
-					math::Vector<2> ep, sp;
-					for(points::Section& point : m_points)
-					{
-						for(points::Fiber& fiber : point.fibers())
-						{
-							//data
-							const double s2 = fiber.position(0);
-							//strains
-							ep[1] = es[1];
-							ep[0] = es[0] - s2 * es[2];
-							//kinematics
-							Ap.zeros();
-							Ap(0, 0) = 1;
-							Ap(1, 1) = 1;
-							Ap(0, 2) = -s2;
-							//return mapping
-							m_material->return_mapping(sp.data(), Kp.data(), ep.data(), fiber.material_point());
-							//resultants
-							ss += fiber.area() * Ap.transpose() * sp;
-							m_Ks += fiber.area() * Ap.transpose() * Kp * Ap;
-						}
-					}
 				}
-			}
-
-			void Beam2D::compute_N(math::Matrix<4, 6>& N) const
-			{
-				N.zeros();
-				N(2, 2) = 1.0 / 2;
-				N(2, 5) = 1.0 / 2;
-				N(0, 0) = N(1, 1) = N(3, 2) = -1 / m_Lr;
-				N(0, 3) = N(1, 4) = N(3, 5) = +1 / m_Lr;
-			}
-			void Beam2D::compute_L(math::Matrix<3, 4>& L, const vec2& an, const vec2& bn, const vec3& es) const
-			{
-				L.zeros();
-				L(2, 3) = 1;
-				L(0, 0) = an[0];
-				L(0, 1) = an[1];
-				L(1, 0) = bn[0];
-				L(1, 1) = bn[1];
-				L(0, 2) = es[1];
-				L(1, 2) = -(1 + es[0]);
-			}
-			void Beam2D::compute_dL(math::Matrix<4, 4>& dL, const vec2& an, const vec2& bn, const vec3& es, const vec3& ss) const
-			{
-				dL.zeros();
-				dL(2, 2) = -(1 + es[0]) * ss[0] - es[1] * ss[1];
-				dL(0, 2) = dL(2, 0) = ss[0] * bn[0] - ss[1] * an[0];
-				dL(1, 2) = dL(2, 1) = ss[0] * bn[1] - ss[1] * an[1];
 			}
 
 			//draw

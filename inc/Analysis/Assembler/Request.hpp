@@ -26,7 +26,7 @@ namespace fea
 
 		public:
 			//data
-			bool m_fi, m_ft;
+			bool m_f, m_time;
 			bool m_T, m_U, m_V;
 			bool m_K, m_C, m_M;
 

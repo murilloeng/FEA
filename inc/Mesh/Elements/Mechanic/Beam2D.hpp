@@ -21,9 +21,22 @@ namespace fea
 				//destructor
 				~Beam2D(void) = default;
 
-				//types
-				typedef math::Vector<2> vec2;
-				typedef math::Vector<3> vec3;
+				//structs
+				struct Data
+				{
+					math::Mat2 m_Kp;
+					math::Mat3 m_Ks;
+					math::Mat6 m_Ke;
+					math::Vec6 m_fe;
+					math::Vec2 m_ep, m_sp;
+					math::Vec3 m_es, m_ss;
+					math::Vec2 m_an, m_bn;
+					math::Matrix<3, 4> m_L;
+					math::Matrix<4, 6> m_N;
+					math::Matrix<4, 4> m_dL;
+					math::Matrix<2, 3> m_Ap;
+				};
+				
 
 			public:
 				//data
@@ -44,20 +57,20 @@ namespace fea
 
 				//analysis
 				void setup(void) override;
-				void compute(analysis::Compute&) override;
+				void compute(analysis::Data&) override;
 
-				void compute_ss(vec3&, const vec3&);
-
-				void compute_N(math::Matrix<4, 6>&) const;
-				void compute_L(math::Matrix<3, 4>&, const vec2&, const vec2&, const vec3&) const;
-				void compute_dL(math::Matrix<4, 4>&, const vec2&, const vec2&, const vec3&, const vec3&) const;
+				//compute
+				void compute_N(Data&) const;
+				void compute_L(Data&) const;
+				void compute_dL(Data&) const;
+				void compute_ss(Data&) const;
 
 				//data
 				double m_q0;
+				math::Vec2 m_a0;
+				math::Mat3 m_Ks;
 				double m_curvature;
-				math::Vector<2> m_a0;
 				static bool m_large_strains;
-				math::Matrix<3, 3> m_Ks;
 
 				//friends
 				friend class fea::mesh::Mesh;

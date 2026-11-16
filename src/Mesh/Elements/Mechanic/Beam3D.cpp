@@ -154,7 +154,7 @@ namespace fea
 			{
 				Beam::restore();
 			}
-			void Beam3D::compute(analysis::Compute&)
+			void Beam3D::compute(analysis::Data&)
 			{
 				return;
 			}

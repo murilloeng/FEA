@@ -50,9 +50,9 @@ namespace fea
 		}
 
 		//data
-		Compute& Assembler::compute(void)
+		Data& Assembler::data(void)
 		{
-			return m_compute;
+			return m_data;
 		}
 		Request& Assembler::request(void)
 		{
@@ -279,15 +279,15 @@ namespace fea
 			const double p = m_analysis->solver()->m_p_new;
 			for(const boundary::LoadItem* item : load_combination->load_items())
 			{
-				double* f = m_request.m_ft || !item->fixed() ? fe : fd;
+				double* f = m_request.m_time || !item->fixed() ? fe : fd;
 				const boundary::LoadCase* load_case = m_analysis->m_model->m_boundary->m_load_cases[item->load_case()];
 				for(const boundary::loads::Node* load : load_case->loads_nodes())
 				{
 					const double iv = item->value();
 					const double lv = load->value();
 					const double nd = load->node()->state(load->dof());
-					const double Vp = m_request.m_ft || item->fixed() ? 1 : p;
-					const double lt = m_request.m_ft || item->fixed() ? load->time_function(t) : 1;
+					const double Vp = m_request.m_time || item->fixed() ? 1 : p;
+					const double lt = m_request.m_time || item->fixed() ? load->time_function(t) : 1;
 					if(load->m_dof_index < m_dof_unknow)
 					{
 						f[load->m_dof_index] += iv * lv * lt;
@@ -310,13 +310,13 @@ namespace fea
 			}
 			for(mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
-				element->compute(m_compute);
-				if(m_request.m_T) T += m_compute.m_T;
-				if(m_request.m_U) U += m_compute.m_U;
-				if(m_request.m_K) assemble_matrix(K, m_compute.m_K, element->m_dof_indexes);
-				if(m_request.m_C) assemble_matrix(C, m_compute.m_C, element->m_dof_indexes);
-				if(m_request.m_M) assemble_matrix(M, m_compute.m_M, element->m_dof_indexes);
-				if(m_request.m_fi) assemble_vector(fi, m_compute.m_f, element->m_dof_indexes);
+				element->compute(m_data);
+				if(m_request.m_T) T += m_data.m_T;
+				if(m_request.m_U) U += m_data.m_U;
+				if(m_request.m_K) assemble_matrix(K, m_data.m_K, element->m_dof_indexes);
+				if(m_request.m_C) assemble_matrix(C, m_data.m_C, element->m_dof_indexes);
+				if(m_request.m_M) assemble_matrix(M, m_data.m_M, element->m_dof_indexes);
+				if(m_request.m_f) assemble_vector(fi, m_data.m_f, element->m_dof_indexes);
 			}
 		}
 		void Assembler::assemble_constraints(void)
@@ -326,21 +326,21 @@ namespace fea
 			double* xn = m_analysis->solver()->m_x_new;
 			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
-				constraint->state(m_compute.m_x);
+				constraint->state(m_data.m_x);
 				double& fc = fi[constraint->m_dof_index];
 				const double pc = xn[constraint->m_dof_index];
-				if(m_request.m_fi)
+				if(m_request.m_f)
 				{
-					constraint->m_function(fc, m_compute.m_x);
-					constraint->m_gradient(m_compute.m_f, m_compute.m_x);
-					assemble_vector(fi, m_compute.m_f, constraint->m_dof_indexes, pc);
+					constraint->m_function(fc, m_data.m_x);
+					constraint->m_gradient(m_data.m_f, m_data.m_x);
+					assemble_vector(fi, m_data.m_f, constraint->m_dof_indexes, pc);
 				}
 				if(m_request.m_K)
 				{
-					constraint->m_hessian(m_compute.m_K, m_compute.m_x);
-					assemble_matrix(K, m_compute.m_K, constraint->m_dof_indexes, pc);
-					assemble_matrix(K, m_compute.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
-					assemble_matrix(K, m_compute.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
+					constraint->m_hessian(m_data.m_K, m_data.m_x);
+					assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, pc);
+					assemble_matrix(K, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
+					assemble_matrix(K, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
 				}
 			}
 		}
@@ -406,8 +406,8 @@ namespace fea
 			dof_map();
 			dof_local();
 			m_request.setup();
-			m_compute.setup(m_dof_local);
-			m_compute.m_request = &m_request;
+			m_data.setup(m_dof_local);
+			m_data.m_request = &m_request;
 			m_analysis->solver()->rows_map(m_rows_map);
 			m_analysis->solver()->cols_map(m_cols_map);
 		}

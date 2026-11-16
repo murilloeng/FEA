@@ -42,7 +42,7 @@ namespace fea
 			}
 
 			//analysis
-			void Truss2D::compute(analysis::Compute& compute)
+			void Truss2D::compute(analysis::Data& data)
 			{
 				//data
 				const double A = m_section->area();
@@ -65,28 +65,28 @@ namespace fea
 				const double fn = sn * A * eg;
 				const double Kn = (Cn * eg * eg + sn * eh) * A / m_Lr;
 				//internal energy
-				if(compute.m_request->m_U)
+				if(data.m_request->m_U)
 				{
-					compute.m_U = sn * sn / E / 2 * A * m_Lr;
+					data.m_U = sn * sn / E / 2 * A * m_Lr;
 				}
 				//internal force
-				if(compute.m_request->m_fi)
+				if(data.m_request->m_f)
 				{
-					compute.m_f[0] = -fn * (x2[0] - x1[0]) / Ln;
-					compute.m_f[1] = -fn * (x2[1] - x1[1]) / Ln;
-					compute.m_f[2] = +fn * (x2[0] - x1[0]) / Ln;
-					compute.m_f[3] = +fn * (x2[1] - x1[1]) / Ln;
+					data.m_f[0] = -fn * (x2[0] - x1[0]) / Ln;
+					data.m_f[1] = -fn * (x2[1] - x1[1]) / Ln;
+					data.m_f[2] = +fn * (x2[0] - x1[0]) / Ln;
+					data.m_f[3] = +fn * (x2[1] - x1[1]) / Ln;
 				}
 				//stiffness
-				if(compute.m_request->m_K)
+				if(data.m_request->m_K)
 				{
 					const math::Vec2 t1 = (x2 - x1) / Ln;
-					compute.m_K[0 + 4 * 0] = compute.m_K[2 + 4 * 2] = +(Kn - fn / Ln) * t1[0] * t1[0] + fn / Ln;
-					compute.m_K[1 + 4 * 1] = compute.m_K[3 + 4 * 3] = +(Kn - fn / Ln) * t1[1] * t1[1] + fn / Ln;
-					compute.m_K[2 + 4 * 0] = compute.m_K[0 + 4 * 2] = -(Kn - fn / Ln) * t1[0] * t1[0] - fn / Ln;
-					compute.m_K[3 + 4 * 1] = compute.m_K[1 + 4 * 3] = -(Kn - fn / Ln) * t1[1] * t1[1] - fn / Ln;
-					compute.m_K[1 + 4 * 0] = compute.m_K[0 + 4 * 1] = compute.m_K[3 + 4 * 2] = compute.m_K[2 + 4 * 3] = +(Kn - fn / Ln) * t1[0] * t1[1];
-					compute.m_K[3 + 4 * 0] = compute.m_K[0 + 4 * 3] = compute.m_K[2 + 4 * 1] = compute.m_K[1 + 4 * 2] = -(Kn - fn / Ln) * t1[0] * t1[1];
+					data.m_K[0 + 4 * 0] = data.m_K[2 + 4 * 2] = +(Kn - fn / Ln) * t1[0] * t1[0] + fn / Ln;
+					data.m_K[1 + 4 * 1] = data.m_K[3 + 4 * 3] = +(Kn - fn / Ln) * t1[1] * t1[1] + fn / Ln;
+					data.m_K[2 + 4 * 0] = data.m_K[0 + 4 * 2] = -(Kn - fn / Ln) * t1[0] * t1[0] - fn / Ln;
+					data.m_K[3 + 4 * 1] = data.m_K[1 + 4 * 3] = -(Kn - fn / Ln) * t1[1] * t1[1] - fn / Ln;
+					data.m_K[1 + 4 * 0] = data.m_K[0 + 4 * 1] = data.m_K[3 + 4 * 2] = data.m_K[2 + 4 * 3] = +(Kn - fn / Ln) * t1[0] * t1[1];
+					data.m_K[3 + 4 * 0] = data.m_K[0 + 4 * 3] = data.m_K[2 + 4 * 1] = data.m_K[1 + 4 * 2] = -(Kn - fn / Ln) * t1[0] * t1[1];
 				}
 			}
 		}

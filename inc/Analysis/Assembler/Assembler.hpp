@@ -32,7 +32,7 @@ namespace fea
 
 		public:
 			//data
-			Compute& compute(void);
+			Data& data(void);
 			Request& request(void);
 			uint32_t dof_know(void) const;
 			uint32_t dof_total(void) const;
@@ -75,7 +75,7 @@ namespace fea
 			int32_t* m_rows_triplet;
 			int32_t* m_cols_triplet;
 
-			Compute m_compute;
+			Data m_data;
 			Request m_request;
 			uint32_t m_dof_know;
 			uint32_t m_dof_local;

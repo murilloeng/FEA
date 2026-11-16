@@ -38,7 +38,7 @@ namespace fea
 			private:
 				//analysis
 				void check(void) override;
-				void compute(analysis::Compute&) override;
+				void compute(analysis::Data&) override;
 
 				//data
 				nodes::DOF m_dof;

@@ -86,7 +86,7 @@ namespace fea
 					throw std::runtime_error("Error: Nodal element dof is unset!");
 				}
 			}
-			void Nodal::compute(analysis::Compute& compute)
+			void Nodal::compute(analysis::Data& data)
 			{
 				//data
 				const double M = m_inertia;
@@ -95,13 +95,13 @@ namespace fea
 				const double x = node(0)->state(m_dof);
 				const double v = node(0)->velocity(m_dof);
 				//tangents
-				if(compute.m_request->m_M) compute.m_M[0] = M;
-				if(compute.m_request->m_C) compute.m_C[0] = C;
-				if(compute.m_request->m_K) compute.m_K[0] = K;
+				if(data.m_request->m_M) data.m_M[0] = M;
+				if(data.m_request->m_C) data.m_C[0] = C;
+				if(data.m_request->m_K) data.m_K[0] = K;
 				//internal energy
-				if(compute.m_request->m_U) compute.m_U = K * x * x / 2;
+				if(data.m_request->m_U) data.m_U = K * x * x / 2;
 				//internal force
-				if(compute.m_request->m_fi) compute.m_f[0] = K * x + C * v;
+				if(data.m_request->m_f) data.m_f[0] = K * x + C * v;
 			}
 		}
 	}

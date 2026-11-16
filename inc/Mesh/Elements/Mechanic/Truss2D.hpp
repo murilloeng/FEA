@@ -22,7 +22,7 @@ namespace fea
 				uint32_t dof_set(uint32_t) const override;
 
 				//analysis
-				void compute(analysis::Compute&) override;
+				void compute(analysis::Data&) override;
 
 				//friends
 				friend class fea::mesh::Mesh;
