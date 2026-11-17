@@ -129,7 +129,7 @@ void test::beam2D::inelastic::morpho_plastic_line(void)
 	//setup
 	section.compute();
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->attempt_max(1);
 	model.analysis()->solver_static_nonlinear()->iteration_max(30);

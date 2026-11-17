@@ -64,9 +64,12 @@ void test::beam3D::elastic::cantilever_force(void)
 	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
+	model.boundary()->create_support(0, dof::Rotation_1);
+	model.boundary()->create_support(0, dof::Rotation_2);
 	model.boundary()->create_support(0, dof::Rotation_3);
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
+	model.boundary()->create_support(0, dof::Translation_3);
 	//loads
 	section.width(b);
 	section.height(h);
@@ -78,8 +81,8 @@ void test::beam3D::elastic::cantilever_force(void)
 	model.boundary()->create_load_case(1, dof::Translation_2, -E * I /  L /  L);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
-	model.analysis()->solver_static_nonlinear()->step_max(400);
+	model.analysis()->solver_static_nonlinear()->silent(true);
+	model.analysis()->solver_static_nonlinear()->step_max(1000);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_3);
@@ -105,4 +108,5 @@ void test::beam3D::elastic::cantilever_force(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 3D/Elastic/Cantilever Force/plot.gp");
 }

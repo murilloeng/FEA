@@ -2,23 +2,32 @@
 #include <stdexcept>
 
 //Math
-#include "Math/inc/Linear/Matrix.hpp"
+#include "Math/inc/Groups/ASO3.hpp"
+#include "Math/inc/Groups/GSO3.hpp"
 
 //Materials
 #include "Materials/inc/Mechanic/Stress.hpp"
+#include "Materials/inc/Mechanic/Uniaxial.hpp"
+#include "Materials/inc/Mechanic/Multiaxial.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
+#include "FEA/inc/Analysis/Assembler/Compute.hpp"
+#include "FEA/inc/Analysis/Assembler/Request.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam3D.hpp"
 
 //static
-const fea::mesh::nodes::DOF dt1 = fea::mesh::nodes::DOF::Rotation_1;
-const fea::mesh::nodes::DOF dt2 = fea::mesh::nodes::DOF::Rotation_2;
-const fea::mesh::nodes::DOF dt3 = fea::mesh::nodes::DOF::Rotation_3;
-const fea::mesh::nodes::DOF du1 = fea::mesh::nodes::DOF::Translation_1;
-const fea::mesh::nodes::DOF du2 = fea::mesh::nodes::DOF::Translation_2;
-const fea::mesh::nodes::DOF du3 = fea::mesh::nodes::DOF::Translation_3;
+static const fea::mesh::nodes::DOF du1 = fea::mesh::nodes::DOF::Translation_1;
+static const fea::mesh::nodes::DOF du2 = fea::mesh::nodes::DOF::Translation_2;
+static const fea::mesh::nodes::DOF du3 = fea::mesh::nodes::DOF::Translation_3;
+
+//right jacobian gradient: d(J(v) a) / dv
+static math::Mat3 jacobian_gradient(const math::Vec3& v, const math::Vec3& a)
+{
+	const math::Vec3 w = -v;
+	return -math::ASO3(w.data()).jacobian_gradient(a);
+}
 
 namespace fea
 {
@@ -27,15 +36,9 @@ namespace fea
 		namespace elements
 		{
 			//constructor
-			Beam3D::Beam3D(void) : m_Kl(6, 6), m_dl(6), m_fl(6), m_major_axis{0, 0, 1}
+			Beam3D::Beam3D(void) : m_major_axis{0, 0, 1}
 			{
-				return;
-			}
-
-			//destructor
-			Beam3D::~Beam3D(void)
-			{
-				return;
+				m_quadrature.order(1);
 			}
 
 			//data
@@ -67,62 +70,6 @@ namespace fea
 					1 << uint32_t(nodes::DOF::Translation_3);
 			}
 
-			//tangents
-			void Beam3D::inertia_CR(double*) const
-			{
-				return;
-			}
-			void Beam3D::inertia_TL(double*) const
-			{
-				return;
-			}
-
-			void Beam3D::damping_CR(double*) const
-			{
-				return;
-			}
-			void Beam3D::damping_TL(double*) const
-			{
-				return;
-			}
-
-			void Beam3D::stiffness_CR(double* K) const
-			{
-				return;
-			}
-			void Beam3D::stiffness_TL(double* K) const
-			{
-				return;
-			}
-
-			//forces
-			void Beam3D::internal_force_CR(double* f) const
-			{
-				return;
-			}
-			void Beam3D::internal_force_TL(double* fi) const
-			{
-				return;
-			}
-
-			//energies
-			double Beam3D::kinetic_energy_CR(void) const
-			{
-				return 0;
-			}
-			double Beam3D::kinetic_energy_TL(void) const
-			{
-				return 0;
-			}
-			double Beam3D::internal_energy_CR(void) const
-			{
-				return m_Kl.bilinear(m_dl) / 2;
-			}
-			double Beam3D::internal_energy_TL(void) const
-			{
-				return 0;
-			}
-
 			//analysis
 			void Beam3D::check(void)
 			{
@@ -131,155 +78,201 @@ namespace fea
 				const math::Vec3 z1(node(0)->position());
 				const math::Vec3 z2(node(1)->position());
 				//check
-				const math::Vec3 s2 = m_major_axis;
-				const math::Vec3 s1 = (z2 - z1).unit();
-				if(s1.cross(s2).norm() < 1.00e-05) throw std::runtime_error("Error: Beam element major axis is parallel to length!");
+				if((z2 - z1).unit().cross(m_major_axis).norm() < 1.00e-05)
+				{
+					throw std::runtime_error("Error: Beam3D element major axis is parallel to length!");
+				}
+				if(m_material->inelastic() && m_shear && !dynamic_cast<const materials::Multiaxial*>(m_material))
+				{
+					throw std::runtime_error("Error: Beam3D element with shear in inelastic analysis requires a multiaxial material!");
+				}
+				if(m_material->inelastic() && !m_shear && !dynamic_cast<const materials::Uniaxial*>(m_material))
+				{
+					throw std::runtime_error("Error: Beam3D element without shear in inelastic analysis requires a uniaxial material!");
+				}
 			}
 			void Beam3D::setup(void)
 			{
-				//data
+				//setup
 				Beam::setup();
 				const math::Vec3 z1(node(0)->position());
 				const math::Vec3 z2(node(1)->position());
-				//projection
-				const math::Vec3 s2 = m_major_axis;
+				//triad
 				const math::Vec3 s1 = (z2 - z1) / m_Lr;
-				m_major_axis = (s2 - s1.inner(s2) * s1).unit();
+				m_major_axis = (m_major_axis - s1.inner(m_major_axis) * s1).unit();
+				const math::Vec3 s3 = m_major_axis;
+				const math::Vec3 s2 = s3.cross(s1);
+				m_Qr = {{s1[0], s2[0], s3[0]}, {s1[1], s2[1], s3[1]}, {s1[2], s2[2], s3[2]}};
+				//stiffness
+				const double p = 1.00e+03;
+				const double A = m_section->area();
+				const double I2 = m_section->inertia(0);
+				const double I3 = m_section->inertia(1);
+				const double S2 = m_section->shear_area(0);
+				const double S3 = m_section->shear_area(1);
+				const double J = m_section->torsion_constant();
+				const double G = m_material->shear_modulus();
+				const double E = m_material->elastic_modulus();
+				m_Ks.zeros();
+				m_Ks(0, 0) = E * A;
+				m_Ks(3, 3) = G * J;
+				m_Ks(4, 4) = E * I2;
+				m_Ks(5, 5) = E * I3;
+				m_Ks(1, 1) = m_shear ? G * S2 : p * E * I3 / m_Lr / m_Lr;
+				m_Ks(2, 2) = m_shear ? G * S3 : p * E * I2 / m_Lr / m_Lr;
 			}
-			void Beam3D::update(void)
+			void Beam3D::compute(analysis::Data& assembler_data)
 			{
-				Beam::update();
-			}
-			void Beam3D::restore(void)
-			{
-				Beam::restore();
-			}
-			void Beam3D::compute(analysis::Data&)
-			{
-				return;
+				//data
+				Data data;
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
+				const math::GSO3 q1 = node(0)->rotation_gso3();
+				const math::GSO3 q2 = node(1)->rotation_gso3();
+				const math::Vec3 u1(node(0)->state(du1), node(0)->state(du2), node(0)->state(du3));
+				const math::Vec3 u2(node(1)->state(du1), node(1)->state(du2), node(1)->state(du3));
+				//kinematics
+				data.m_pr = m_Qr.transpose() * (q1.inverse() * q2).log().vector();
+				const math::Vec3 ph = m_Qr * data.m_pr / 2;
+				data.m_R1 = q1.matrix() * m_Qr;
+				data.m_Rm = (q1 * math::ASO3(ph.data()).exp()).matrix() * m_Qr;
+				data.m_d = (z2 + u2 - z1 - u1) / m_Lr;
+				//strains
+				const math::Vec3 g = data.m_Rm.transpose() * data.m_d;
+				data.m_es = {g[0] - 1, g[1], g[2], data.m_pr[0] / m_Lr, data.m_pr[1] / m_Lr, data.m_pr[2] / m_Lr};
+				//compute
+				compute_B(data);
+				compute_T(data);
+				compute_ss(data);
+				if(assembler_data.m_request->m_U)
+				{
+					assembler_data.m_U = m_Lr * m_Ks.bilinear(data.m_es) / 2;
+				}
+				if(assembler_data.m_request->m_f)
+				{
+					data.m_fe = m_Lr * data.m_B.transpose() * data.m_ss;
+					data.m_fe.write(assembler_data.m_f);
+				}
+				if(assembler_data.m_request->m_K)
+				{
+					compute_G(data);
+					data.m_Ke = m_Lr * data.m_B.transpose() * data.m_Ks * data.m_B + data.m_G;
+					for(uint32_t i = 0; i < 12; i++)
+					{
+						data.m_Ke.span<1, 3>(i, 3) = math::Matrix<1, 3>(data.m_Ke.span<1, 3>(i, 3) * data.m_T1);
+						data.m_Ke.span<1, 3>(i, 9) = math::Matrix<1, 3>(data.m_Ke.span<1, 3>(i, 9) * data.m_T2);
+					}
+					data.m_Ke.write(assembler_data.m_K);
+				}
 			}
 
 			//compute
-			void Beam3D::compute_CR(void)
+			void Beam3D::compute_B(Data& data) const
 			{
-				compute_CR_state();
-				materials::Mechanic::inelastic() ? compute_CR_plastic() : compute_CR_elastic();
+				//data
+				const math::Mat3 I(math::Mode::eye);
+				const math::Vec3 pr = data.m_pr;
+				const math::Vec3 ph = -pr / 2;
+				const math::Vec3 pm = -pr;
+				const math::Mat3 Rt = data.m_Rm.transpose();
+				const math::Mat3 D = Rt * data.m_d.spin();
+				//variations (spatial spins)
+				data.m_Ar = math::ASO3(pm.data()).jacobian_inverse() * data.m_R1.transpose();
+				data.m_Hr = data.m_R1 * math::ASO3(ph.data()).jacobian() * data.m_Ar / 2;
+				//operator
+				data.m_B.zeros();
+				data.m_B.span<3, 3>(0, 0) = -Rt / m_Lr;
+				data.m_B.span<3, 3>(0, 6) = +Rt / m_Lr;
+				data.m_B.span<3, 3>(0, 3) = D * (I - data.m_Hr);
+				data.m_B.span<3, 3>(0, 9) = D * data.m_Hr;
+				data.m_B.span<3, 3>(3, 3) = -data.m_Ar / m_Lr;
+				data.m_B.span<3, 3>(3, 9) = +data.m_Ar / m_Lr;
 			}
-			void Beam3D::compute_TL(void)
+			void Beam3D::compute_G(Data& data) const
 			{
-				return;
+				//data
+				const math::Mat3 I(math::Mode::eye);
+				const math::Vec3 pr = data.m_pr;
+				const math::Vec3 ph = pr / 2;
+				const math::Mat3 R1 = data.m_R1;
+				const math::Vec3 n(data.m_ss[0], data.m_ss[1], data.m_ss[2]);
+				const math::Vec3 m(data.m_ss[3], data.m_ss[4], data.m_ss[5]);
+				const math::Mat3 Jh = math::ASO3(ph.data()).jacobian();
+				const math::Mat3 Ji = math::ASO3(pr.data()).jacobian_inverse();
+				//forces
+				const math::Vec3 F = data.m_Rm * n;
+				const math::Vec3 q = m_Lr * F.cross(data.m_d);
+				const math::Vec3 u = Ji * (m + Jh * R1.transpose() * q / 2);
+				const math::Vec3 c = R1 * u;
+				//variations
+				math::Matrix<3, 12> W1(math::Mode::zeros), Wm(math::Mode::zeros), Wp(math::Mode::zeros), Dd(math::Mode::zeros);
+				W1.span<3, 3>(0, 3) = I;
+				Wm.span<3, 3>(0, 3) = I - data.m_Hr;
+				Wm.span<3, 3>(0, 9) = data.m_Hr;
+				Wp.span<3, 3>(0, 3) = -data.m_Ar;
+				Wp.span<3, 3>(0, 9) = +data.m_Ar;
+				Dd.span<3, 3>(0, 0) = -I / m_Lr;
+				Dd.span<3, 3>(0, 6) = +I / m_Lr;
+				const math::Matrix<3, 12> dF = -F.spin() * Wm;
+				const math::Matrix<3, 12> dq = m_Lr * (data.m_d.spin() * F.spin() * Wm + F.spin() * Dd);
+				const math::Matrix<3, 12> dp = jacobian_gradient(ph, R1.transpose() * q) * Wp / 4 + Jh * R1.transpose() * (dq + q.spin() * W1) / 2;
+				const math::Matrix<3, 12> du = Ji * (dp - jacobian_gradient(pr, u) * Wp);
+				const math::Matrix<3, 12> dc = R1 * du - c.spin() * W1;
+				//geometric stiffness
+				data.m_G.span<3, 12>(0, 0) = -dF;
+				data.m_G.span<3, 12>(3, 0) = dq - dc;
+				data.m_G.span<3, 12>(6, 0) = dF;
+				data.m_G.span<3, 12>(9, 0) = dc;
 			}
-
-			//compute CR
-			void Beam3D::compute_CR_state(void)
+			void Beam3D::compute_T(Data& data) const
 			{
-				// //data
-				// const math::Vec3 z1 = node(0)->position();
-				// const math::Vec3 z2 = node(1)->position();
-				// const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
-				// const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
-				// //axes
-				// const math::Vec3 s2 = m_major_axis;
-				// const math::Vec3 s1 = (z2 - z1) / m_Lr;
-				// const math::Vec3 s3 = (z2 - z1).cross(s2) / m_Lr;
-				// //quaternions
-				// const math::Quat q0(s1, s2, s3);
-				// const math::Quat q1 = node(0)->quaternion_new();
-				// const math::Quat q2 = node(1)->quaternion_new();
-				// //local state
-				// const math::Vec3 x1 = z1 + u1;
-				// const math::Vec3 x2 = z2 + u2;
-				// const math::Quat qr = q1 * q0;
-				// m_dl.span(3, 0, 3, 1) = (qr.conjugate() * q2 * q0).pseudo();
-				// m_dl.span(0, 0, 3, 1) = qr.conjugate(x2 - x1) - math::Vec3(m_Lr, 0, 0);
+				const math::Vec3 t1 = -node(0)->rotation_aso3().vector();
+				const math::Vec3 t2 = -node(1)->rotation_aso3().vector();
+				data.m_T1 = math::ASO3(t1.data()).jacobian();
+				data.m_T2 = math::ASO3(t2.data()).jacobian();
 			}
-			void Beam3D::compute_CR_elastic(void)
+			void Beam3D::compute_ss(Data& data)
 			{
-				//section
-				const double A = m_section->area();
-				const double I22 = m_section->inertia(0);
-				const double I33 = m_section->inertia(1);
-				const double A22 = m_section->shear_area(0);
-				const double A33 = m_section->shear_area(1);
-				const double J = m_section->torsion_constant();
-				//material
-				const double G = m_material->shear_modulus();
-				const double E = m_material->elastic_modulus();
-				//shear
-				const double q2 = G * A22 * m_Lr * m_Lr;
-				const double q3 = G * A33 * m_Lr * m_Lr;
-				const double w2 = !m_shear ? 0 : E * I33 / q2;
-				const double w3 = !m_shear ? 0 : E * I22 / q3;
-				const double m2 = !m_shear ? 1 : 1 / (1 + 12 * w2);
-				const double m3 = !m_shear ? 1 : 1 / (1 + 12 * w3);
-				//force
-				m_fl[0] = E * A / m_Lr * m_dl[0];
-				m_fl[3] = G * J / m_Lr * m_dl[3];
-				m_fl[1] = 6 * E * I33 * m2 / m_Lr / m_Lr * (2 * m_dl[1] / m_Lr - m_dl[5]);
-				m_fl[2] = 6 * E * I22 * m3 / m_Lr / m_Lr * (2 * m_dl[2] / m_Lr + m_dl[4]);
-				m_fl[4] = E * I22 / m_Lr * ((1 + 3 * m3) * m_dl[4] + 6 * m3 * m_dl[2] / m_Lr);
-				m_fl[5] = E * I33 / m_Lr * ((1 + 3 * m2) * m_dl[5] - 6 * m2 * m_dl[1] / m_Lr);
-				//stiffness
-				m_Kl.zeros();
-				m_Kl[0 + 6 * 0] = E * A / m_Lr;
-				m_Kl[3 + 6 * 3] = G * J / m_Lr;
-				m_Kl[4 + 6 * 4] = E * I22 * (1 + 3 * m3) / m_Lr;
-				m_Kl[5 + 6 * 5] = E * I33 * (1 + 3 * m2) / m_Lr;
-				m_Kl[1 + 6 * 1] = 12 * E * I33 * m2 / m_Lr / m_Lr / m_Lr;
-				m_Kl[2 + 6 * 2] = 12 * E * I22 * m3 / m_Lr / m_Lr / m_Lr;
-				m_Kl[1 + 6 * 5] = m_Kl[5 + 6 * 1] = -6 * E * I33 * m2 / m_Lr / m_Lr;
-				m_Kl[2 + 6 * 4] = m_Kl[4 + 6 * 2] = +6 * E * I22 * m3 / m_Lr / m_Lr;
+				if(!m_material->inelastic())
+				{
+					data.m_Ks = m_Ks;
+					data.m_ss = m_Ks * data.m_es;
+				}
+				else
+				{
+					data.m_ss.zeros();
+					data.m_Ks.zeros();
+					for(points::Fiber& fiber : m_points[0].fibers())
+					{
+						//data
+						const double A = fiber.area();
+						const double x2 = fiber.position(0);
+						const double x3 = fiber.position(1);
+						//kinematics
+						data.m_Ap = {{1, 0, 0, 0, x3, -x2}, {0, 1, 0, -x3, 0, 0}, {0, 0, 1, x2, 0, 0}};
+						data.m_ep = data.m_Ap * data.m_es;
+						//material
+						data.m_sp.zeros();
+						data.m_Kp.zeros();
+						m_material->return_mapping(data.m_sp.data(), data.m_Kp.data(), data.m_ep.data(), fiber.material_point());
+						//section
+						data.m_ss += A * data.m_Ap.transpose() * data.m_sp;
+						data.m_Ks += A * data.m_Ap.transpose() * data.m_Kp * data.m_Ap;
+					}
+					if(!m_shear)
+					{
+						for(uint32_t i = 1; i < 4; i++)
+						{
+							for(uint32_t j = 0; j < 6; j++)
+							{
+								data.m_Ks(i, j) = data.m_Ks(j, i) = 0;
+							}
+							data.m_Ks(i, i) = m_Ks(i, i);
+							data.m_ss[i] = m_Ks(i, i) * data.m_es[i];
+						}
+					}
+				}
 			}
-			void Beam3D::compute_CR_plastic(void)
-			{
-				return;
-			}
-			void Beam3D::compute_CR_kinematic(void) const
-			{
-				// //data
-				// const math::Vec3 z1 = node(0)->position();
-				// const math::Vec3 z2 = node(1)->position();
-				// const math::Vec3 u1 = {node(0)->state(du1), node(0)->state(du2), node(0)->state(du3)};
-				// const math::Vec3 u2 = {node(1)->state(du1), node(1)->state(du2), node(1)->state(du3)};
-				// const math::Vec3 t1 = {node(0)->state(dt1), node(0)->state(dt2), node(0)->state(dt3)};
-				// const math::Vec3 t2 = {node(1)->state(dt1), node(1)->state(dt2), node(1)->state(dt3)};
-				// //axes
-				// const math::Vec3 s2 = m_major_axis;
-				// const math::Vec3 s1 = (z2 - z1) / m_Lr;
-				// const math::Vec3 s3 = (z2 - z1).cross(s2) / m_Lr;
-				// //quaternions
-				// const math::Quat q0(s1, s2, s3);
-				// const math::Quat q1 = node(0)->quaternion_new();
-				// const math::Quat q2 = node(1)->quaternion_new();
-				// //data
-				// const math::Vec3 x1 = z1 + u1;
-				// const math::Vec3 x2 = z2 + u2;
-				// const math::Quat qr = q1 * q0;
-				// const math::Mat3 Xr = (x2 - x1).spin();
-				// const math::Mat3 T1 = t1.rotation_gradient();
-				// const math::Mat3 T2 = t2.rotation_gradient();
-				// const math::Mat3 Rt = qr.conjugate().rotation();
-				// const math::Vec3 tl = qr.conjugate(q2 * q0).pseudo();
-				// const math::Mat3 Ti = tl.rotation_gradient_inverse();
-				// //kinematic
-				// m_B.zeros();
-				// m_B.span(0, 0) = -Rt;
-				// m_B.span(0, 6) = +Rt;
-				// m_B.span(3, 3) = -Ti * Rt * T1;
-				// m_B.span(3, 9) = +Ti * Rt * T2;
-				// m_B.span(0, 3) = +Rt * Xr * T1;
-			}
-			void Beam3D::compute_CR_plastic_length(double* B, double s)
-			{
-				return;
-			}
-			void Beam3D::compute_CR_plastic_section(double* H, double x2, double x3)
-			{
-				return;
-			}
-
-			//static
-			math::MatrixN Beam3D::m_B(6, 12);
 		}
 	}
 }

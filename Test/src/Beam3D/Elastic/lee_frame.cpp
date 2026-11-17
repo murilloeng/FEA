@@ -5,6 +5,7 @@
 #include "Materials/inc/Mechanic/Uniaxial.hpp"
 
 //Math
+#include "Math/inc/Solvers/Continuation.hpp"
 #include "Math/inc/Validation/Validator.hpp"
 
 //FEA
@@ -62,6 +63,8 @@ void test::beam3D::elastic::lee_frame(void)
 	}
 	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
+	model.boundary()->create_support(0, dof::Rotation_1);
+	model.boundary()->create_support(0, dof::Rotation_2);
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);
 	model.boundary()->create_support(0, dof::Translation_3);
@@ -78,12 +81,13 @@ void test::beam3D::elastic::lee_frame(void)
 	model.boundary()->create_load_case(12, dof::Translation_2, -1);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->step_size(1.00e-01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(12);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(3.00e+00);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::ArcLengthCylindrical);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
 	//solve
@@ -98,6 +102,7 @@ void test::beam3D::elastic::lee_frame(void)
 	validator.create_item();
 	validator.item(0)->tolerance(1.20e-01);
 	validator.item(1)->tolerance(1.20e-01);
+	validator.item(1)->adjuster_numeric([](double& x1, double&){ x1 = -x1; });
 	validator.item(0)->load_numeric("Test/data/Beam 3D/Elastic/Lee Frame/data.txt", 0, 2);
 	validator.item(1)->load_numeric("Test/data/Beam 3D/Elastic/Lee Frame/data.txt", 1, 2);
 	validator.item(0)->load_reference("Test/data/Beam 3D/Elastic/Lee Frame/reference-u.dat", 0, 1);
@@ -106,4 +111,5 @@ void test::beam3D::elastic::lee_frame(void)
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Beam 3D/Elastic/Lee Frame/plot.gp");
 }

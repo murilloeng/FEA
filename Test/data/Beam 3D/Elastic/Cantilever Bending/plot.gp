@@ -12,7 +12,7 @@ u1(p) = p == 0 ? 0 : L * (sin(p) / p - 1)
 u2(p) = p == 0 ? 0 : L * (1 - cos(p)) / p
 
 plot\
-	u1(2 * pi * x) with points linestyle 1 title 'u (m) - Analytic',\
-	u2(2 * pi * x) with points linestyle 2 title 'v (m) - Analytic',\
+	u1(2 * pi * x) with points linestyle 1 pointtype 7 title 'u (m) - Analytic',\
+	u2(2 * pi * x) with points linestyle 2 pointtype 7 title 'v (m) - Analytic',\
 	'Test/data/Beam 3D/Elastic/Cantilever Bending/data.txt' using ($3) : ($1) with lines linestyle 1 title 'u (m) - Numeric',\
 	'Test/data/Beam 3D/Elastic/Cantilever Bending/data.txt' using ($3) : ($2) with lines linestyle 2 title 'v (m) - Numeric'

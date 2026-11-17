@@ -21,4 +21,4 @@ p3(t) = 2 * t / L <= ky ? E * I * 2 * t / L / (1.5 * My) : (3 - (ky * L / 2 / t)
 
 plot\
 	'Test/data/Beam 2D/Inelastic/Pinned Bending/data.txt' using ($1) : ($2) with lines linestyle 2 title 'Numeric',\
-	[t=0:k(1.5 * My * 0.994) * L / 2] '+' using (t) : (p3(t)) with points linestyle 1 title 'Reference'
+	[t=0:k(1.5 * My * 0.994) * L / 2] '+' using (t) : (p3(t)) with points linestyle 1 pointtype 7 title 'Reference'

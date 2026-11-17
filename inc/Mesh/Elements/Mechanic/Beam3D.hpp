@@ -2,8 +2,6 @@
 
 //Math
 #include "Math/inc/Linear/Matrix.hpp"
-#include "Math/inc/Linear/VectorN.hpp"
-#include "Math/inc/Linear/MatrixN.hpp"
 
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
@@ -16,64 +14,55 @@ namespace fea
 		{
 			class Beam3D : public Beam
 			{
-			public:
+			private:
 				//constructor
 				Beam3D(void);
 
 				//destructor
-				~Beam3D(void);
+				~Beam3D(void) = default;
 
+				//structs
+				struct Data
+				{
+					math::Mat3 m_Kp;
+					math::Mat6 m_Ks;
+					math::Vec3 m_ep, m_sp;
+					math::Vec6 m_es, m_ss;
+					math::Vec3 m_d, m_pr;
+					math::Mat3 m_R1, m_Rm;
+					math::Mat3 m_Ar, m_Hr;
+					math::Mat3 m_T1, m_T2;
+					math::Matrix<3, 6> m_Ap;
+					math::Matrix<6, 12> m_B;
+					math::Matrix<12, 1> m_fe;
+					math::Matrix<12, 12> m_Ke;
+					math::Matrix<12, 12> m_G;
+				};
+
+			public:
 				//data
 				math::Vec3& major_axis(void);
 				const math::Vec3& major_axis(void) const;
 
+			private:
+				//data
 				uint32_t stress_set(void) const override;
 				uint32_t dof_set(uint32_t) const override;
-
-				//tangents
-				void inertia_CR(double*) const;
-				void inertia_TL(double*) const;
-
-				void damping_CR(double*) const;
-				void damping_TL(double*) const;
-
-				void stiffness_CR(double*) const;
-				void stiffness_TL(double*) const;
-
-				//forces
-				void internal_force_CR(double*) const;
-				void internal_force_TL(double*) const;
-
-				//energies
-				double kinetic_energy_CR(void) const;
-				double kinetic_energy_TL(void) const;
-				double internal_energy_CR(void) const;
-				double internal_energy_TL(void) const;
 
 				//analysis
 				void check(void) override;
 				void setup(void) override;
-				void update(void) override;
-				void restore(void) override;
 				void compute(analysis::Data&) override;
 
 				//compute
-				void compute_CR(void);
-				void compute_TL(void);
-
-				//compute CR
-				void compute_CR_state(void);
-				void compute_CR_elastic(void);
-				void compute_CR_plastic(void);
-				void compute_CR_kinematic(void) const;
-				void compute_CR_plastic_length(double*, double);
-				void compute_CR_plastic_section(double*, double, double);
+				void compute_B(Data&) const;
+				void compute_G(Data&) const;
+				void compute_T(Data&) const;
+				void compute_ss(Data&);
 
 				//data
-				math::MatrixN m_Kl;
-				math::VectorN m_dl, m_fl;
-				static math::MatrixN m_B;
-
+				math::Mat3 m_Qr;
+				math::Mat6 m_Ks;
 				math::Vec3 m_major_axis;
 
 				//friends

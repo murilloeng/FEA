@@ -51,7 +51,7 @@ void test::rigid2D::spring_buckling(void)
 	model.boundary()->create_load_case(1, dof::Translation_1, -P);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(1000);
 	model.analysis()->solver_static_nonlinear()->attempt_max(1);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

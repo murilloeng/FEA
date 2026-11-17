@@ -12,11 +12,11 @@ u1(p) = (sin(p) / p - 1)
 u2(p) = (1 - cos(p)) / p
 
 plot\
-	u1(2 * pi * x) with points linestyle 1 title 'u (m) - Reference',\
-	u2(2 * pi * x) with points linestyle 2 title 'v (m) - Reference',\
+	u1(2 * pi * x) with points linestyle 1 pointtype 7 title 'u (m) - Reference',\
+	u2(2 * pi * x) with points linestyle 2 pointtype 7 title 'v (m) - Reference',\
 	'Test/data/Beam 2D/Elastic/Cantilever Bending/data.txt' using ($4) : ($1) with lines linestyle 1 title 'u (m) - Numeric',\
 	'Test/data/Beam 2D/Elastic/Cantilever Bending/data.txt' using ($4) : ($2) with lines linestyle 2 title 'v (m) - Numeric'
 
 plot\
-	t3(2 * pi * x) with points linestyle 3 title '{/Symbol q} (rad) - Reference',\
+	t3(2 * pi * x) with points linestyle 3 pointtype 7 title '{/Symbol q} (rad) - Reference',\
 	'Test/data/Beam 2D/Elastic/Cantilever Bending/data.txt' using ($4) : ($3) with lines linestyle 3 title '{/Symbol q} (rad) - Numeric'
