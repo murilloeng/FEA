@@ -1,6 +1,3 @@
-//std
-#include <cmath>
-
 //Sections
 #include "Sections/inc/Rectangle.hpp"
 
@@ -31,7 +28,7 @@
 //data
 static const uint32_t nw = 1;
 static const uint32_t nh = 40;
-static const uint32_t ne = 20;
+static const uint32_t ne = 40;
 static const double w = 2.00e-01;
 static const double h = 4.00e-01;
 static const double L = 3.00e+00;
@@ -39,29 +36,6 @@ static const double v = 3.00e-01;
 static const double E = 2.10e+11;
 static const double K = 0.00e+00;
 static const double sy = 2.50e+08;
-
-static const double I = w * h * h * h / 12;
-static const double My = sy * w * h * h / 6;
-static const double ky = 2 * sy / E / h;
-
-static double function_t3(double p)
-{
-	const double P = 1.5 * My * p / L, a = P / My, ry = fmin(1 / a, L);
-	if(p == 0) return 0;
-	const double te = P * ry * ry / 2 / E / I;
-	const double tp = ry < L ? ky / a * (1 - sqrt(fmax(3 - 2 * a * L, 0))) : 0;
-	return -(te + tp);
-}
-static double function_u2(double p)
-{
-	const double P = 1.5 * My * p / L, a = P / My, ry = fmin(1 / a, L);
-	if(p == 0) return 0;
-	const double s = fmax(3 - 2 * a * L, 0);
-	const double ve = P * ry * ry * ry / 3 / E / I;
-	const double vp = ry < L ? ky / 4 / a / a * (16.0 / 3 - 6 * sqrt(s) + 2 * s * sqrt(s) / 3) : 0;
-	return -(ve + vp);
-}
-
 
 void test::beam2D::inelastic::cantilever_force(void)
 {
@@ -77,7 +51,7 @@ void test::beam2D::inelastic::cantilever_force(void)
 	model.mesh()->create_node(L, 0, 0);
 	for(uint32_t k = 1; k < ne; k++)
 	{
-		model.mesh()->create_node(L * pow(double(k) / ne, 3), 0, 0);
+		model.mesh()->create_node(L * k / ne, 0, 0);
 	}
 	//elements
 	for(uint32_t k = 0; k < ne; k++)
@@ -111,14 +85,14 @@ void test::beam2D::inelastic::cantilever_force(void)
 	model.boundary()->create_load_case(1, dof::Translation_2, -sy * W / L);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(400);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);
-	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_3);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(1.00e+00);
+	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().state_min(-6.00e-02);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::ArcLengthCylindrical);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMaximum);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	model.solve();
 	//save
@@ -129,10 +103,10 @@ void test::beam2D::inelastic::cantilever_force(void)
 	//validator
 	validator.create_item();
 	validator.create_item();
-	validator.item(0)->function(function_u2);
-	validator.item(1)->function(function_t3);
 	validator.item(0)->load_numeric("Test/data/Beam 2D/Inelastic/Cantilever Force/data.txt", 3, 1);
 	validator.item(1)->load_numeric("Test/data/Beam 2D/Inelastic/Cantilever Force/data.txt", 3, 2);
+	validator.item(0)->load_reference("Test/data/Beam 2D/Inelastic/Cantilever Force/reference.dat", 0, 1);
+	validator.item(1)->load_reference("Test/data/Beam 2D/Inelastic/Cantilever Force/reference.dat", 0, 2);
 	//validate
 	validator.validate();
 	//draw

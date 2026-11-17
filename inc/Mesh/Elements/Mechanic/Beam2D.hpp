@@ -47,6 +47,7 @@ namespace fea
 				void draw_update(draw::Data&) const override;
 
 				//analysis
+				void check(void) override;
 				void setup(void) override;
 				void compute(analysis::Data&) override;
 
@@ -54,7 +55,7 @@ namespace fea
 				void compute_N(Data&) const;
 				void compute_L(Data&) const;
 				void compute_dL(Data&) const;
-				void compute_ss(Data&) const;
+				void compute_ss(Data&);
 
 				//data
 				double m_qr;

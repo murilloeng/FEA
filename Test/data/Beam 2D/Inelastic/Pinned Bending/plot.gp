@@ -10,17 +10,15 @@ k(M) = M <= My ? M / E / I : ky / sqrt(3 - 2 * M / My)
 
 set grid
 set key above
-set parametric
-set samples 100
+set samples 33
+set xlabel "{/Symbol q} (rad)"
 set ylabel "{/Symbol l}" norotate
 
 set style line 1 linecolor rgb "#ff0000" pointtype 7 pointsize 0.5
 set style line 2 linecolor rgb "#0000ff" pointtype 7 pointsize 0.5
 
-t3(p) = k(1.5 * My * p) * L / 2
-
-set trange [0:0.995]
+p3(t) = 2 * t / L <= ky ? E * I * 2 * t / L / (1.5 * My) : (3 - (ky * L / 2 / t)**2) / 3
 
 plot\
-	'Test/data/Beam 2D/Inelastic/Pinned Bending/data.txt' using ($1) : ($2) with lines linestyle 2 title '{/Symbol q} (rad) - Numeric',\
-	t3(t), t with points linestyle 1 title '{/Symbol q} (rad) - Reference'
+	'Test/data/Beam 2D/Inelastic/Pinned Bending/data.txt' using ($1) : ($2) with lines linestyle 2 title 'Numeric',\
+	[t=0:k(1.5 * My * 0.994) * L / 2] '+' using (t) : (p3(t)) with points linestyle 1 title 'Reference'

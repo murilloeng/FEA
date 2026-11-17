@@ -44,21 +44,16 @@ static const double E = 2.10e+11;
 static const double K = 0.00e+00;
 static const double sy = 2.50e+08;
 
+static const double ky = 2 * sy / E / h;
 static const double I = w * h * h * h / 12;
 static const double My = sy * w * h * h / 6;
-static const double ky = 2 * sy / E / h;
 
-//reference: elastic-perfectly-plastic rectangle, k = M / EI for M <= My and k = ky / sqrt(3 - 2 M / My)
-//for My <= M < Mp = 1.5 My (e.g. Lubliner, Plasticity Theory, sec. 4.4)
-static double curvature(double M)
-{
-	return M <= My ? M / E / I : ky / sqrt(3 - 2 * M / My);
-}
+//reference: Lubliner, Plasticity Theory, sec. 4.4, ISBN 978-0-486-46290-5
 
-//end moments M = p Mp: uniform curvature, the axis is an exact circular arc and each end rotates by k L / 2
 static double function_t3(double p)
 {
-	return curvature(1.5 * My * p) * L / 2;
+	const double M = 1.5 * My * p;
+	return (M <= My ? M / E / I : ky / sqrt(3 - 2 * M / My)) * L / 2;
 }
 
 void test::beam2D::inelastic::pinned_bending(void)
@@ -108,7 +103,7 @@ void test::beam2D::inelastic::pinned_bending(void)
 	model.boundary()->load_case(0)->create_load_node(1, dof::Rotation_3, +sy * W);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(500);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(1);

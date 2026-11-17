@@ -9,6 +9,8 @@
 
 //Materials
 #include "Materials/inc/Mechanic/Stress.hpp"
+#include "Materials/inc/Mechanic/Uniaxial.hpp"
+#include "Materials/inc/Mechanic/Multiaxial.hpp"
 
 //FEA
 #include "FEA/inc/Draw/Data.hpp"
@@ -54,6 +56,18 @@ namespace fea
 			}
 
 			//analysis
+			void Beam2D::check(void)
+			{
+				Beam::check();
+				if(m_material->inelastic() && m_shear && !dynamic_cast<const materials::Multiaxial*>(m_material))
+				{
+					throw std::runtime_error("Error: Beam2D element with shear in inelastic analysis requires a multiaxial material!");
+				}
+				if(m_material->inelastic() && !m_shear && !dynamic_cast<const materials::Uniaxial*>(m_material))
+				{
+					throw std::runtime_error("Error: Beam2D element without shear in inelastic analysis requires a uniaxial material!");
+				}
+			}
 			void Beam2D::setup(void)
 			{
 				//setup
@@ -62,16 +76,13 @@ namespace fea
 				const double* z2 = node(1)->position();
 				m_qr = atan2(z2[1] - z1[1], z2[0] - z1[0]);
 				//stiffness
-				if(!m_material->inelastic())
-				{
-					const double p = 1.00e+03;
-					const double A = m_section->area();
-					const double I = m_section->inertia(1);
-					const double S = m_section->shear_area(0);
-					const double G = m_material->shear_modulus();
-					const double E = m_material->elastic_modulus();
-					m_Ks = {{E * A, 0, 0}, {0, m_shear ? G * S : p * E * I / m_Lr / m_Lr, 0}, {0, 0, E * I}};
-				}
+				const double p = 1.00e+03;
+				const double A = m_section->area();
+				const double I = m_section->inertia(1);
+				const double S = m_section->shear_area(0);
+				const double G = m_material->shear_modulus();
+				const double E = m_material->elastic_modulus();
+				m_Ks = {{E * A, 0, 0}, {0, m_shear ? G * S : p * E * I / m_Lr / m_Lr, 0}, {0, 0, E * I}};
 			}
 			void Beam2D::compute(analysis::Data& assembler_data)
 			{
@@ -108,7 +119,7 @@ namespace fea
 				if(assembler_data.m_request->m_K)
 				{
 					compute_dL(data);
-					data.m_Ke = m_Lr * data.m_N.transpose() * (data.m_L.transpose() * m_Ks * data.m_L + data.m_dL) * data.m_N;
+					data.m_Ke = m_Lr * data.m_N.transpose() * (data.m_L.transpose() * data.m_Ks * data.m_L + data.m_dL) * data.m_N;
 					data.m_Ke.write(assembler_data.m_K);
 				}
 			}
@@ -139,14 +150,39 @@ namespace fea
 				data.m_dL(0, 2) = data.m_dL(2, 0) = data.m_ss[0] * data.m_bn[0] - data.m_ss[1] * data.m_an[0];
 				data.m_dL(1, 2) = data.m_dL(2, 1) = data.m_ss[0] * data.m_bn[1] - data.m_ss[1] * data.m_an[1];
 			}
-			void Beam2D::compute_ss(Data& data) const
+			void Beam2D::compute_ss(Data& data)
 			{
 				if(!m_material->inelastic())
 				{
+					data.m_Ks = m_Ks;
 					data.m_ss = m_Ks * data.m_es;
 				}
 				else
 				{
+					data.m_ss.zeros();
+					data.m_Ks.zeros();
+					for(points::Fiber& fiber : m_points[0].fibers())
+					{
+						//fiber
+						const double A = fiber.area();
+						const double x2 = fiber.position(0);
+						data.m_Ap = {{1, 0, -x2}, {0, 1, 0}};
+						//material
+						data.m_sp.zeros();
+						data.m_Kp.zeros();
+						data.m_ep = data.m_Ap * data.m_es;
+						m_material->return_mapping(data.m_sp.data(), data.m_Kp.data(), data.m_ep.data(), fiber.material_point());
+						//section
+						data.m_ss += A * data.m_Ap.transpose() * data.m_sp;
+						data.m_Ks += A * data.m_Ap.transpose() * data.m_Kp * data.m_Ap;
+					}
+					if(!m_shear)
+					{
+						data.m_Ks(1, 1) = m_Ks(1, 1);
+						data.m_Ks(0, 1) = data.m_Ks(1, 0) = 0;
+						data.m_Ks(1, 2) = data.m_Ks(2, 1) = 0;
+						data.m_ss[1] = m_Ks(1, 1) * data.m_es[1];
+					}
 				}
 			}
 
