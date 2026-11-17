@@ -38,15 +38,6 @@ namespace fea
 					math::Matrix<2, 3> m_Ap;
 				};
 
-			public:
-				//data
-				double curvature(double);
-				double curvature(void) const;
-
-				static bool large_strains(void);
-				static bool large_strains(bool);
-
-			private:
 				//data
 				uint32_t stress_set(void) const override;
 				uint32_t dof_set(uint32_t) const override;
@@ -56,7 +47,6 @@ namespace fea
 				void draw_update(draw::Data&) const override;
 
 				//analysis
-				void check(void) override;
 				void setup(void) override;
 				void compute(analysis::Data&) override;
 
@@ -67,10 +57,8 @@ namespace fea
 				void compute_ss(Data&) const;
 
 				//data
-				double m_q0;
+				double m_qr;
 				math::Mat3 m_Ks;
-				double m_curvature;
-				static bool m_large_strains;
 
 				//friends
 				friend class fea::mesh::Mesh;
