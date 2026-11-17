@@ -244,16 +244,15 @@ namespace fea
 					data.m_Ks.zeros();
 					for(points::Fiber& fiber : m_points[0].fibers())
 					{
-						//data
+						//fiber
 						const double A = fiber.area();
 						const double x2 = fiber.position(0);
 						const double x3 = fiber.position(1);
-						//kinematics
 						data.m_Ap = {{1, 0, 0, 0, x3, -x2}, {0, 1, 0, -x3, 0, 0}, {0, 0, 1, x2, 0, 0}};
-						data.m_ep = data.m_Ap * data.m_es;
 						//material
 						data.m_sp.zeros();
 						data.m_Kp.zeros();
+						data.m_ep = data.m_Ap * data.m_es;
 						m_material->return_mapping(data.m_sp.data(), data.m_Kp.data(), data.m_ep.data(), fiber.material_point());
 						//section
 						data.m_ss += A * data.m_Ap.transpose() * data.m_sp;
