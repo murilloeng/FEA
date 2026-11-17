@@ -1,3 +1,6 @@
+//std
+#include <stdexcept>
+
 //FEA
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam.hpp"
 
@@ -44,6 +47,14 @@ namespace fea
 			}
 
 			//analysis
+			void Beam::check(void)
+			{
+				Frame::check();
+				if(m_section->fibers().empty() && m_material->inelastic())
+				{
+					throw std::runtime_error("Error: Beam element with empty fibers discretisation in inelastic analysis!");
+				}
+			}
 			void Beam::setup(void)
 			{
 				Frame::setup();

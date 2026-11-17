@@ -34,6 +34,7 @@ namespace fea
 
 			protected:
 				//analysis
+				void check(void) override;
 				void setup(void) override;
 				void update(void) override;
 				void restore(void) override;

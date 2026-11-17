@@ -28,6 +28,7 @@ namespace fea
 					math::Mat3 m_Ks;
 					math::Mat6 m_Ke;
 					math::Vec6 m_fe;
+					math::Vec2 m_a0;
 					math::Vec2 m_ep, m_sp;
 					math::Vec3 m_es, m_ss;
 					math::Vec2 m_an, m_bn;
@@ -36,7 +37,6 @@ namespace fea
 					math::Matrix<4, 4> m_dL;
 					math::Matrix<2, 3> m_Ap;
 				};
-				
 
 			public:
 				//data
@@ -56,6 +56,7 @@ namespace fea
 				void draw_update(draw::Data&) const override;
 
 				//analysis
+				void check(void) override;
 				void setup(void) override;
 				void compute(analysis::Data&) override;
 
@@ -67,7 +68,6 @@ namespace fea
 
 				//data
 				double m_q0;
-				math::Vec2 m_a0;
 				math::Mat3 m_Ks;
 				double m_curvature;
 				static bool m_large_strains;

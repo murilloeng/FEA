@@ -1,5 +1,6 @@
 //std
 #include <cmath>
+#include <stdexcept>
 
 //Canvas
 #include "Canvas/inc/Math/vec2.hpp"
@@ -73,23 +74,56 @@ namespace fea
 			}
 
 			//analysis
+			void Beam2D::check(void)
+			{
+				Beam::check();
+				if(m_section->fibers().empty() && m_curvature != 0)
+				{
+					throw std::runtime_error("Error: Beam element with empty fibers discretisation and non-zero curvature!");
+				}
+			}
 			void Beam2D::setup(void)
 			{
-				//data
 				Beam::setup();
-				const double p = 1.00e+03;
-				const double A = m_section->area();
-				const double I = m_section->inertia(1);
-				const double S = m_section->shear_area(0);
-				const double G = m_material->shear_modulus();
-				const double E = m_material->elastic_modulus();
-				const double K = m_shear ? G * S : p * E * I / m_Lr / m_Lr;
-				//setup
 				const double* z1 = node(0)->position();
 				const double* z2 = node(1)->position();
 				m_q0 = atan2(z2[1] - z1[1], z2[0] - z1[0]);
-				m_a0 = {cos(m_q0), sin(m_q0)};
-				m_Ks = {{E * A, 0, 0}, {0, K, 0}, {0, 0, E * I}};
+				if(!m_material->inelastic() && !m_large_strains)
+				{
+					const double G = m_material->shear_modulus();
+					const double E = m_material->elastic_modulus();
+					if(m_section->fibers().empty() || m_curvature == 0)
+					{
+						const double p = 1.00e+03;
+						const double A = m_section->area();
+						const double I = m_section->inertia(1);
+						const double S = m_section->shear_area(0);
+						m_Ks = {{E * A, 0, 0}, {0, m_shear ? G * S : p * E * I / m_Lr / m_Lr, 0}, {0, 0, E * I}};
+					}
+					else
+					{
+						m_Ks.zeros();
+						const double k0 = m_curvature;
+						math::Matrix<2, 2> Kp(math::Mode::zeros);
+						math::Matrix<2, 3> Ap(math::Mode::zeros);
+						for(const sections::fibers::Fiber* fiber : m_section->fibers())
+						{
+							//data
+							const double A = fiber->area();
+							const double s2 = fiber->position(0);
+							const double J0 = 1 - s2 * k0;
+							//kinematics
+							Ap(1, 1) = 1;
+							Ap(0, 0) = J0;
+							Ap(0, 2) = -J0 * s2;
+							//stiffness
+							Kp(1, 1) = G / J0 / J0;
+							Kp(0, 0) = E / J0 / J0 / J0 / J0;
+							//stiffness
+							m_Ks += A * J0 * Ap.transpose() * Kp * Ap;
+						}
+					}
+				}
 			}
 			void Beam2D::compute(analysis::Data& assembler_data)
 			{
@@ -100,9 +134,10 @@ namespace fea
 				const math::Vec2 u1 = {node(0)->state(du1), node(0)->state(du2)};
 				const math::Vec2 u2 = {node(1)->state(du1), node(1)->state(du2)};
 				//compute
+				data.m_a0 = {cos(m_q0), sin(m_q0)};
 				const double qn = m_q0 + (t1 + t2) / 2;
 				const double cn = cos(qn), sn = sin(qn);
-				const math::Vec2 dx = m_a0 + (u2 - u1) / m_Lr;
+				const math::Vec2 dx = data.m_a0 + (u2 - u1) / m_Lr;
 				//strains
 				data.m_an = {cn, sn};
 				data.m_bn = {-sn, cn};
