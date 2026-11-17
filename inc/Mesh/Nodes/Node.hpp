@@ -5,6 +5,10 @@
 #include <cstdio>
 #include <cstdint>
 
+//Math
+#include "Math/inc/Groups/ASO3.hpp"
+#include "Math/inc/Groups/GSO3.hpp"
+
 namespace fea
 {
 	namespace mesh
@@ -37,6 +41,7 @@ namespace fea
 			private:
 				//constructor
 				Node(const double*);
+				Node(const Node&) = delete;
 				Node(double, double, double);
 
 				//destructor
@@ -67,19 +72,25 @@ namespace fea
 				const double* position(const double*);
 				const double* position(double, double, double);
 
+				math::ASO3 rotation_aso3(void) const;
+				math::GSO3 rotation_gso3(void) const;
+
 			private:
 				//analysis
 				void setup(void);
 				void update(void);
 				void restore(void);
-				void compute(void);
 				void dof_setup(uint32_t&);
+
+				//operators
+				Node& operator=(const Node&) = delete;
 
 				//data
 				uint32_t m_index;
 				uint32_t m_dof_set;
 				static Mesh* m_mesh;
 				double m_position[3];
+				math::GSO3* m_rotation;
 				std::vector<uint32_t> m_dof_indexes;
 
 				//friends

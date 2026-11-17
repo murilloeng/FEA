@@ -304,10 +304,6 @@ namespace fea
 			double* C = m_analysis->solver()->m_C;
 			double* M = m_analysis->solver()->m_M;
 			double* fi = m_analysis->solver()->m_fi;
-			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
-			{
-				node->compute();
-			}
 			for(mesh::elements::Element* element : m_analysis->m_model->m_mesh->m_elements)
 			{
 				element->compute(m_data);

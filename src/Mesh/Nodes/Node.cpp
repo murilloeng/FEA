@@ -2,10 +2,14 @@
 #include <cstring>
 #include <stdexcept>
 
+//Math
+#include "Math/inc/Groups/ASO3.hpp"
+
 //FEA
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
@@ -26,11 +30,11 @@ namespace fea
 		namespace nodes
 		{
 			//constructor
-			Node::Node(const double* x) : m_dof_set{0}, m_position{x[0], x[1], x[2]}
+			Node::Node(const double* x) : m_dof_set{0}, m_position{x[0], x[1], x[2]}, m_rotation{nullptr}
 			{
 				return;
 			}
-			Node::Node(double x1, double x2, double x3) : m_dof_set{0}, m_position{x1, x2, x3}
+			Node::Node(double x1, double x2, double x3) : m_dof_set{0}, m_position{x1, x2, x3}, m_rotation{nullptr}
 			{
 				return;
 			}
@@ -38,7 +42,7 @@ namespace fea
 			//destructor
 			Node::~Node(void)
 			{
-				return;
+				delete m_rotation;
 			}
 
 			//serialization
@@ -162,72 +166,67 @@ namespace fea
 				return m_position;
 			}
 
+			math::ASO3 Node::rotation_aso3(void) const
+			{
+				//data
+				double* x = m_mesh->model()->analysis()->solver()->state_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
+				//return
+				return math::ASO3(
+					m_rotation && m_dof_indexes[id + 0] < nu ? x[m_dof_indexes[id + 0]] : 0,
+					m_rotation && m_dof_indexes[id + 1] < nu ? x[m_dof_indexes[id + 1]] : 0,
+					m_rotation && m_dof_indexes[id + 2] < nu ? x[m_dof_indexes[id + 2]] : 0
+				);
+			}
+			math::GSO3 Node::rotation_gso3(void) const
+			{
+				return m_rotation ? rotation_aso3().exp() * *m_rotation : math::GSO3();
+			}
+
 			//analysis
 			void Node::setup(void)
 			{
-				// //data
-				// const uint32_t dof_rotation = 
-				// 	1 << uint32_t(DOF::Rotation_1) |
-				// 	1 << uint32_t(DOF::Rotation_2) |
-				// 	1 << uint32_t(DOF::Rotation_3);
-				// //quaternions
-				// if((m_dof_set & dof_rotation) == dof_rotation)
-				// {
-				// 	delete[] m_quaternion_old;
-				// 	delete[] m_quaternion_new;
-				// 	m_quaternion_old = new double[4];
-				// 	m_quaternion_new = new double[4];
-				// 	m_quaternion_old[0] = m_quaternion_new[0] = 1;
-				// 	m_quaternion_old[1] = m_quaternion_new[1] = 0;
-				// 	m_quaternion_old[2] = m_quaternion_new[2] = 0;
-				// 	m_quaternion_old[3] = m_quaternion_new[3] = 0;
-				// }
+				//data
+				const uint32_t dof_rotation = 
+					1 << uint32_t(DOF::Rotation_1) |
+					1 << uint32_t(DOF::Rotation_2) |
+					1 << uint32_t(DOF::Rotation_3);
+				//rotation
+				if((m_dof_set & dof_rotation) == dof_rotation)
+				{
+					delete m_rotation;
+					m_rotation = new math::GSO3;
+				}
 			}
 			void Node::update(void)
 			{
-				// //data
-				// double* x = m_mesh->model()->analysis()->solver()->state_new();
-				// const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
-				// const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
-				// //update
-				// if(m_quaternion_old)
-				// {
-				// 	if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
-				// 	if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
-				// 	if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
-				// 	memcpy(m_quaternion_old, m_quaternion_new, 4 * sizeof(double));
-				// }
+				//data
+				double* x = m_mesh->model()->analysis()->solver()->state_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
+				//update
+				if(m_rotation)
+				{
+					*m_rotation = rotation_gso3();
+					if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
+					if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
+					if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
+				}
 			}
 			void Node::restore(void)
 			{
-				// //data
-				// double* x = m_mesh->model()->analysis()->solver()->state_new();
-				// const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
-				// const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
-				// //restore
-				// if(m_quaternion_new)
-				// {
-				// 	if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
-				// 	if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
-				// 	if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
-				// 	memcpy(m_quaternion_new, m_quaternion_old, 4 * sizeof(double));
-				// }
-			}
-			void Node::compute(void)
-			{
-				// //rotation
-				// m_rotation_new[0] = state(DOF::Rotation_1);
-				// m_rotation_new[1] = state(DOF::Rotation_2);
-				// m_rotation_new[2] = state(DOF::Rotation_3);
-				// //position
-				// m_position_new[0] = m_position_ref[0] + state(DOF::Translation_1);
-				// m_position_new[1] = m_position_ref[1] + state(DOF::Translation_2);
-				// m_position_new[2] = m_position_ref[2] + state(DOF::Translation_3);
-				// //quaternion
-				// if(m_quaternion_new)
-				// {
-				// 	math::Quat(m_quaternion_new + 0) = math::Vec3(m_rotation_new).quaternion() * math::Quat(m_quaternion_old);
-				// }
+				//data
+				double* x = m_mesh->model()->analysis()->solver()->state_new();
+				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
+				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
+				//restore
+				if(m_rotation)
+				{
+					if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
+					if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
+					if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
+				}
 			}
 			void Node::dof_setup(uint32_t& dof_counter)
 			{
