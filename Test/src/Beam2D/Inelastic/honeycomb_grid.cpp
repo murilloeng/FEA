@@ -132,7 +132,6 @@ void test::beam2D::inelastic::honeycomb_grid(void)
 		((fea::mesh::elements::Beam2D*) element)->section(&section);
 		((fea::mesh::elements::Beam2D*) element)->material(&material);
 	}
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	for(uint32_t i = 0; i < n1; i++)
 	{

@@ -28,15 +28,6 @@ namespace fea
 				return 0;
 			}
 
-			Mechanic::Formulation Mechanic::formulation(void)
-			{
-				return m_formulation;
-			}
-			Mechanic::Formulation Mechanic::formulation(Formulation formulation)
-			{
-				return m_formulation = formulation;
-			}
-
 			const materials::Mechanic* Mechanic::material(void) const
 			{
 				return m_material;
@@ -55,9 +46,6 @@ namespace fea
 				}
 				Element::check();
 			}
-
-			//static
-			Mechanic::Formulation Mechanic::m_formulation = Mechanic::Formulation::Corotational;
 		}
 	}
 }

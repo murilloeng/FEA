@@ -61,7 +61,6 @@ void test::beam3D::elastic::lee_frame(void)
 		((fea::mesh::elements::Beam3D*) model.mesh()->element(i))->section(&section);
 		((fea::mesh::elements::Beam3D*) model.mesh()->element(i))->material(&material);
 	}
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	model.boundary()->create_support(0, dof::Rotation_1);
 	model.boundary()->create_support(0, dof::Rotation_2);
@@ -81,9 +80,9 @@ void test::beam3D::elastic::lee_frame(void)
 	model.boundary()->create_load_case(12, dof::Translation_2, -1);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(true);
-	model.analysis()->solver_static_nonlinear()->step_max(400);
-	model.analysis()->solver_static_nonlinear()->step_size(1.00e-01);
+	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->step_max(100);
+	model.analysis()->solver_static_nonlinear()->step_size(3.00e-01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(12);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(3.00e+00);

@@ -70,7 +70,6 @@ void test::beam2D::elastic::deep_arch(void)
 		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->section(&section);
 		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->material(&material);
 	}
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	model.boundary()->create_support(0, dof::Rotation_3);
 	model.boundary()->create_support(0, dof::Translation_1);

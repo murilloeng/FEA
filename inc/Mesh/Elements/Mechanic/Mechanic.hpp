@@ -22,17 +22,8 @@ namespace fea
 				~Mechanic(void);
 
 			public:
-				//enum
-				enum class Formulation
-				{
-					Corotational, Lagragian
-				};
-
 				//data
 				virtual uint32_t stress_set(void) const;
-
-				static Formulation formulation(void);
-				static Formulation formulation(Formulation);
 
 				const materials::Mechanic* material(void) const;
 				const materials::Mechanic* material(const materials::Mechanic*);
@@ -42,7 +33,6 @@ namespace fea
 				void check(void) override;
 
 				//data
-				static Formulation m_formulation;
 				const materials::Mechanic* m_material;
 			};
 		}

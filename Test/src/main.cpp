@@ -11,10 +11,7 @@ int main(void)
 {
 	try
 	{
-		test::beam3D::inelastic::pinned_force();
-		test::beam3D::inelastic::pinned_bending();
-		test::beam3D::inelastic::cantilever_force();
-		test::beam3D::inelastic::cantilever_bending();
+		test::beam3D::elastic::lee_frame();
 	}
 	catch(const std::exception& exception)
 	{

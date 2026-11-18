@@ -69,7 +69,6 @@ void test::beam2D::elastic::pinched_ring(void)
 		((fea::mesh::elements::Beam2D*) element)->section(&section);
 		((fea::mesh::elements::Beam2D*) element)->material(&material);
 	}
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	for(uint32_t k = 0; k < 2; k++)
 	{

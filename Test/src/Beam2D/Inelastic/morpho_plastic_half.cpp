@@ -103,7 +103,6 @@ void test::beam2D::inelastic::morpho_plastic_half(void)
 		((fea::mesh::elements::Beam2D*) element)->section(&section);
 		((fea::mesh::elements::Beam2D*) element)->material(&material);
 	}
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	model.boundary()->create_support(0, dof::Translation_1);
 	model.boundary()->create_support(0, dof::Translation_2);

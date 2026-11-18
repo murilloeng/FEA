@@ -73,7 +73,6 @@ static void solve(bool shear, const char* name)
 		((fea::mesh::elements::Beam2D*) model.mesh()->element(i))->material(&material);
 	}
 	fea::mesh::elements::Beam::shear(shear);
-	fea::mesh::elements::Mechanic::formulation(fea::mesh::elements::Mechanic::Formulation::Corotational);
 	//supports
 	model.boundary()->create_support(0, dof::Rotation_3);
 	model.boundary()->create_support(0, dof::Translation_1);
