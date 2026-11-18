@@ -11,7 +11,7 @@ int main(void)
 {
 	try
 	{
-		test::beam3D::elastic::lee_frame();
+		test::beam3D::elastic::hockling_cable();
 	}
 	catch(const std::exception& exception)
 	{

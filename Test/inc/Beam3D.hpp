@@ -8,6 +8,7 @@ namespace test
 		namespace elastic
 		{
 			void helix(void);
+			void hockling_cable(void);
 			void lee_frame(void);
 			void dome_framed(void);
 			void cantilever_arc(void);
