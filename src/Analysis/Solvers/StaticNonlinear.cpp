@@ -74,6 +74,7 @@ namespace fea
 					if(!m_silent) printf("Solver failed in step %d!\n", m_step);
 					break;
 				}
+				if(m_step_stop) break;
 				print();
 				if(m_stability) compute_stability();
 				if(m_callback_step) m_callback_step();

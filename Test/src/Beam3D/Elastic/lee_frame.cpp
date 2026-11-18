@@ -80,7 +80,7 @@ void test::beam3D::elastic::lee_frame(void)
 	model.boundary()->create_load_case(12, dof::Translation_2, -1);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(100);
 	model.analysis()->solver_static_nonlinear()->step_size(3.00e-01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
