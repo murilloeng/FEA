@@ -27,6 +27,7 @@ namespace fea
 	{
 		class Analysis;
 		class Assembler;
+		class Incremental;
 	}
 }
 
@@ -98,6 +99,7 @@ namespace fea
 				friend class fea::boundary::Boundary;
 				friend class fea::analysis::Analysis;
 				friend class fea::analysis::Assembler;
+				friend class fea::analysis::Incremental;
 			};
 		}
 	}

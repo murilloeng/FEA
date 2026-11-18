@@ -38,7 +38,6 @@ static const double h = 6.00e+00;
 static const double w = 6.00e-01;
 static const double E = 2.00e+05;
 static const double v = 3.00e-01;
-static const double a = r / 10;
 
 //Reference: J-M. Battini, PhD Thesis (2002), pp. 118
 
@@ -57,8 +56,6 @@ void test::beam3D::elastic::deployable_ring(void)
 		const double t = 2 * M_PI * i / n;
 		model.mesh()->create_node(r * cos(t), r * sin(t), 0);
 	}
-	//unloaded arm attached to the loaded node: its tip translation measures the rotation of node n / 2
-	model.mesh()->create_node(-r, 0, a);
 	//elements
 	for(uint32_t i = 0; i < n; i++)
 	{
@@ -66,8 +63,6 @@ void test::beam3D::elastic::deployable_ring(void)
 		model.mesh()->create_element(fea::mesh::elements::Type::Beam3D, {i, (i + 1) % n});
 		((fea::mesh::elements::Beam3D*) model.mesh()->element(i))->major_axis() = {cos(t), sin(t), 0};
 	}
-	model.mesh()->create_element(fea::mesh::elements::Type::Beam3D, {n / 2, n});
-	((fea::mesh::elements::Beam3D*) model.mesh()->element(n))->major_axis() = {1, 0, 0};
 	for(fea::mesh::elements::Element* element : model.mesh()->elements())
 	{
 		((fea::mesh::elements::Beam3D*) element)->section(&section);
@@ -99,27 +94,24 @@ void test::beam3D::elastic::deployable_ring(void)
 	model.analysis()->solver_static_nonlinear()->step_adapt(true);
 	model.analysis()->solver_static_nonlinear()->step_size(5.00e+01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
-	model.analysis()->solver_static_nonlinear()->watch_dof().node(n);
+	model.analysis()->solver_static_nonlinear()->watch_dof().node(n / 2);
 	model.analysis()->solver_static_nonlinear()->iteration_desired(4);
-	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
+	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_1);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
 	//solve
 	model.solve();
 	//save
 	model.save_results("Test/data/Beam 3D/Elastic/Deployable Ring");
 	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 3D/Elastic/Deployable Ring/data.txt", {
-		{n, dof::Translation_2}, {n, dof::Translation_3}
+		{n / 2, dof::Rotation_1}
 	});
-	//rotation
+	//rotation (recorded in [-pi, pi], unwrapped)
 	const uint32_t ns = model.analysis()->solver_static_nonlinear()->step();
-	const uint32_t i2 = model.mesh()->node(n)->dof_index(dof::Translation_2);
-	const uint32_t i3 = model.mesh()->node(n)->dof_index(dof::Translation_3);
+	const uint32_t id = model.mesh()->node(n / 2)->dof_index(dof::Rotation_1);
 	std::vector<double> t(ns), p(ns);
 	for(uint32_t i = 0; i < ns; i++)
 	{
-		const double u2 = model.analysis()->solver_static_nonlinear()->state_data(i, i2);
-		const double u3 = model.analysis()->solver_static_nonlinear()->state_data(i, i3);
-		t[i] = atan2(u2, a + u3);
+		t[i] = -model.analysis()->solver_static_nonlinear()->state_data(i, id);
 		p[i] = model.analysis()->solver_static_nonlinear()->load_data(i);
 		if(i != 0) t[i] += 2 * M_PI * round((t[i - 1] - t[i]) / 2 / M_PI);
 	}

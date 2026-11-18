@@ -36,6 +36,7 @@ namespace fea
 		protected:
 			//analysis
 			void setup(void) override;
+			void record(void) override;
 		};
 	}
 }

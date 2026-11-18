@@ -2,6 +2,7 @@
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
@@ -120,6 +121,29 @@ namespace fea
 		void Incremental::setup(void)
 		{
 			Solver::setup();
+		}
+		void Incremental::record(void)
+		{
+			const mesh::nodes::DOF dofs[] = {
+				mesh::nodes::DOF::Rotation_1, 
+				mesh::nodes::DOF::Rotation_2, 
+				mesh::nodes::DOF::Rotation_3
+			};
+			math::solvers::Incremental::record();
+			if(~states_set() & 1 << uint32_t(State::x)) return;
+			const uint32_t nu = m_analysis->assembler()->dof_unknow();
+			for(const mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
+			{
+				if(node->m_rotation)
+				{
+					const math::Vec3 t = node->rotation_gso3().log().vector();
+					for(uint32_t i = 0; i < 3; i++)
+					{
+						const uint32_t index = node->dof_index(dofs[i]);
+						if(index < nu) m_x_data[m_step * m_size + index] = t[i];
+					}
+				}
+			}
 		}
 	}
 }
