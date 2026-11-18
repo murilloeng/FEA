@@ -73,11 +73,9 @@ namespace fea
 			//analysis
 			void Beam3D::check(void)
 			{
-				//data
 				Beam::check();
 				const math::Vec3 z1(node(0)->position());
 				const math::Vec3 z2(node(1)->position());
-				//check
 				if((z2 - z1).unit().cross(m_major_axis).norm() < 1.00e-05)
 				{
 					throw std::runtime_error("Error: Beam3D element major axis is parallel to length!");
@@ -93,26 +91,28 @@ namespace fea
 			}
 			void Beam3D::setup(void)
 			{
-				//setup
-				Beam::setup();
-				const math::Vec3 z1(node(0)->position());
-				const math::Vec3 z2(node(1)->position());
-				//triad
-				const math::Vec3 s1 = (z2 - z1) / m_Lr;
-				m_major_axis = (m_major_axis - s1.inner(m_major_axis) * s1).unit();
-				const math::Vec3 s3 = m_major_axis;
-				const math::Vec3 s2 = s3.cross(s1);
-				m_Qr = {{s1[0], s2[0], s3[0]}, {s1[1], s2[1], s3[1]}, {s1[2], s2[2], s3[2]}};
-				//stiffness
+				//data
 				const double p = 1.00e+03;
 				const double A = m_section->area();
 				const double I2 = m_section->inertia(0);
 				const double I3 = m_section->inertia(1);
 				const double S2 = m_section->shear_area(0);
 				const double S3 = m_section->shear_area(1);
-				const double J = m_section->torsion_constant();
 				const double G = m_material->shear_modulus();
 				const double E = m_material->elastic_modulus();
+				const double J = m_section->torsion_constant();
+				//setup
+				Beam::setup();
+				const math::Vec3 z1(node(0)->position());
+				const math::Vec3 z2(node(1)->position());
+				//axis
+				const math::Vec3 s1 = (z2 - z1) / m_Lr;
+				m_major_axis = (m_major_axis - s1.inner(m_major_axis) * s1).unit();
+				//triad
+				const math::Vec3 s3 = m_major_axis;
+				const math::Vec3 s2 = s3.cross(s1);
+				m_Qr = {{s1[0], s2[0], s3[0]}, {s1[1], s2[1], s3[1]}, {s1[2], s2[2], s3[2]}};
+				//stiffness
 				m_Ks.zeros();
 				m_Ks(0, 0) = E * A;
 				m_Ks(3, 3) = G * J;
@@ -132,13 +132,12 @@ namespace fea
 				const math::Vec3 u1(node(0)->state(du1), node(0)->state(du2), node(0)->state(du3));
 				const math::Vec3 u2(node(1)->state(du1), node(1)->state(du2), node(1)->state(du3));
 				//kinematics
-				data.m_pr = m_Qr.transpose() * (q1.inverse() * q2).log().vector();
-				const math::Vec3 ph = m_Qr * data.m_pr / 2;
 				data.m_R1 = q1.matrix() * m_Qr;
-				data.m_Rm = (q1 * math::ASO3(ph.data()).exp()).matrix() * m_Qr;
-				data.m_d = (z2 + u2 - z1 - u1) / m_Lr;
+				data.m_dx = (z2 + u2 - z1 - u1) / m_Lr;
+				data.m_pr = m_Qr.transpose() * (q1.inverse() * q2).log().vector();
+				data.m_Rm = data.m_R1 * math::ASO3(data.m_pr / 2).exp().matrix();
 				//strains
-				const math::Vec3 g = data.m_Rm.transpose() * data.m_d;
+				const math::Vec3 g = data.m_Rm.transpose() * data.m_dx;
 				data.m_es = {g[0] - 1, g[1], g[2], data.m_pr[0] / m_Lr, data.m_pr[1] / m_Lr, data.m_pr[2] / m_Lr};
 				//compute
 				compute_B(data);
@@ -171,37 +170,32 @@ namespace fea
 			{
 				//data
 				const math::Mat3 I(math::Mode::eye);
-				const math::Vec3 pr = data.m_pr;
-				const math::Vec3 ph = -pr / 2;
-				const math::Vec3 pm = -pr;
 				const math::Mat3 Rt = data.m_Rm.transpose();
-				const math::Mat3 D = Rt * data.m_d.spin();
-				//variations (spatial spins)
-				data.m_Ar = math::ASO3(pm.data()).jacobian_inverse() * data.m_R1.transpose();
-				data.m_Hr = data.m_R1 * math::ASO3(ph.data()).jacobian() * data.m_Ar / 2;
-				//operator
+				const math::Mat3 Dx = Rt * data.m_dx.spin();
+				//variations
+				data.m_Ar = math::ASO3(-data.m_pr).jacobian_inverse() * data.m_R1.transpose();
+				data.m_Hr = data.m_R1 * math::ASO3(-data.m_pr / 2).jacobian() * data.m_Ar / 2;
+				//gradient
 				data.m_B.zeros();
 				data.m_B.span<3, 3>(0, 0) = -Rt / m_Lr;
 				data.m_B.span<3, 3>(0, 6) = +Rt / m_Lr;
-				data.m_B.span<3, 3>(0, 3) = D * (I - data.m_Hr);
-				data.m_B.span<3, 3>(0, 9) = D * data.m_Hr;
+				data.m_B.span<3, 3>(0, 9) = +Dx * data.m_Hr;
 				data.m_B.span<3, 3>(3, 3) = -data.m_Ar / m_Lr;
 				data.m_B.span<3, 3>(3, 9) = +data.m_Ar / m_Lr;
+				data.m_B.span<3, 3>(0, 3) = +Dx * (I - data.m_Hr);
 			}
 			void Beam3D::compute_G(Data& data) const
 			{
 				//data
-				const math::Mat3 I(math::Mode::eye);
-				const math::Vec3 pr = data.m_pr;
-				const math::Vec3 ph = pr / 2;
 				const math::Mat3 R1 = data.m_R1;
-				const math::Vec3 n(data.m_ss[0], data.m_ss[1], data.m_ss[2]);
-				const math::Vec3 m(data.m_ss[3], data.m_ss[4], data.m_ss[5]);
-				const math::Mat3 Jh = math::ASO3(ph.data()).jacobian();
-				const math::Mat3 Ji = math::ASO3(pr.data()).jacobian_inverse();
+				const math::Mat3 I(math::Mode::eye);
+				const math::Vec3 n(data.m_ss.data() + 0);
+				const math::Vec3 m(data.m_ss.data() + 3);
+				const math::Mat3 Jh = math::ASO3(data.m_pr / 2).jacobian();
+				const math::Mat3 Ji = math::ASO3(data.m_pr).jacobian_inverse();
 				//forces
 				const math::Vec3 F = data.m_Rm * n;
-				const math::Vec3 q = m_Lr * F.cross(data.m_d);
+				const math::Vec3 q = m_Lr * F.cross(data.m_dx);
 				const math::Vec3 u = Ji * (m + Jh * R1.transpose() * q / 2);
 				const math::Vec3 c = R1 * u;
 				//variations
@@ -214,11 +208,11 @@ namespace fea
 				Dd.span<3, 3>(0, 0) = -I / m_Lr;
 				Dd.span<3, 3>(0, 6) = +I / m_Lr;
 				const math::Matrix<3, 12> dF = -F.spin() * Wm;
-				const math::Matrix<3, 12> dq = m_Lr * (data.m_d.spin() * F.spin() * Wm + F.spin() * Dd);
-				const math::Matrix<3, 12> dp = jacobian_gradient(ph, R1.transpose() * q) * Wp / 4 + Jh * R1.transpose() * (dq + q.spin() * W1) / 2;
-				const math::Matrix<3, 12> du = Ji * (dp - jacobian_gradient(pr, u) * Wp);
+				const math::Matrix<3, 12> dq = m_Lr * (data.m_dx.spin() * F.spin() * Wm + F.spin() * Dd);
+				const math::Matrix<3, 12> dp = jacobian_gradient(data.m_pr / 2, R1.transpose() * q) * Wp / 4 + Jh * R1.transpose() * (dq + q.spin() * W1) / 2;
+				const math::Matrix<3, 12> du = Ji * (dp - jacobian_gradient(data.m_pr, u) * Wp);
 				const math::Matrix<3, 12> dc = R1 * du - c.spin() * W1;
-				//geometric stiffness
+				//Hesssian
 				data.m_G.span<3, 12>(0, 0) = -dF;
 				data.m_G.span<3, 12>(3, 0) = dq - dc;
 				data.m_G.span<3, 12>(6, 0) = dF;
@@ -226,10 +220,8 @@ namespace fea
 			}
 			void Beam3D::compute_T(Data& data) const
 			{
-				const math::Vec3 t1 = -node(0)->rotation_aso3().vector();
-				const math::Vec3 t2 = -node(1)->rotation_aso3().vector();
-				data.m_T1 = math::ASO3(t1.data()).jacobian();
-				data.m_T2 = math::ASO3(t2.data()).jacobian();
+				data.m_T1 = math::ASO3(-node(0)->rotation_aso3().vector()).jacobian();
+				data.m_T2 = math::ASO3(-node(1)->rotation_aso3().vector()).jacobian();
 			}
 			void Beam3D::compute_ss(Data& data)
 			{

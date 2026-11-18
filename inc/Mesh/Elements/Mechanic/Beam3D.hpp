@@ -26,17 +26,17 @@ namespace fea
 				{
 					math::Mat3 m_Kp;
 					math::Mat6 m_Ks;
+					math::Vec3 m_dx, m_pr;
 					math::Vec3 m_ep, m_sp;
 					math::Vec6 m_es, m_ss;
-					math::Vec3 m_d, m_pr;
 					math::Mat3 m_R1, m_Rm;
 					math::Mat3 m_Ar, m_Hr;
 					math::Mat3 m_T1, m_T2;
+					math::Vector<12> m_fe;
 					math::Matrix<3, 6> m_Ap;
 					math::Matrix<6, 12> m_B;
-					math::Matrix<12, 1> m_fe;
-					math::Matrix<12, 12> m_Ke;
 					math::Matrix<12, 12> m_G;
+					math::Matrix<12, 12> m_Ke;
 				};
 
 			public:
