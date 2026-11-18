@@ -11,7 +11,7 @@ int main(void)
 {
 	try
 	{
-		test::beam3D::elastic::hockling_cable();
+		test::beam3D::elastic::deployable_ring();
 	}
 	catch(const std::exception& exception)
 	{

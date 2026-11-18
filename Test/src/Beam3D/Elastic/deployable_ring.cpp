@@ -89,13 +89,13 @@ void test::beam3D::elastic::deployable_ring(void)
 	model.boundary()->create_load_case(n / 2, dof::Rotation_1, -1);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
-	model.analysis()->solver_static_nonlinear()->silent(true);
-	model.analysis()->solver_static_nonlinear()->step_max(2000);
+	model.analysis()->solver_static_nonlinear()->silent(false);
+	model.analysis()->solver_static_nonlinear()->step_max(1100);
 	model.analysis()->solver_static_nonlinear()->step_adapt(true);
 	model.analysis()->solver_static_nonlinear()->step_size(5.00e+01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
+	model.analysis()->solver_static_nonlinear()->iteration_desired(6);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(n / 2);
-	model.analysis()->solver_static_nonlinear()->iteration_desired(4);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Rotation_1);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
 	//solve
