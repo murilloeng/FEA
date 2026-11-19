@@ -6,12 +6,14 @@
 //Test
 #include "FEA/Test/inc/Beam2D.hpp"
 #include "FEA/Test/inc/Beam3D.hpp"
+#include "FEA/Test/inc/Rigid3D.hpp"
 
 int main(void)
 {
 	try
 	{
-		test::beam3D::elastic::deployable_ring();
+		test::rigid3D::arm_bending();
+		test::rigid3D::arm_torsion();
 	}
 	catch(const std::exception& exception)
 	{
