@@ -192,18 +192,7 @@ namespace fea
 			}
 			void Node::update(void)
 			{
-				//data
-				double* x = m_mesh->model()->analysis()->solver()->state_new();
-				const uint32_t nu = m_mesh->model()->analysis()->assembler()->dof_unknow();
-				const uint32_t id = math::bit_index(m_dof_set, 1 << uint32_t(DOF::Rotation_1));
-				//update
-				if(m_rotation)
-				{
-					*m_rotation = rotation_gso3();
-					if(m_dof_indexes[id + 0] < nu) x[m_dof_indexes[id + 0]] = 0;
-					if(m_dof_indexes[id + 1] < nu) x[m_dof_indexes[id + 1]] = 0;
-					if(m_dof_indexes[id + 2] < nu) x[m_dof_indexes[id + 2]] = 0;
-				}
+				if(m_rotation) *m_rotation = rotation_gso3();
 			}
 			void Node::restore(void)
 			{

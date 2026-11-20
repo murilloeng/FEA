@@ -52,7 +52,7 @@ namespace fea
 				//rotation
 				const math::Vec3 dz = z1 - z0;
 				const std::function<math::Vec3(const double*)> rotate = [node, dz](const double* t){
-					return math::Vec3(math::ASO3(t).exp().matrix() * node->rotation_old().matrix() * dz);
+					return math::ASO3(t).exp().matrix() * node->rotation_old().matrix() * dz;
 				};
 				//constraints
 				for(uint32_t i = 0; i < 3; i++)
@@ -68,47 +68,33 @@ namespace fea
 					});
 					//gradient
 					m_mesh->model()->boundary()->constraint(nc + i)->gradient([i, rotate](double* g, const double* x){
+						//data
 						math::Vector<5> gc(math::Mode::zeros);
-						const math::Vec3 r = rotate(x + 2);
-						const math::Vec3 e(i == 0, i == 1, i == 2);
+						const math::Vec3 r = rotate(x + 2), e(i == 0, i == 1, i == 2);
+						//gradient
 						gc[0] = +1;
 						gc[1] = -1;
 						gc.span<3, 1>(2, 0) = e.cross(r);
+						//write
 						gc.write(g);
 					});
 					//hessian
 					m_mesh->model()->boundary()->constraint(nc + i)->hessian([i, rotate](double* H, const double* x){
+						//data
 						math::Matrix<5, 5> Hc(math::Mode::zeros);
-						const math::Vec3 r = rotate(x + 2);
-						const math::Vec3 t(x + 2), e(i == 0, i == 1, i == 2);
-						const math::Mat3 T = math::ASO3(-t).jacobian();
-						Hc.span<3, 3>(2, 2) = -e.spin() * r.spin() * T;
+						const math::Vec3 r = rotate(x + 2), t(x + 2), e(i == 0, i == 1, i == 2);
+						//hessian
+						Hc.span<3, 3>(2, 2) = -e.spin() * r.spin() * math::ASO3(-t).jacobian();
+						//write
 						Hc.write(H);
-					});
-				}
-				//rotation
-				for(uint32_t i = 0; i < 3; i++)
-				{
-					//constraint
-					m_mesh->model()->boundary()->create_constraint({m_nodes[1], m_nodes[0]}, {dr[i], dr[i]});
-					//function
-					m_mesh->model()->boundary()->constraint(nc + 3 + i)->function([](double& f, const double* x){
-						f = x[0] - x[1];
-					});
-					//gradient
-					m_mesh->model()->boundary()->constraint(nc + 3 + i)->gradient([](double* g, const double*){
-						g[0] = +1;
-						g[1] = -1;
-					});
-					//hessian
-					m_mesh->model()->boundary()->constraint(nc + 3 + i)->hessian([](double* H, const double*){
-						H[0] = H[1] = H[2] = H[3] = 0;
 					});
 				}
 			}
 			void Rigid3D::create_dependencies(void) const
 			{
-				return;
+				m_mesh->model()->boundary()->create_dependency(m_nodes[0], nodes::DOF::Rotation_1, m_nodes[1], nodes::DOF::Rotation_1);
+				m_mesh->model()->boundary()->create_dependency(m_nodes[0], nodes::DOF::Rotation_2, m_nodes[1], nodes::DOF::Rotation_2);
+				m_mesh->model()->boundary()->create_dependency(m_nodes[0], nodes::DOF::Rotation_3, m_nodes[1], nodes::DOF::Rotation_3);
 			}
 
 			//draw

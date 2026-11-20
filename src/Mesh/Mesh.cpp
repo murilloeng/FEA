@@ -235,6 +235,7 @@ namespace fea
 		void Mesh::update(void)
 		{
 			for(nodes::Node* node : m_nodes) node->update();
+			for(nodes::Node* node : m_nodes) node->restore();
 			for(elements::Element* element : m_elements) element->update();
 		}
 		void Mesh::restore(void)
