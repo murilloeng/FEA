@@ -133,6 +133,10 @@ namespace fea
 			{
 				throw std::runtime_error("Error: Constraint " + std::to_string(m_index) + " functions are unset!");
 			}
+			if(m_boundary->model()->analysis()->solver()->states_set() & 1 << uint32_t(math::solvers::Solver::State::a) && !m_third)
+			{
+				throw std::runtime_error("Error: Constraint " + std::to_string(m_index) + " functions are unset!");
+			}
 		}
 		void Constraint::setup(void)
 		{

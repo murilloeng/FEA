@@ -330,11 +330,11 @@ namespace fea
 			{
 				//data
 				constraint->state(m_data.m_x);
-				constraint->m_third(m_data.m_A, m_data.m_x);
 				constraint->m_hessian(m_data.m_K, m_data.m_x);
 				constraint->m_gradient(m_data.m_f, m_data.m_x);
 				constraint->m_function(m_data.m_U, m_data.m_x);
 				const uint32_t nd = constraint->m_dof_indexes.size();
+				if(constraint->m_third) constraint->m_third(m_data.m_A, m_data.m_x);
 				//assemble
 				if(!m_request.m_M)
 				{
