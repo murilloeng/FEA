@@ -137,19 +137,6 @@ namespace fea
 				return (m_dof_set & 1 << uint32_t(dof)) && m_dof_indexes[id] < nu ? a[m_dof_indexes[id] + nu * step] : 0;
 			}
 
-			const double* Node::rotation_new(void) const
-			{
-				return nullptr;
-			}
-			const double* Node::quaternion_old(void) const
-			{
-				return nullptr;
-			}
-			const double* Node::quaternion_new(void) const
-			{
-				return nullptr;
-			}
-
 			const double* Node::position(void) const
 			{
 				return m_position;
@@ -166,6 +153,14 @@ namespace fea
 				return m_position;
 			}
 
+			math::GSO3 Node::rotation_old(void) const
+			{
+				return m_rotation ? *m_rotation : math::GSO3();
+			}
+			math::GSO3 Node::rotation_gso3(void) const
+			{
+				return m_rotation ? rotation_aso3().exp() * *m_rotation : math::GSO3();
+			}
 			math::ASO3 Node::rotation_aso3(void) const
 			{
 				//data
@@ -178,10 +173,6 @@ namespace fea
 					m_rotation && m_dof_indexes[id + 1] < nu ? x[m_dof_indexes[id + 1]] : 0,
 					m_rotation && m_dof_indexes[id + 2] < nu ? x[m_dof_indexes[id + 2]] : 0
 				);
-			}
-			math::GSO3 Node::rotation_gso3(void) const
-			{
-				return m_rotation ? rotation_aso3().exp() * *m_rotation : math::GSO3();
 			}
 
 			//analysis

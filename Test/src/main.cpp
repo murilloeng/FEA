@@ -12,8 +12,7 @@ int main(void)
 {
 	try
 	{
-		test::rigid3D::arm_bending();
-		test::rigid3D::arm_torsion();
+		test::rigid3D::kirigami();
 	}
 	catch(const std::exception& exception)
 	{

@@ -65,16 +65,13 @@ namespace fea
 				double velocity(DOF, uint32_t) const;
 				double acceleration(DOF, uint32_t) const;
 
-				const double* rotation_new(void) const;
-				const double* quaternion_old(void) const;
-				const double* quaternion_new(void) const;
-
 				const double* position(void) const;
 				const double* position(const double*);
 				const double* position(double, double, double);
 
-				math::ASO3 rotation_aso3(void) const;
+				math::GSO3 rotation_old(void) const;
 				math::GSO3 rotation_gso3(void) const;
+				math::ASO3 rotation_aso3(void) const;
 
 			private:
 				//analysis

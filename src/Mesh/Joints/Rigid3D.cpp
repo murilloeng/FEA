@@ -43,19 +43,18 @@ namespace fea
 			void Rigid3D::create_constraints(void) const
 			{
 				//data
-				const nodes::DOF dt[] = {nodes::DOF::Translation_1, nodes::DOF::Translation_2, nodes::DOF::Translation_3};
-				const nodes::DOF dr[] = {nodes::DOF::Rotation_1, nodes::DOF::Rotation_2, nodes::DOF::Rotation_3};
 				const nodes::Node* node = m_mesh->node(m_nodes[0]);
 				const math::Vec3 z0(m_mesh->node(m_nodes[0])->position());
 				const math::Vec3 z1(m_mesh->node(m_nodes[1])->position());
 				const uint32_t nc = m_mesh->model()->boundary()->constraints().size();
-				//rotation of the first node: R = exp(t) * Rn
+				const nodes::DOF dr[] = {nodes::DOF::Rotation_1, nodes::DOF::Rotation_2, nodes::DOF::Rotation_3};
+				const nodes::DOF dt[] = {nodes::DOF::Translation_1, nodes::DOF::Translation_2, nodes::DOF::Translation_3};
+				//rotation
 				const math::Vec3 dz = z1 - z0;
 				const std::function<math::Vec3(const double*)> rotate = [node, dz](const double* t){
-					const math::GSO3 Rn = node->rotation_aso3().exp().inverse() * node->rotation_gso3();
-					return math::Vec3(math::ASO3(t).exp().matrix() * Rn.matrix() * dz);
+					return math::Vec3(math::ASO3(t).exp().matrix() * node->rotation_old().matrix() * dz);
 				};
-				//position constraints: x1 + u1 = x0 + u0 + R * dz
+				//constraints
 				for(uint32_t i = 0; i < 3; i++)
 				{
 					//constraint
@@ -67,7 +66,7 @@ namespace fea
 					m_mesh->model()->boundary()->constraint(nc + i)->function([i, dz, rotate](double& f, const double* x){
 						f = x[0] - x[1] + dz[i] - rotate(x + 2)[i];
 					});
-					//gradient (spatial spin variations)
+					//gradient
 					m_mesh->model()->boundary()->constraint(nc + i)->gradient([i, rotate](double* g, const double* x){
 						math::Vector<5> gc(math::Mode::zeros);
 						const math::Vec3 r = rotate(x + 2);
@@ -87,7 +86,7 @@ namespace fea
 						Hc.write(H);
 					});
 				}
-				//rotation constraints: t1 = t0
+				//rotation
 				for(uint32_t i = 0; i < 3; i++)
 				{
 					//constraint
