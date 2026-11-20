@@ -5,10 +5,10 @@
 #
 # The elastica EI theta'' = -P cos(theta), theta(0) = 0, theta'(L) = 0, x' = cos(theta), y' = sin(theta)
 # is solved by shooting on theta'(0) with tight tolerances. With lambda = P L^2 / EI:
-#   tip deflection v / L = -y(L) / L, tip shortening u / L = -(1 - x(L) / L), tip rotation theta = -theta(L)
+# tip deflection v / L = -y(L) / L, tip shortening u / L = -(1 - x(L) / L), tip rotation theta = -theta(L)
 # (signs as in reference.dat: the force points down).
 #
-# usage: python3 reference.py  (writes reference.dat; columns: lambda, v / L, u / L, theta;
+# usage: python3 reference.py (writes reference.dat; columns: lambda, v / L, u / L, theta;
 # it agrees with the original published table to within one unit of its fifth decimal)
 
 import os

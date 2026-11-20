@@ -72,7 +72,7 @@ void test::beam2D::elastic::cantilever_force(void)
 	model.boundary()->create_support(0, dof::Translation_2);
 	//loads
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(1, dof::Translation_2, -E * I /  L /  L);
+	model.boundary()->create_load_case(1, dof::Translation_2, -E * I / L / L);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(true);

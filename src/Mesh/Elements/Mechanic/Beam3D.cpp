@@ -13,7 +13,7 @@
 //FEA
 #include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
-#include "FEA/inc/Analysis/Assembler/Compute.hpp"
+#include "FEA/inc/Analysis/Assembler/Data.hpp"
 #include "FEA/inc/Analysis/Assembler/Request.hpp"
 #include "FEA/inc/Mesh/Elements/Mechanic/Beam3D.hpp"
 

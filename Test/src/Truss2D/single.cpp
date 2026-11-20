@@ -36,8 +36,8 @@ using continuation = math::solvers::Continuation::Type;
 /*
 	Single bar along x, node 1 free to move axially only.
 	Exact axial force from the Truss element work conjugate, s = stretch:
-		Linear:      N = EA * (s - 1)
-		Quadratic:   N = EA * s * (s * s - 1) / 2
+		Linear: N = EA * (s - 1)
+		Quadratic: N = EA * s * (s * s - 1) / 2
 		Logarithmic: N = EA * log(s) / s
 	The path uses state control, which also crosses the Quadratic limit point at s = 1 / sqrt(3) in compression.
 	The step size is the first load increment, so it is the state increment times the initial stiffness EA / L.

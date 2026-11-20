@@ -88,6 +88,21 @@ namespace fea
 						//write
 						Hc.write(H);
 					});
+					//third
+					m_mesh->model()->boundary()->constraint(nc + i)->third([i, rotate](double* T, const double* x){
+						//data
+						math::Matrix<25, 5> Tc(math::Mode::zeros);
+						const math::Vec3 r = rotate(x + 2), t(x + 2), e(i == 0, i == 1, i == 2);
+						const math::Mat3 J = math::ASO3(-t).jacobian();
+						//third
+						for(uint32_t j = 0; j < 3; j++)
+						{
+							const math::Vec3 u(j == 0, j == 1, j == 2), w = J * u;
+							Tc.span<3, 3>(5 * (2 + j) + 2, 2) = -e.spin() * (w.spin() * r.spin() * J + r.spin() * math::ASO3(t).jacobian_gradient(u));
+						}
+						//write
+						Tc.write(T);
+					});
 				}
 			}
 			void Rigid3D::create_dependencies(void) const

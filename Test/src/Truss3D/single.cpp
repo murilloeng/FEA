@@ -38,8 +38,8 @@ using continuation = math::solvers::Continuation::Type;
 	A free bar has no transverse stiffness at zero stress, so node 1 is kept on the bar line by tying the three
 	translations, which is only possible with equal components (dependencies have no factor).
 	Equal components give s = 1 + sqrt(3) * u / L and a load on the master dof P = sqrt(3) * N, where:
-		Linear:      N = EA * (s - 1)
-		Quadratic:   N = EA * s * (s * s - 1) / 2
+		Linear: N = EA * (s - 1)
+		Quadratic: N = EA * s * (s * s - 1) / 2
 		Logarithmic: N = EA * log(s) / s
 	The step size is the first load increment, so it is the state increment times the initial stiffness 3 * EA / L.
 */

@@ -5,12 +5,16 @@
 #include <cstdint>
 
 //FEA
-#include "FEA/inc/Analysis/Assembler/Compute.hpp"
+#include "FEA/inc/Analysis/Assembler/Data.hpp"
 #include "FEA/inc/Analysis/Assembler/Request.hpp"
 
 namespace fea
 {
 	class Model;
+	namespace boundary
+	{
+		class Constraint;
+	}
 	namespace analysis
 	{
 		class Analysis;

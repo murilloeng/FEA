@@ -2,7 +2,7 @@
 #include <cstring>
 
 //FEA
-#include "FEA/inc/Analysis/Assembler/Compute.hpp"
+#include "FEA/inc/Analysis/Assembler/Data.hpp"
 
 namespace fea
 {
@@ -11,7 +11,7 @@ namespace fea
 		//constructor
 		Data::Data(void) : 
 			m_size{0}, m_request{nullptr}, m_T{0}, m_U{0}, m_V{0},
-			m_x{nullptr}, m_f{nullptr}, m_K{nullptr}, m_C{nullptr}, m_M{nullptr}
+			m_x{nullptr}, m_v{nullptr}, m_a{nullptr}, m_f{nullptr}, m_K{nullptr}, m_C{nullptr}, m_M{nullptr}, m_A{nullptr}
 		{
 			return;
 		}
@@ -30,11 +30,12 @@ namespace fea
 			memset(m_K, 0, m_size * m_size * sizeof(double));
 			memset(m_C, 0, m_size * m_size * sizeof(double));
 			memset(m_M, 0, m_size * m_size * sizeof(double));
+			memset(m_A, 0, m_size * m_size * m_size * sizeof(double));
 		}
 		void Data::cleanup(void)
 		{
 			double** data[] = {
-				&m_x, &m_f, &m_K, &m_C, &m_M
+				&m_x, &m_v, &m_a, &m_f, &m_K, &m_C, &m_M, &m_A
 			};
 			for(double** ptr : data)
 			{
@@ -47,10 +48,13 @@ namespace fea
 			cleanup();
 			m_size = size;
 			m_x = new double[size];
+			m_v = new double[size];
+			m_a = new double[size];
 			m_f = new double[size];
 			m_K = new double[size * size];
 			m_C = new double[size * size];
 			m_M = new double[size * size];
+			m_A = new double[size * size * size];
 		}
 	}
 }

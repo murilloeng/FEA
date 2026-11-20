@@ -43,14 +43,22 @@ namespace fea
 			void save(FILE*) const;
 
 			//types
-			typedef std::function<void(double*, const double*)> Hessian;
 			typedef std::function<void(double*, const double*)> Gradient;
 			typedef std::function<void(double&, const double*)> Function;
 
 		public:
 			//data
-			Hessian hessian(Hessian);
-			Hessian hessian(void) const;
+			static double beta(void);
+			static double beta(double);
+
+			static double alpha(void);
+			static double alpha(double);
+
+			Gradient third(Gradient);
+			Gradient third(void) const;
+
+			Gradient hessian(Gradient);
+			Gradient hessian(void) const;
 
 			Gradient gradient(Gradient);
 			Gradient gradient(void) const;
@@ -68,15 +76,20 @@ namespace fea
 			//analysis
 			void check(void);
 			void setup(void);
-			void state(double*) const;
 			void dof_setup(uint32_t&);
+			void state(double*) const;
+			void velocity(double*) const;
+			void acceleration(double*) const;
 
 			//data
 			uint32_t m_index;
-			Hessian m_hessian;
+			Gradient m_third;
+			Gradient m_hessian;
 			Gradient m_gradient;
 			Function m_function;
 			uint32_t m_dof_index;
+			static double m_beta;
+			static double m_alpha;
 			static Boundary* m_boundary;
 			std::vector<uint32_t> m_nodes;
 			std::vector<uint32_t> m_dof_indexes;

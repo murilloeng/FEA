@@ -92,7 +92,7 @@ namespace fea
 				Frame::restore();
 				if(materials::Mechanic::inelastic())
 				{
-					for(points::Section& section  : m_points)
+					for(points::Section& section : m_points)
 					{
 						for(points::Fiber& fiber : section.fibers())
 						{

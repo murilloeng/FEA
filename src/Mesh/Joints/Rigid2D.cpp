@@ -85,6 +85,15 @@ namespace fea
 					H[0 + 3 * 1] = H[1 + 3 * 1] = H[2 + 3 * 1] = 0;
 					H[2 + 3 * 2] = cos(x[2]) * dz[1] + sin(x[2]) * dz[0];
 				});
+				//thirds
+				m_mesh->model()->boundary()->constraint(nc + 0)->third([dz](double* T, const double* x){
+					for(uint32_t i = 0; i < 27; i++) T[i] = 0;
+					T[2 + 3 * 2 + 9 * 2] = -sin(x[2]) * dz[0] - cos(x[2]) * dz[1];
+				});
+				m_mesh->model()->boundary()->constraint(nc + 1)->third([dz](double* T, const double* x){
+					for(uint32_t i = 0; i < 27; i++) T[i] = 0;
+					T[2 + 3 * 2 + 9 * 2] = cos(x[2]) * dz[0] - sin(x[2]) * dz[1];
+				});
 			}
 			void Rigid2D::create_dependencies(void) const
 			{

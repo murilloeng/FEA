@@ -34,7 +34,7 @@ namespace fea
 			//data
 			uint32_t m_size;
 			const Request* m_request;
-			double m_T, m_U, m_V, *m_x, *m_f, *m_K, *m_C, *m_M;
+			double m_T, m_U, m_V, *m_x, *m_v, *m_a, *m_f, *m_K, *m_C, *m_M, *m_A;
 
 			//friends
 			friend class fea::analysis::Assembler;

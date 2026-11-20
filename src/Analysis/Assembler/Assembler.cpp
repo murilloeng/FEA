@@ -318,26 +318,60 @@ namespace fea
 		}
 		void Assembler::assemble_constraints(void)
 		{
+			double* M = m_analysis->solver()->m_M;
+			double* C = m_analysis->solver()->m_C;
 			double* K = m_analysis->solver()->m_K;
-			double* fi = m_analysis->solver()->m_fi;
-			double* xn = m_analysis->solver()->m_x_new;
+			double* f = m_analysis->solver()->m_fi;
+			double* x = m_analysis->solver()->m_x_new;
+			double* a = m_analysis->solver()->m_a_new;
+			const double bc = boundary::Constraint::m_beta;
+			const double ac = boundary::Constraint::m_alpha;
 			for(const boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
+				//data
 				constraint->state(m_data.m_x);
-				double& fc = fi[constraint->m_dof_index];
-				const double pc = xn[constraint->m_dof_index];
-				if(m_request.m_f)
+				constraint->m_third(m_data.m_A, m_data.m_x);
+				constraint->m_hessian(m_data.m_K, m_data.m_x);
+				constraint->m_gradient(m_data.m_f, m_data.m_x);
+				constraint->m_function(m_data.m_U, m_data.m_x);
+				const uint32_t nd = constraint->m_dof_indexes.size();
+				//assemble
+				if(!m_request.m_M)
 				{
-					constraint->m_function(fc, m_data.m_x);
-					constraint->m_gradient(m_data.m_f, m_data.m_x);
-					assemble_vector(fi, m_data.m_f, constraint->m_dof_indexes, pc);
-				}
-				if(m_request.m_K)
-				{
-					constraint->m_hessian(m_data.m_K, m_data.m_x);
-					assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, pc);
+					f[constraint->m_dof_index] = m_data.m_U;
 					assemble_matrix(K, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
 					assemble_matrix(K, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
+					assemble_vector(f, m_data.m_f, constraint->m_dof_indexes, x[constraint->m_dof_index]);
+					assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, x[constraint->m_dof_index]);
+				}
+				else
+				{
+					double gc = 0, hc = 0;
+					std::vector<double> cc(nd);
+					std::vector<double> kc(nd);
+					constraint->velocity(m_data.m_v);
+					constraint->acceleration(m_data.m_a);
+					for(uint32_t i = 0; i < nd; i++)
+					{
+						cc[i] = 2 * ac * m_data.m_f[i];
+						kc[i] = bc * bc * m_data.m_f[i];
+						gc += m_data.m_f[i] * m_data.m_v[i];
+						hc += m_data.m_f[i] * m_data.m_a[i];
+						for(uint32_t j = 0; j < nd; j++)
+						{
+							hc += m_data.m_K[i + nd * j] * m_data.m_v[i] * m_data.m_v[j];
+							cc[i] += (m_data.m_K[i + nd * j] + m_data.m_K[j + nd * i]) * m_data.m_v[j];
+							kc[i] += m_data.m_K[j + nd * i] * (m_data.m_a[j] + 2 * ac * m_data.m_v[j]);
+							for(uint32_t k = 0; k < nd; k++) kc[i] += m_data.m_A[j + nd * k + nd * nd * i] * m_data.m_v[j] * m_data.m_v[k];
+						}
+					}
+					f[constraint->m_dof_index] = hc + 2 * ac * gc + bc * bc * m_data.m_U;
+					assemble_matrix(C, cc.data(), constraint->m_dof_index, constraint->m_dof_indexes);
+					assemble_matrix(K, kc.data(), constraint->m_dof_index, constraint->m_dof_indexes);
+					assemble_matrix(M, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
+					assemble_matrix(M, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
+					assemble_vector(f, m_data.m_f, constraint->m_dof_indexes, a[constraint->m_dof_index]);
+					assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, a[constraint->m_dof_index]);
 				}
 			}
 		}

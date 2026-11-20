@@ -46,11 +46,38 @@ namespace fea
 		}
 
 		//data
-		Constraint::Hessian Constraint::hessian(void) const
+		double Constraint::beta(void)
+		{
+			return m_beta;
+		}
+		double Constraint::beta(double beta)
+		{
+			return m_beta = beta;
+		}
+
+		double Constraint::alpha(void)
+		{
+			return m_alpha;
+		}
+		double Constraint::alpha(double alpha)
+		{
+			return m_alpha = alpha;
+		}
+
+		Constraint::Gradient Constraint::third(void) const
+		{
+			return m_third;
+		}
+		Constraint::Gradient Constraint::third(Gradient third)
+		{
+			return m_third = third;
+		}
+
+		Constraint::Gradient Constraint::hessian(void) const
 		{
 			return m_hessian;
 		}
-		Constraint::Hessian Constraint::hessian(Hessian hessian)
+		Constraint::Gradient Constraint::hessian(Gradient hessian)
 		{
 			return m_hessian = hessian;
 		}
@@ -115,6 +142,10 @@ namespace fea
 				m_dof_indexes.push_back(m_boundary->model()->mesh()->node(m_nodes[i])->dof_index(m_dof[i]));
 			}
 		}
+		void Constraint::dof_setup(uint32_t& dof_counter)
+		{
+			m_dof_index = dof_counter++;
+		}
 		void Constraint::state(double* xc) const
 		{
 			//data
@@ -127,12 +158,34 @@ namespace fea
 				xc[i] = m_dof_indexes[i] < nu ? x[m_dof_indexes[i]] : m_boundary->support(m_dof_indexes[i] - nu)->state(t);
 			}
 		}
-		void Constraint::dof_setup(uint32_t& dof_counter)
+		void Constraint::velocity(double* vc) const
 		{
-			m_dof_index = dof_counter++;
+			//data
+			const double t = m_boundary->model()->analysis()->solver()->time_new();
+			const double* v = m_boundary->model()->analysis()->solver()->velocity_new();
+			const uint32_t nu = m_boundary->model()->analysis()->assembler()->dof_unknow();
+			//state
+			for(uint32_t i = 0; i < m_dof_indexes.size(); i++)
+			{
+				vc[i] = m_dof_indexes[i] < nu ? v[m_dof_indexes[i]] : m_boundary->support(m_dof_indexes[i] - nu)->velocity(t);
+			}
+		}
+		void Constraint::acceleration(double* ac) const
+		{
+			//data
+			const double t = m_boundary->model()->analysis()->solver()->time_new();
+			const uint32_t nu = m_boundary->model()->analysis()->assembler()->dof_unknow();
+			const double* a = m_boundary->model()->analysis()->solver()->acceleration_new();
+			//state
+			for(uint32_t i = 0; i < m_dof_indexes.size(); i++)
+			{
+				ac[i] = m_dof_indexes[i] < nu ? a[m_dof_indexes[i]] : m_boundary->support(m_dof_indexes[i] - nu)->acceleration(t);
+			}
 		}
 
 		//static
+		double Constraint::m_beta = 0;
+		double Constraint::m_alpha = 0;
 		Boundary* Constraint::m_boundary = nullptr;
 	}
 }

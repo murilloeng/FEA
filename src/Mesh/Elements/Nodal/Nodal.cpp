@@ -5,8 +5,8 @@
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Nodal/Nodal.hpp"
 
+#include "FEA/inc/Analysis/Assembler/Data.hpp"
 #include "FEA/inc/Analysis/Assembler/Request.hpp"
-#include "FEA/inc/Analysis/Assembler/Compute.hpp"
 
 namespace fea
 {

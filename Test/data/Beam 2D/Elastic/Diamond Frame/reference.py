@@ -8,14 +8,14 @@
 # force P / 2, no horizontal force) to the side corner B (on the horizontal axis), whose rotation is
 # zero. Going from A to B with tangent angle phi (unit L and EI, lambda = P L^2 / (2 EI) per the test's
 # load 2 EI / L^2 per unit load factor, so the member force is lambda):
-#   phi' = -s lambda x, x' = cos(phi), y' = sin(phi), phi(B) = -pi / 4, s = -1 tension, +1 compression
+# phi' = -s lambda x, x' = cos(phi), y' = sin(phi), phi(B) = -pi / 4, s = -1 tension, +1 compression
 # and the unknown slope phi(A) is found by shooting, following the load from zero.
 #
-#   column 1: displacement of the hinge along the load (outward in tension, inward in compression) / L
-#   column 2: displacement of the side corner (inward in tension, outward in compression) / L
-#   column 3: pi / 4 + rotation of the member end at the hinge (absolute angle, as in the original tables)
+# column 1: displacement of the hinge along the load (outward in tension, inward in compression) / L
+# column 2: displacement of the side corner (inward in tension, outward in compression) / L
+# column 3: pi / 4 + rotation of the member end at the hinge (absolute angle, as in the original tables)
 #
-# usage: python3 reference.py  (writes reference-tension.dat and reference-compression.dat;
+# usage: python3 reference.py (writes reference-tension.dat and reference-compression.dat;
 # columns: lambda, then the three quantities above; agrees with the original published tables to
 # within one unit of their fifth decimal)
 

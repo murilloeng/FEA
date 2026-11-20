@@ -77,7 +77,7 @@ void test::beam3D::elastic::cantilever_force(void)
 	material.elastic_modulus(E);
 	const double I = section.inertia(0);
 	model.boundary()->create_load_combination(0, false, 1);
-	model.boundary()->create_load_case(1, dof::Translation_2, -E * I /  L /  L);
+	model.boundary()->create_load_case(1, dof::Translation_2, -E * I / L / L);
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(true);
