@@ -1,7 +1,9 @@
 //std
 #include <cstring>
+#include <numeric>
 #include <algorithm>
 #include <stdexcept>
+#include <functional>
 
 //SuiteSparse
 #include <suitesparse/umfpack.h>
@@ -112,54 +114,53 @@ namespace fea
 			//data
 			dof_apply();
 			dof_setup();
-			uint32_t cd = 0, ck = 0;
-			std::vector<uint32_t> dd, dk;
-			const std::vector<boundary::Dependency*> dependencies = m_analysis->m_model->m_boundary->m_dependencies;
-			//lists
+			std::vector<uint32_t> dk;
+			std::vector<bool> known(m_dof_total, false);
+			std::vector<uint32_t> root(m_dof_total), map(m_dof_total);
+			const std::function<uint32_t(uint32_t)> find = [&root](uint32_t dof){
+				while(root[dof] != dof) dof = root[dof] = root[root[dof]];
+				return dof;
+			};
+			//supports
 			for(const boundary::Support* support : m_analysis->m_model->m_boundary->m_supports)
 			{
 				dk.push_back(support->node()->dof_index(support->dof()));
+				known[dk.back()] = true;
 			}
+			//dependencies
+			std::iota(root.begin(), root.end(), 0);
 			for(const boundary::Dependency* dependency : m_analysis->m_model->m_boundary->m_dependencies)
 			{
-				const uint32_t d1 = dependency->node(0)->dof_index(dependency->m_dof[0]);
-				const uint32_t d2 = dependency->node(1)->dof_index(dependency->m_dof[1]);
-				dd.push_back(
-					std::find(dk.begin(), dk.end(), d1) != dk.end() ? d2 :
-					std::find(dk.begin(), dk.end(), d2) != dk.end() ? d1 : std::max(d1, d2)
-				);
+				const uint32_t r1 = find(dependency->node(0)->dof_index(dependency->m_dof[0]));
+				const uint32_t r2 = find(dependency->node(1)->dof_index(dependency->m_dof[1]));
+				if(r1 == r2) continue;
+				if(known[r1] && known[r2])
+				{
+					throw std::runtime_error("Error: Dependencies link two supported dofs!");
+				}
+				if(known[r1] || (!known[r2] && r1 < r2)) root[r2] = r1; else root[r1] = r2;
 			}
-			//nodes
+			//counters
+			m_dof_dependent = 0;
 			m_dof_know = (uint32_t) dk.size();
-			m_dof_dependent = (uint32_t) dd.size();
+			for(uint32_t i = 0; i < m_dof_total; i++) m_dof_dependent += find(i) != i;
 			m_dof_unknow = m_dof_total - m_dof_know - m_dof_dependent;
+			//map
+			for(uint32_t i = 0, c = 0; i < m_dof_total; i++)
+			{
+				if(find(i) == i && !known[i]) map[i] = c++;
+			}
+			for(uint32_t i = 0; i < m_dof_know; i++) map[dk[i]] = m_dof_unknow + i;
+			for(uint32_t i = 0; i < m_dof_total; i++) map[i] = map[find(i)];
+			//nodes
 			for(mesh::nodes::Node* node : m_analysis->m_model->m_mesh->m_nodes)
 			{
-				for(uint32_t& dof_index : node->m_dof_indexes)
-				{
-					std::vector<uint32_t>::iterator pd = std::find(dd.begin(), dd.end(), dof_index);
-					std::vector<uint32_t>::iterator pk = std::find(dk.begin(), dk.end(), dof_index);
-					if(pd != dd.end() ? ++cd : false)
-					{
-						const uint32_t i = std::distance(dd.begin(), pd);
-						const uint32_t d1 = dependencies[i]->node(0)->dof_index(dependencies[i]->m_dof[0]);
-						const uint32_t d2 = dependencies[i]->node(1)->dof_index(dependencies[i]->m_dof[1]);
-						dof_index = dof_index == d1 ? d2 : d1;
-					}
-					else if(pk != dk.end() ? ++ck : false)
-					{
-						dof_index = m_dof_unknow + (uint32_t) std::distance(dk.begin(), pk);
-					}
-					else
-					{
-						dof_index -= cd + ck;
-					}
-				}
+				for(uint32_t& dof_index : node->m_dof_indexes) dof_index = map[dof_index];
 			}
-			//constraintes
+			//constraints
 			for(boundary::Constraint* constraint : m_analysis->m_model->m_boundary->m_constraints)
 			{
-				constraint->m_dof_index -= m_dof_know + m_dof_dependent;
+				constraint->m_dof_index = map[constraint->m_dof_index];
 			}
 		}
 		void Assembler::dof_apply(void)
