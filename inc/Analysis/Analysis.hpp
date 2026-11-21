@@ -13,7 +13,9 @@ namespace fea
 		class Assembler;
 		class TangentDrift;
 		class StaticLinear;
+		class DynamicLinear;
 		class StaticNonlinear;
+		class DynamicNonlinear;
 		enum class Type : uint32_t;
 	}
 }
@@ -43,7 +45,9 @@ namespace fea
 
 			TangentDrift* solver_tangent_drift(void) const;
 			StaticLinear* solver_static_linear(void) const;
+			DynamicLinear* solver_dynamic_linear(void) const;
 			StaticNonlinear* solver_static_nonlinear(void) const;
+			DynamicNonlinear* solver_dynamic_nonlinear(void) const;
 
 		private:
 			//analysis
@@ -57,7 +61,9 @@ namespace fea
 			Assembler* m_assembler;
 			TangentDrift* m_solver_tangent_drift;
 			StaticLinear* m_solver_static_linear;
+			DynamicLinear* m_solver_dynamic_linear;
 			StaticNonlinear* m_solver_static_nonlinear;
+			DynamicNonlinear* m_solver_dynamic_nonlinear;
 
 			//friends
 			friend class fea::Model;

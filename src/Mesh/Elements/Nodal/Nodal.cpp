@@ -89,6 +89,7 @@ namespace fea
 				const double K = m_stiffness;
 				const double x = node(0)->state(m_dof);
 				const double v = node(0)->velocity(m_dof);
+				const double a = node(0)->acceleration(m_dof);
 				//tangents
 				if(data.m_request->m_M) data.m_M[0] = M;
 				if(data.m_request->m_C) data.m_C[0] = C;
@@ -96,7 +97,7 @@ namespace fea
 				//internal energy
 				if(data.m_request->m_U) data.m_U = K * x * x / 2;
 				//internal force
-				if(data.m_request->m_f) data.m_f[0] = K * x + C * v;
+				if(data.m_request->m_f) data.m_f[0] = K * x + C * v + M * a;
 			}
 		}
 	}

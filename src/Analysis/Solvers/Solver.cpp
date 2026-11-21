@@ -110,6 +110,8 @@ namespace fea
 			//allocate
 			math::solvers::Solver::allocate(nu);
 			memset(m_x_old, 0, m_size * sizeof(double));
+			if(m_v_old) memset(m_v_old, 0, m_size * sizeof(double));
+			if(m_a_old) memset(m_a_old, 0, m_size * sizeof(double));
 		}
 
 		//static

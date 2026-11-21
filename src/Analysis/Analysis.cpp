@@ -11,7 +11,9 @@
 #include "FEA/inc/Analysis/Solvers/WatchDOF.hpp"
 #include "FEA/inc/Analysis/Solvers/TangentDrift.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
+#include "FEA/inc/Analysis/Solvers/DynamicLinear.hpp"
 #include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
+#include "FEA/inc/Analysis/Solvers/DynamicNonlinear.hpp"
 
 namespace fea
 {
@@ -22,7 +24,9 @@ namespace fea
 			m_assembler{new Assembler},
 			m_solver_tangent_drift{new TangentDrift},
 			m_solver_static_linear{new StaticLinear}, 
-			m_solver_static_nonlinear{new StaticNonlinear}
+			m_solver_dynamic_linear{new DynamicLinear}, 
+			m_solver_static_nonlinear{new StaticNonlinear}, 
+			m_solver_dynamic_nonlinear{new DynamicNonlinear}
 		{
 			Solver::m_analysis = this;
 			WatchDOF::m_analysis = this;
@@ -36,7 +40,9 @@ namespace fea
 			delete m_assembler;
 			delete m_solver_tangent_drift;
 			delete m_solver_static_linear;
+			delete m_solver_dynamic_linear;
 			delete m_solver_static_nonlinear;
+			delete m_solver_dynamic_nonlinear;
 		}
 
 		//serialization
@@ -68,9 +74,17 @@ namespace fea
 		{
 			return m_solver_static_linear;
 		}
+		DynamicLinear* Analysis::solver_dynamic_linear(void) const
+		{
+			return m_solver_dynamic_linear;
+		}
 		StaticNonlinear* Analysis::solver_static_nonlinear(void) const
 		{
 			return m_solver_static_nonlinear;
+		}
+		DynamicNonlinear* Analysis::solver_dynamic_nonlinear(void) const
+		{
+			return m_solver_dynamic_nonlinear;
 		}
 
 		//analysis
