@@ -336,13 +336,19 @@ namespace fea
 				const uint32_t nd = constraint->m_dof_indexes.size();
 				if(constraint->m_third) constraint->m_third(m_data.m_A, m_data.m_x);
 				//assemble
-				if(!m_request.m_M)
+				if(!m_request.m_time)
 				{
-					f[constraint->m_dof_index] = m_data.m_U;
-					assemble_matrix(K, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
-					assemble_matrix(K, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
-					assemble_vector(f, m_data.m_f, constraint->m_dof_indexes, x[constraint->m_dof_index]);
-					assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, x[constraint->m_dof_index]);
+					if(m_request.m_f)
+					{
+						f[constraint->m_dof_index] = m_data.m_U;
+						assemble_vector(f, m_data.m_f, constraint->m_dof_indexes, x[constraint->m_dof_index]);
+					}
+					if(m_request.m_K)
+					{
+						assemble_matrix(K, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
+						assemble_matrix(K, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
+						assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, x[constraint->m_dof_index]);
+					}
 				}
 				else
 				{
@@ -365,13 +371,25 @@ namespace fea
 							for(uint32_t k = 0; k < nd; k++) kc[i] += m_data.m_A[j + nd * k + nd * nd * i] * m_data.m_v[j] * m_data.m_v[k];
 						}
 					}
-					f[constraint->m_dof_index] = hc + 2 * ac * gc + bc * bc * m_data.m_U;
-					assemble_matrix(C, cc.data(), constraint->m_dof_index, constraint->m_dof_indexes);
-					assemble_matrix(K, kc.data(), constraint->m_dof_index, constraint->m_dof_indexes);
-					assemble_matrix(M, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
-					assemble_matrix(M, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
-					assemble_vector(f, m_data.m_f, constraint->m_dof_indexes, a[constraint->m_dof_index]);
-					assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, a[constraint->m_dof_index]);
+					if(m_request.m_f)
+					{
+						f[constraint->m_dof_index] = hc + 2 * ac * gc + bc * bc * m_data.m_U;
+						assemble_vector(f, m_data.m_f, constraint->m_dof_indexes, a[constraint->m_dof_index]);
+					}
+					if(m_request.m_C)
+					{
+						assemble_matrix(C, cc.data(), constraint->m_dof_index, constraint->m_dof_indexes);
+					}
+					if(m_request.m_K)
+					{
+						assemble_matrix(K, kc.data(), constraint->m_dof_index, constraint->m_dof_indexes);
+						assemble_matrix(K, m_data.m_K, constraint->m_dof_indexes, a[constraint->m_dof_index]);
+					}
+					if(m_request.m_M)
+					{
+						assemble_matrix(M, m_data.m_f, constraint->m_dof_index, constraint->m_dof_indexes);
+						assemble_matrix(M, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
+					}
 				}
 			}
 		}

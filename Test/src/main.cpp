@@ -6,13 +6,14 @@
 //Test
 #include "FEA/Test/inc/Beam2D.hpp"
 #include "FEA/Test/inc/Beam3D.hpp"
+#include "FEA/Test/inc/Rigid2D.hpp"
 #include "FEA/Test/inc/Rigid3D.hpp"
 
 int main(void)
 {
 	try
 	{
-		test::rigid3D::arm_bending();
+		test::rigid2D::spring_buckling();
 	}
 	catch(const std::exception& exception)
 	{

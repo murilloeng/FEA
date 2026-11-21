@@ -29,7 +29,7 @@ static const double L = 1.00e+00;
 static const double M = 1.00e+00;
 static const double g = 9.81e+00;
 
-void test::rigid2D::pendulum(void)
+void test::rigid2D::single_pendulum(void)
 {
 	//data
 	fea::Model model;
@@ -68,18 +68,19 @@ void test::rigid2D::pendulum(void)
 	//solve
 	model.solve();
 	//save
-	model.analysis()->solver_dynamic_nonlinear()->save("Test/data/Rigid 2D/Pendulum/data.txt", {
+	model.analysis()->solver_dynamic_nonlinear()->save("Test/data/Rigid 2D/Single Pendulum/data.txt", {
 		{1, dof::Translation_1}, {1, dof::Translation_2}
 	});
 	//validator
 	validator.create_item();
 	validator.create_item();
-	validator.item(0)->load_numeric("Test/data/Rigid 2D/Pendulum/data.txt", 6, 0);
-	validator.item(1)->load_numeric("Test/data/Rigid 2D/Pendulum/data.txt", 6, 3);
-	validator.item(0)->load_reference("Test/data/Rigid 2D/Pendulum/reference.dat", 0, 1);
-	validator.item(1)->load_reference("Test/data/Rigid 2D/Pendulum/reference.dat", 0, 2);
+	validator.item(0)->load_numeric("Test/data/Rigid 2D/Single Pendulum/data.txt", 6, 0);
+	validator.item(1)->load_numeric("Test/data/Rigid 2D/Single Pendulum/data.txt", 6, 3);
+	validator.item(0)->load_reference("Test/data/Rigid 2D/Single Pendulum/reference.dat", 0, 1);
+	validator.item(1)->load_reference("Test/data/Rigid 2D/Single Pendulum/reference.dat", 0, 2);
 	//validate
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
+	fea::draw::Engine::plot("Test/data/Rigid 2D/Single Pendulum/plot.gp");
 }

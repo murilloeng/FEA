@@ -19,7 +19,7 @@
 
 //target system: M * a + C * v + K * x = fe(t) - fs(t)
 
-//fs(t): internal force due to prescribed supports
+//fs(t): internal and constraint forces due to prescribed supports
 
 //time interpolation:
 //v_new = v_old + (1 - g) * dt * a_old + g * dt * a_new
@@ -222,6 +222,7 @@ namespace fea
 			memset(m_fe, 0, m_size * sizeof(double));
 			m_analysis->assembler()->assemble_loads();
 			m_analysis->assembler()->assemble_elements();
+			m_analysis->assembler()->assemble_constraints();
 		}
 		void DynamicLinear::compute_energy(void)
 		{
