@@ -13,7 +13,7 @@ int main(void)
 {
 	try
 	{
-		test::beam3D::elastic::path_independence();
+		test::beam3D::elastic::deployable_ring();
 	}
 	catch(const std::exception& exception)
 	{

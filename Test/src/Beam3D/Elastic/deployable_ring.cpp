@@ -32,7 +32,7 @@
 #include "FEA/Test/inc/Beam3D.hpp"
 
 //data
-static const uint32_t n = 128;
+static const uint32_t n = 32;
 static const double r = 1.20e+02;
 static const double h = 6.00e+00;
 static const double w = 6.00e-01;
@@ -90,7 +90,7 @@ void test::beam3D::elastic::deployable_ring(void)
 	//setup
 	model.analysis()->solver_static_nonlinear()->enable();
 	model.analysis()->solver_static_nonlinear()->silent(true);
-	model.analysis()->solver_static_nonlinear()->step_max(1100);
+	model.analysis()->solver_static_nonlinear()->step_max(160);
 	model.analysis()->solver_static_nonlinear()->step_adapt(true);
 	model.analysis()->solver_static_nonlinear()->step_size(5.00e+01);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);

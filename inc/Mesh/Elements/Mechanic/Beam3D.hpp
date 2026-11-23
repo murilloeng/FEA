@@ -29,8 +29,8 @@ namespace fea
 					math::Vec3 m_dx, m_pr;
 					math::Vec3 m_ep, m_sp;
 					math::Vec6 m_es, m_ss;
-					math::Mat3 m_R1, m_Rm;
-					math::Mat3 m_Ar, m_Hr;
+					math::Mat3 m_R1, m_A;
+					math::Mat3 m_Ar, m_Av;
 					math::Vec3 m_t[2];
 					math::Mat3 m_Q[2], m_J[2], m_T[2];
 					math::Vector<12> m_fe;

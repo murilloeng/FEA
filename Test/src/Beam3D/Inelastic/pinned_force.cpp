@@ -31,13 +31,16 @@ static const uint32_t nh = 40;
 static const uint32_t ne = 40;
 static const double w = 2.00e-01;
 static const double h = 4.00e-01;
-static const double L = 3.00e+00;
+static const double L = 1.20e+01;
 static const double v = 3.00e-01;
 static const double E = 2.10e+11;
 static const double K = 0.00e+00;
 static const double sy = 2.50e+08;
 
 //reference: Lubliner, Plasticity Theory, sec. 4.4, ISBN 978-0-486-46290-5
+//the beam is 4 times longer than in the reference (L / h = 30) so that its physical shear deflection is negligible
+//(Bernoulli reference); the load factor is unchanged (P = 4 sy W / L) and the deflection scales with 4^2 = 16
+//(reference.dat holds the reference deflections already scaled by 16)
 
 void test::beam3D::inelastic::pinned_force(void)
 {
@@ -102,7 +105,7 @@ void test::beam3D::inelastic::pinned_force(void)
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(2);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_2);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
-	model.analysis()->solver_static_nonlinear()->stop_criteria().state_min(-1.20e-02);
+	model.analysis()->solver_static_nonlinear()->stop_criteria().state_min(-1.92e-01);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	model.solve();

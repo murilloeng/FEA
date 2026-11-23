@@ -61,7 +61,7 @@ static double function_u1(double p)
 	return t == 0 ? 0 : L * (sin(t) / t - 1);
 }
 
-void test::beam3D::inelastic::pinned_bending(void)
+void test::beam3D::inelastic::pinned_moment(void)
 {
 	//data
 	fea::Model model;
@@ -122,15 +122,15 @@ void test::beam3D::inelastic::pinned_bending(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 3D/Inelastic/Pinned Bending");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 3D/Inelastic/Pinned Bending/data.txt", {{1, dof::Translation_1}});
+	model.save_results("Test/data/Beam 3D/Inelastic/Pinned Moment");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 3D/Inelastic/Pinned Moment/data.txt", {{1, dof::Translation_1}});
 	//validator
 	validator.create_item();
 	validator.item(0)->function(function_u1);
-	validator.item(0)->load_numeric("Test/data/Beam 3D/Inelastic/Pinned Bending/data.txt", 1, 0);
+	validator.item(0)->load_numeric("Test/data/Beam 3D/Inelastic/Pinned Moment/data.txt", 1, 0);
 	//validate
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
-	fea::draw::Engine::plot("Test/data/Beam 3D/Inelastic/Pinned Bending/plot.gp");
+	fea::draw::Engine::plot("Test/data/Beam 3D/Inelastic/Pinned Moment/plot.gp");
 }

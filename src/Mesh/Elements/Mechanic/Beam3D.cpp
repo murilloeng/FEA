@@ -4,6 +4,7 @@
 //Math
 #include "Math/inc/Groups/ASO3.hpp"
 #include "Math/inc/Groups/GSO3.hpp"
+#include "Math/inc/Miscellaneous/rotations.hpp"
 
 //Materials
 #include "Materials/inc/Mechanic/Stress.hpp"
@@ -27,6 +28,53 @@ static math::Mat3 jacobian_gradient(const math::Vec3& v, const math::Vec3& a)
 {
 	const math::Vec3 w = -v;
 	return -math::ASO3(w.data()).jacobian_gradient(a);
+}
+
+//radial derivatives: (d / t dt)^k fn(t)
+static double fn(double t, uint32_t n, uint32_t k)
+{
+	return k == 0 ? math::fn(t, n) : n * fn(t, n + 2, k - 1) - fn(t, n + 1, k - 1);
+}
+
+//left jacobian inverse derivatives: f(v) = a' * A(v) * b, A(v) = J(-v)^-1 = I - spin(v) / 2 + c * spin(v)^2
+static void jacobian_inverse_derivatives(math::Vec3* g, math::Mat3* H, const math::Vec3& v, const math::Vec3& a, const math::Vec3& b)
+{
+	//radial: c = (f3 - 2 f4) / f2 / 2
+	double N[3], M[3];
+	const double t = v.norm();
+	for(uint32_t k = 0; k < 3; k++)
+	{
+		M[k] = fn(t, 2, k);
+		N[k] = (fn(t, 3, k) - 2 * fn(t, 4, k)) / 2;
+	}
+	const double c0 = N[0] / M[0];
+	const double c1 = N[1] / M[0] - N[0] * M[1] / M[0] / M[0];
+	const double c2 = N[2] / M[0] - 2 * N[1] * M[1] / M[0] / M[0] - N[0] * M[2] / M[0] / M[0] + 2 * N[0] * M[1] * M[1] / M[0] / M[0] / M[0];
+	const double k1 = 2 * c0 + t * t * c1;
+	const double k2 = 4 * c1 + t * t * c2;
+	//data: f = (a' * b) * (1 - c t^2) - v' * (b x a) / 2 + c * (a' * v) * (b' * v)
+	const double s = a.inner(b);
+	const double q = a.inner(v) * b.inner(v);
+	const math::Mat3 I(math::Mode::eye);
+	const math::Vec3 w = b.cross(a);
+	const math::Vec3 p = b.inner(v) * a + a.inner(v) * b;
+	//gradient
+	if(g) *g = (q * c1 - s * k1) * v - w / 2 + c0 * p;
+	//hessian
+	if(H) *H = (q * c1 - s * k1) * I + (q * c2 - s * k2) * v.outer() + c1 * (v.outer(p) + p.outer(v)) + c0 * (a.outer(b) + b.outer(a));
+}
+static math::Mat3 jacobian_inverse_gradient(const math::Vec3& v, const math::Vec3& a, const math::Vec3& b, bool transpose)
+{
+	//gradient: d(A(v) * b) / dv or d(A(v)' * a) / dv
+	math::Mat3 G;
+	for(uint32_t i = 0; i < 3; i++)
+	{
+		math::Vec3 gi;
+		const math::Vec3 e(i == 0, i == 1, i == 2);
+		jacobian_inverse_derivatives(&gi, nullptr, v, transpose ? a : e, transpose ? e : b);
+		for(uint32_t j = 0; j < 3; j++) G(i, j) = gi[j];
+	}
+	return G;
 }
 
 namespace fea
@@ -92,7 +140,6 @@ namespace fea
 			void Beam3D::setup(void)
 			{
 				//data
-				const double p = 1.00e+03;
 				const double A = m_section->area();
 				const double I2 = m_section->inertia(0);
 				const double I3 = m_section->inertia(1);
@@ -118,8 +165,8 @@ namespace fea
 				m_Ks(3, 3) = G * J;
 				m_Ks(4, 4) = E * I2;
 				m_Ks(5, 5) = E * I3;
-				m_Ks(1, 1) = m_shear ? G * S2 : p * E * I3 / m_Lr / m_Lr;
-				m_Ks(2, 2) = m_shear ? G * S3 : p * E * I2 / m_Lr / m_Lr;
+				m_Ks(1, 1) = G * (S2 > 0 ? S2 : A);
+				m_Ks(2, 2) = G * (S3 > 0 ? S3 : A);
 			}
 			void Beam3D::compute(analysis::Data& assembler_data)
 			{
@@ -135,9 +182,9 @@ namespace fea
 				data.m_R1 = q1.matrix() * m_Qr;
 				data.m_dx = (z2 + u2 - z1 - u1) / m_Lr;
 				data.m_pr = m_Qr.transpose() * (q1.inverse() * q2).log().vector();
-				data.m_Rm = data.m_R1 * math::ASO3(data.m_pr / 2).exp().matrix();
-				//strains
-				const math::Vec3 g = data.m_Rm.transpose() * data.m_dx;
+				data.m_A = math::ASO3(-data.m_pr).jacobian_inverse();
+				//strains (helicoidal: x2 - x1 = Lr * R1 * J(-pr) * (e1 + g))
+				const math::Vec3 g = data.m_A * data.m_R1.transpose() * data.m_dx;
 				data.m_es = {g[0] - 1, g[1], g[2], data.m_pr[0] / m_Lr, data.m_pr[1] / m_Lr, data.m_pr[2] / m_Lr};
 				//compute
 				compute_B(data);
@@ -182,52 +229,53 @@ namespace fea
 			void Beam3D::compute_B(Data& data) const
 			{
 				//data
-				const math::Mat3 I(math::Mode::eye);
-				const math::Mat3 Rt = data.m_Rm.transpose();
-				const math::Mat3 Dx = Rt * data.m_dx.spin();
+				const math::Mat3 Rt = data.m_R1.transpose();
+				const math::Vec3 v = Rt * data.m_dx;
 				//variations
-				data.m_Ar = math::ASO3(-data.m_pr).jacobian_inverse() * data.m_R1.transpose();
-				data.m_Hr = data.m_R1 * math::ASO3(-data.m_pr / 2).jacobian() * data.m_Ar / 2;
+				data.m_Ar = data.m_A * Rt;
+				data.m_Av = jacobian_inverse_gradient(data.m_pr, v, v, false);
 				//gradient
 				data.m_B.zeros();
-				data.m_B.span<3, 3>(0, 0) = -Rt / m_Lr;
-				data.m_B.span<3, 3>(0, 6) = +Rt / m_Lr;
-				data.m_B.span<3, 3>(0, 9) = +Dx * data.m_Hr;
+				data.m_B.span<3, 3>(0, 0) = -data.m_Ar / m_Lr;
+				data.m_B.span<3, 3>(0, 6) = +data.m_Ar / m_Lr;
+				data.m_B.span<3, 3>(0, 9) = +data.m_Av * data.m_Ar;
 				data.m_B.span<3, 3>(3, 3) = -data.m_Ar / m_Lr;
 				data.m_B.span<3, 3>(3, 9) = +data.m_Ar / m_Lr;
-				data.m_B.span<3, 3>(0, 3) = +Dx * (I - data.m_Hr);
+				data.m_B.span<3, 3>(0, 3) = data.m_A * v.spin() * Rt - data.m_Av * data.m_Ar;
 			}
 			void Beam3D::compute_G(Data& data) const
 			{
 				//data
+				math::Vec3 gp;
+				math::Mat3 Hp;
 				const math::Mat3 R1 = data.m_R1;
 				const math::Mat3 I(math::Mode::eye);
 				const math::Vec3 n(data.m_ss.data() + 0);
 				const math::Vec3 m(data.m_ss.data() + 3);
-				const math::Mat3 Jh = math::ASO3(data.m_pr / 2).jacobian();
+				const math::Vec3 dx = m_Lr * data.m_dx;
+				const math::Vec3 v = R1.transpose() * dx;
 				const math::Mat3 Ji = math::ASO3(data.m_pr).jacobian_inverse();
+				const math::Mat3 An = jacobian_inverse_gradient(data.m_pr, n, n, true);
+				jacobian_inverse_derivatives(&gp, &Hp, data.m_pr, n, v);
 				//forces
-				const math::Vec3 F = data.m_Rm * n;
-				const math::Vec3 q = m_Lr * F.cross(data.m_dx);
-				const math::Vec3 u = Ji * (m + Jh * R1.transpose() * q / 2);
+				const math::Vec3 F = R1 * data.m_A.transpose() * n;
+				const math::Vec3 u = Ji * (gp + m);
 				const math::Vec3 c = R1 * u;
 				//variations
-				math::Matrix<3, 12> W1(math::Mode::zeros), Wm(math::Mode::zeros), Wp(math::Mode::zeros), Dd(math::Mode::zeros);
+				math::Matrix<3, 12> W1(math::Mode::zeros), Wp(math::Mode::zeros), Dd(math::Mode::zeros);
 				W1.span<3, 3>(0, 3) = I;
-				Wm.span<3, 3>(0, 3) = I - data.m_Hr;
-				Wm.span<3, 3>(0, 9) = data.m_Hr;
 				Wp.span<3, 3>(0, 3) = -data.m_Ar;
 				Wp.span<3, 3>(0, 9) = +data.m_Ar;
-				Dd.span<3, 3>(0, 0) = -I / m_Lr;
-				Dd.span<3, 3>(0, 6) = +I / m_Lr;
-				const math::Matrix<3, 12> dF = -F.spin() * Wm;
-				const math::Matrix<3, 12> dq = m_Lr * (data.m_dx.spin() * F.spin() * Wm + F.spin() * Dd);
-				const math::Matrix<3, 12> dp = jacobian_gradient(data.m_pr / 2, R1.transpose() * q) * Wp / 4 + Jh * R1.transpose() * (dq + q.spin() * W1) / 2;
+				Dd.span<3, 3>(0, 0) = -I;
+				Dd.span<3, 3>(0, 6) = +I;
+				const math::Matrix<3, 12> dv = R1.transpose() * Dd + v.spin() * R1.transpose() * W1;
+				const math::Matrix<3, 12> dF = R1 * An * Wp - F.spin() * W1;
+				const math::Matrix<3, 12> dp = Hp * Wp + An.transpose() * dv;
 				const math::Matrix<3, 12> du = Ji * (dp - jacobian_gradient(data.m_pr, u) * Wp);
 				const math::Matrix<3, 12> dc = R1 * du - c.spin() * W1;
 				//Hesssian
 				data.m_G.span<3, 12>(0, 0) = -dF;
-				data.m_G.span<3, 12>(3, 0) = dq - dc;
+				data.m_G.span<3, 12>(3, 0) = F.spin() * Dd - dx.spin() * dF - dc;
 				data.m_G.span<3, 12>(6, 0) = dF;
 				data.m_G.span<3, 12>(9, 0) = dc;
 			}

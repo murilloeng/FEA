@@ -65,7 +65,7 @@ static double function_u2(double p)
 	return t == 0 ? 0 : L * (1 - cos(t)) / t;
 }
 
-void test::beam3D::inelastic::cantilever_bending(void)
+void test::beam3D::inelastic::cantilever_moment(void)
 {
 	//data
 	fea::Model model;
@@ -121,8 +121,8 @@ void test::beam3D::inelastic::cantilever_bending(void)
 	//solve
 	model.solve();
 	//save
-	model.save_results("Test/data/Beam 3D/Inelastic/Cantilever Bending");
-	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 3D/Inelastic/Cantilever Bending/data.txt", {
+	model.save_results("Test/data/Beam 3D/Inelastic/Cantilever Moment");
+	model.analysis()->solver_static_nonlinear()->save("Test/data/Beam 3D/Inelastic/Cantilever Moment/data.txt", {
 		{1, dof::Translation_1}, {1, dof::Translation_2}
 	});
 	//validator
@@ -130,11 +130,11 @@ void test::beam3D::inelastic::cantilever_bending(void)
 	validator.create_item();
 	validator.item(0)->function(function_u1);
 	validator.item(1)->function(function_u2);
-	validator.item(0)->load_numeric("Test/data/Beam 3D/Inelastic/Cantilever Bending/data.txt", 2, 0);
-	validator.item(1)->load_numeric("Test/data/Beam 3D/Inelastic/Cantilever Bending/data.txt", 2, 1);
+	validator.item(0)->load_numeric("Test/data/Beam 3D/Inelastic/Cantilever Moment/data.txt", 2, 0);
+	validator.item(1)->load_numeric("Test/data/Beam 3D/Inelastic/Cantilever Moment/data.txt", 2, 1);
 	//validate
 	validator.validate();
 	//draw
 	fea::draw::Engine(&model).start();
-	fea::draw::Engine::plot("Test/data/Beam 3D/Inelastic/Cantilever Bending/plot.gp");
+	fea::draw::Engine::plot("Test/data/Beam 3D/Inelastic/Cantilever Moment/plot.gp");
 }

@@ -86,10 +86,11 @@ void test::beam3D::elastic::cantilever_right_angle(void)
 	model.analysis()->solver_static_nonlinear()->silent(true);
 	model.analysis()->solver_static_nonlinear()->step_max(150);
 	model.analysis()->solver_static_nonlinear()->step_adapt(true);
-	model.analysis()->solver_static_nonlinear()->step_size(1.00e+00);
+	model.analysis()->solver_static_nonlinear()->step_size(5.00e-02);
 	model.analysis()->solver_static_nonlinear()->load_combination(0);
 	model.analysis()->solver_static_nonlinear()->iteration_desired(4);
 	model.analysis()->solver_static_nonlinear()->watch_dof().node(2 * ne);
+	model.analysis()->solver_static_nonlinear()->step_factor_max(1.20e+00);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_3);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_max(1.30e+00);
 	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
