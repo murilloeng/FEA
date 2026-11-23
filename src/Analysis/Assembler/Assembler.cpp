@@ -9,12 +9,16 @@
 #include <suitesparse/umfpack.h>
 
 //Math
+#include "Math/inc/Groups/ASO3.hpp"
+#include "Math/inc/Groups/GSO3.hpp"
 #include "Math/inc/Linear/Sparse.hpp"
+#include "Math/inc/Linear/Matrix.hpp"
 
 //FEA
 #include "FEA/inc/Model.hpp"
 
 #include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
 #include "FEA/inc/Mesh/Nodes/Node.hpp"
 #include "FEA/inc/Mesh/Elements/Element.hpp"
 
@@ -28,6 +32,8 @@
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Solvers/StaticLinear.hpp"
+#include "FEA/inc/Analysis/Solvers/DynamicLinear.hpp"
 #include "FEA/inc/Analysis/Assembler/Assembler.hpp"
 
 namespace fea
@@ -289,11 +295,16 @@ namespace fea
 					const double nd = load->node()->state(load->dof());
 					const double Vp = m_request.m_time || item->fixed() ? 1 : p;
 					const double lt = m_request.m_time || item->fixed() ? load->time_function(t) : 1;
-					if(load->m_dof_index < m_dof_unknow)
+					const uint32_t ir = uint32_t(load->dof()) - uint32_t(mesh::nodes::DOF::Rotation_1);
+					if(load->node()->m_rotation && ir < 3)
+					{
+						assemble_moment(f, load->node(), ir, iv * lv * lt, Vp);
+					}
+					else if(load->m_dof_index < m_dof_unknow)
 					{
 						f[load->m_dof_index] += iv * lv * lt;
 						if(m_request.m_V) V -= Vp * iv * lv * lt * nd;
-;					}
+					}
 				}
 			}
 		}
@@ -391,6 +402,33 @@ namespace fea
 						assemble_matrix(M, m_data.m_f, constraint->m_dof_indexes, constraint->m_dof_index);
 					}
 				}
+			}
+		}
+
+		void Assembler::assemble_moment(double* f, const mesh::nodes::Node* node, uint32_t index, double value, double scale)
+		{
+			//spatial moment on material rotation increments: f = J(t)' * Q' * m, K = -d(f) / dt
+			double* K = m_analysis->solver()->m_K;
+			const math::ASO3 t = node->rotation_aso3();
+			const math::Mat3 J = t.jacobian();
+			const math::Mat3 Q = node->rotation_gso3().matrix();
+			const math::Vec3 m = value * Q.transpose() * math::Vec3(index == 0, index == 1, index == 2);
+			const std::vector<uint32_t> dof_indexes = {
+				node->dof_index(mesh::nodes::DOF::Rotation_1),
+				node->dof_index(mesh::nodes::DOF::Rotation_2),
+				node->dof_index(mesh::nodes::DOF::Rotation_3)
+			};
+			//force
+			const math::Vec3 fm = J.transpose() * m;
+			assemble_vector(f, fm.data(), dof_indexes);
+			//stiffness
+			const bool linear = 
+				m_analysis->solver() == m_analysis->solver_static_linear() ||
+				m_analysis->solver() == m_analysis->solver_dynamic_linear();
+			if(m_request.m_K && !linear)
+			{
+				const math::Mat3 Km = t.jacobian_gradient(m) + J.transpose() * m.spin() * J;
+				assemble_matrix(K, Km.data(), dof_indexes, -scale);
 			}
 		}
 

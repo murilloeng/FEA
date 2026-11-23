@@ -159,7 +159,7 @@ namespace fea
 			}
 			math::GSO3 Node::rotation_gso3(void) const
 			{
-				return m_rotation ? rotation_aso3().exp() * *m_rotation : math::GSO3();
+				return m_rotation ? *m_rotation * rotation_aso3().exp() : math::GSO3();
 			}
 			math::ASO3 Node::rotation_aso3(void) const
 			{

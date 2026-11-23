@@ -2,6 +2,7 @@
 #include "Math/inc/Groups/ASO3.hpp"
 #include "Math/inc/Groups/GSO3.hpp"
 #include "Math/inc/Linear/Matrix.hpp"
+#include "Math/inc/Miscellaneous/rotations.hpp"
 
 //Canvas
 #include "Canvas/inc/Math/vec3.hpp"
@@ -20,6 +21,67 @@
 
 #include "FEA/inc/Boundary/Boundary.hpp"
 #include "FEA/inc/Boundary/Constraints/Constraint.hpp"
+
+//radial derivatives: (d / t dt)^k fn(t)
+static double fn(double t, uint32_t n, uint32_t k)
+{
+	return k == 0 ? math::fn(t, n) : n * fn(t, n + 2, k - 1) - fn(t, n + 1, k - 1);
+}
+
+//derivatives of p' * exp(t) * a with exp(t) = f0 * I + f1 * spin(t) + f2 * t * t'
+static void exp_derivatives(double* T, math::Mat3* H, math::Vec3* g, const math::Vec3& t, const math::Vec3& p, const math::Vec3& a)
+{
+	//data
+	double fr[3][4];
+	const double tn = t.norm();
+	const double s = p.inner(a);
+	const math::Vec3 c = a.cross(p);
+	const math::Mat3 I(math::Mode::eye);
+	const double q = p.inner(t) * a.inner(t);
+	const math::Mat3 M = (p.outer(a) + a.outer(p)) / 2;
+	const math::Vec3 m = M * t;
+	const double ct = c.inner(t);
+	//radial
+	for(uint32_t n = 0; n < 3; n++)
+	{
+		for(uint32_t k = 0; k < 4; k++)
+		{
+			fr[n][k] = fn(tn, n, k);
+		}
+	}
+	const double A = s * fr[0][1] + ct * fr[1][1] + q * fr[2][1];
+	const double B = s * fr[0][2] + ct * fr[1][2] + q * fr[2][2];
+	const double C = s * fr[0][3] + ct * fr[1][3] + q * fr[2][3];
+	//gradient
+	if(g)
+	{
+		*g = A * t + fr[1][0] * c + 2 * fr[2][0] * m;
+	}
+	//hessian
+	if(H)
+	{
+		*H = A * I + B * t.outer() + fr[1][1] * (t.outer(c) + c.outer(t)) + 2 * fr[2][1] * (t.outer(m) + m.outer(t)) + 2 * fr[2][0] * M;
+	}
+	//third
+	if(T)
+	{
+		const math::Vec3 u = fr[1][2] * c + 2 * fr[2][2] * m;
+		const math::Vec3 w = B * t + fr[1][1] * c + 2 * fr[2][1] * m;
+		for(uint32_t i = 0; i < 3; i++)
+		{
+			for(uint32_t j = 0; j < 3; j++)
+			{
+				for(uint32_t k = 0; k < 3; k++)
+				{
+					T[i + 3 * j + 9 * k] = 
+						w[i] * I(j, k) + w[j] * I(i, k) + w[k] * I(i, j) + C * t[i] * t[j] * t[k] + 
+						u[i] * t[j] * t[k] + t[i] * u[j] * t[k] + t[i] * t[j] * u[k] + 
+						2 * fr[2][1] * (t[i] * M(j, k) + t[j] * M(i, k) + t[k] * M(i, j));
+				}
+			}
+		}
+	}
+}
 
 namespace fea
 {
@@ -52,7 +114,7 @@ namespace fea
 				//rotation
 				const math::Vec3 dz = z1 - z0;
 				const std::function<math::Vec3(const double*)> rotate = [node, dz](const double* t){
-					return math::ASO3(t).exp().matrix() * node->rotation_old().matrix() * dz;
+					return node->rotation_old().matrix() * math::ASO3(t).exp().matrix() * dz;
 				};
 				//constraints
 				for(uint32_t i = 0; i < 3; i++)
@@ -67,38 +129,48 @@ namespace fea
 						f = x[0] - x[1] + dz[i] - rotate(x + 2)[i];
 					});
 					//gradient
-					m_mesh->model()->boundary()->constraint(nc + i)->gradient([i, rotate](double* g, const double* x){
+					m_mesh->model()->boundary()->constraint(nc + i)->gradient([i, dz, node](double* g, const double* x){
 						//data
+						math::Vec3 gr;
 						math::Vector<5> gc(math::Mode::zeros);
-						const math::Vec3 r = rotate(x + 2), e(i == 0, i == 1, i == 2);
+						const math::Vec3 t(x + 2), e(i == 0, i == 1, i == 2);
 						//gradient
+						exp_derivatives(nullptr, nullptr, &gr, t, node->rotation_old().matrix().transpose() * e, dz);
 						gc[0] = +1;
 						gc[1] = -1;
-						gc.span<3, 1>(2, 0) = e.cross(r);
+						gc.span<3, 1>(2, 0) = -gr;
 						//write
 						gc.write(g);
 					});
 					//hessian
-					m_mesh->model()->boundary()->constraint(nc + i)->hessian([i, rotate](double* H, const double* x){
+					m_mesh->model()->boundary()->constraint(nc + i)->hessian([i, dz, node](double* H, const double* x){
 						//data
+						math::Mat3 Hr;
 						math::Matrix<5, 5> Hc(math::Mode::zeros);
-						const math::Vec3 r = rotate(x + 2), t(x + 2), e(i == 0, i == 1, i == 2);
+						const math::Vec3 t(x + 2), e(i == 0, i == 1, i == 2);
 						//hessian
-						Hc.span<3, 3>(2, 2) = -e.spin() * r.spin() * math::ASO3(-t).jacobian();
+						exp_derivatives(nullptr, &Hr, nullptr, t, node->rotation_old().matrix().transpose() * e, dz);
+						Hc.span<3, 3>(2, 2) = -Hr;
 						//write
 						Hc.write(H);
 					});
 					//third
-					m_mesh->model()->boundary()->constraint(nc + i)->third([i, rotate](double* T, const double* x){
+					m_mesh->model()->boundary()->constraint(nc + i)->third([i, dz, node](double* T, const double* x){
 						//data
+						double Tr[27];
 						math::Matrix<25, 5> Tc(math::Mode::zeros);
-						const math::Vec3 r = rotate(x + 2), t(x + 2), e(i == 0, i == 1, i == 2);
-						const math::Mat3 J = math::ASO3(-t).jacobian();
+						const math::Vec3 t(x + 2), e(i == 0, i == 1, i == 2);
 						//third
+						exp_derivatives(Tr, nullptr, nullptr, t, node->rotation_old().matrix().transpose() * e, dz);
 						for(uint32_t j = 0; j < 3; j++)
 						{
-							const math::Vec3 u(j == 0, j == 1, j == 2), w = J * u;
-							Tc.span<3, 3>(5 * (2 + j) + 2, 2) = -e.spin() * (w.spin() * r.spin() * J + r.spin() * math::ASO3(t).jacobian_gradient(u));
+							for(uint32_t k = 0; k < 3; k++)
+							{
+								for(uint32_t l = 0; l < 3; l++)
+								{
+									Tc(5 * (2 + j) + 2 + k, 2 + l) = -Tr[j + 3 * k + 9 * l];
+								}
+							}
 						}
 						//write
 						Tc.write(T);

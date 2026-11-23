@@ -11,6 +11,13 @@
 namespace fea
 {
 	class Model;
+	namespace mesh
+	{
+		namespace nodes
+		{
+			class Node;
+		}
+	}
 	namespace boundary
 	{
 		class Constraint;
@@ -52,6 +59,7 @@ namespace fea
 			void assemble_loads(void);
 			void assemble_elements(void);
 			void assemble_constraints(void);
+			void assemble_moment(double*, const mesh::nodes::Node*, uint32_t, double, double);
 
 			void assemble_vector(double*, const double*, const std::vector<uint32_t>&, double = 1) const;
 

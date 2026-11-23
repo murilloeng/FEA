@@ -31,7 +31,8 @@ namespace fea
 					math::Vec6 m_es, m_ss;
 					math::Mat3 m_R1, m_Rm;
 					math::Mat3 m_Ar, m_Hr;
-					math::Mat3 m_T1, m_T2;
+					math::Vec3 m_t[2];
+					math::Mat3 m_Q[2], m_J[2], m_T[2];
 					math::Vector<12> m_fe;
 					math::Matrix<3, 6> m_Ap;
 					math::Matrix<6, 12> m_B;

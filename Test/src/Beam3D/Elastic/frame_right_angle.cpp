@@ -99,7 +99,7 @@ void test::beam3D::elastic::frame_right_angle(void)
 	model.analysis()->solver_static_nonlinear()->iteration_desired(4);
 	model.analysis()->solver_static_nonlinear()->watch_dof().dof(dof::Translation_3);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().load_min(-9.80e-01);
-	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::MinimalNorm);
+	model.analysis()->solver_static_nonlinear()->continuation().type(math::solvers::Continuation::Type::ArcLengthCylindrical);
 	model.analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::LoadLimitMinimum);
 	//solve
 	model.solve();

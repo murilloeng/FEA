@@ -147,21 +147,34 @@ namespace fea
 				{
 					assembler_data.m_U = m_Lr * m_Ks.bilinear(data.m_es) / 2;
 				}
-				if(assembler_data.m_request->m_f)
+				if(assembler_data.m_request->m_f || assembler_data.m_request->m_K)
 				{
 					data.m_fe = m_Lr * data.m_B.transpose() * data.m_ss;
-					data.m_fe.write(assembler_data.m_f);
 				}
 				if(assembler_data.m_request->m_K)
 				{
 					compute_G(data);
 					data.m_Ke = m_Lr * data.m_B.transpose() * data.m_Ks * data.m_B + data.m_G;
-					for(uint32_t i = 0; i < 12; i++)
+					//material: K = T' * K * T + d(T' * m) / dt with T = Q * J(t) and m the spatial moment
+					for(uint32_t i = 0; i < 2; i++)
 					{
-						data.m_Ke.span<1, 3>(i, 3) = math::Matrix<1, 3>(data.m_Ke.span<1, 3>(i, 3) * data.m_T1);
-						data.m_Ke.span<1, 3>(i, 9) = math::Matrix<1, 3>(data.m_Ke.span<1, 3>(i, 9) * data.m_T2);
+						const uint32_t k = 6 * i + 3;
+						const math::Vec3 v = data.m_Q[i].transpose() * math::Vec3(data.m_fe.data() + k);
+						data.m_Ke.span<3, 12>(k, 0) = data.m_T[i].transpose() * data.m_Ke.span<3, 12>(k, 0);
+						data.m_Ke.span<12, 3>(0, k) = data.m_Ke.span<12, 3>(0, k) * data.m_T[i];
+						data.m_Ke.span<3, 3>(k, k) += math::ASO3(data.m_t[i]).jacobian_gradient(v);
+						data.m_Ke.span<3, 3>(k, k) += data.m_J[i].transpose() * v.spin() * data.m_J[i];
 					}
 					data.m_Ke.write(assembler_data.m_K);
+				}
+				if(assembler_data.m_request->m_f)
+				{
+					//material: f = T' * f
+					for(uint32_t i = 0; i < 2; i++)
+					{
+						data.m_fe.span<3, 1>(6 * i + 3, 0) = data.m_T[i].transpose() * data.m_fe.span<3, 1>(6 * i + 3, 0);
+					}
+					data.m_fe.write(assembler_data.m_f);
 				}
 			}
 
@@ -220,8 +233,13 @@ namespace fea
 			}
 			void Beam3D::compute_T(Data& data) const
 			{
-				data.m_T1 = math::ASO3(-node(0)->rotation_aso3().vector()).jacobian();
-				data.m_T2 = math::ASO3(-node(1)->rotation_aso3().vector()).jacobian();
+				for(uint32_t i = 0; i < 2; i++)
+				{
+					data.m_t[i] = node(i)->rotation_aso3().vector();
+					data.m_Q[i] = node(i)->rotation_gso3().matrix();
+					data.m_J[i] = math::ASO3(data.m_t[i]).jacobian();
+					data.m_T[i] = data.m_Q[i] * data.m_J[i];
+				}
 			}
 			void Beam3D::compute_ss(Data& data)
 			{

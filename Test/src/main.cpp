@@ -13,7 +13,7 @@ int main(void)
 {
 	try
 	{
-		test::rigid2D::spring_buckling();
+		test::beam3D::elastic::lee_frame();
 	}
 	catch(const std::exception& exception)
 	{

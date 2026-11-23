@@ -124,14 +124,11 @@ namespace fea
 		}
 		void Incremental::record(void)
 		{
-			const mesh::nodes::DOF dofs[] = {
-				mesh::nodes::DOF::Rotation_1, 
-				mesh::nodes::DOF::Rotation_2, 
-				mesh::nodes::DOF::Rotation_3
-			};
+			typedef mesh::nodes::DOF dof;
 			math::solvers::Incremental::record();
 			if(~states_set() & 1 << uint32_t(State::x)) return;
 			const uint32_t nu = m_analysis->assembler()->dof_unknow();
+			const mesh::nodes::DOF dofs[] = {dof::Rotation_1, dof::Rotation_2, dof::Rotation_3};
 			for(const mesh::nodes::Node* node : m_analysis->model()->mesh()->nodes())
 			{
 				if(node->m_rotation)
