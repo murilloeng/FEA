@@ -24,19 +24,14 @@ namespace fea
 				//structs
 				struct Data
 				{
-					math::Mat3 m_Kp;
 					math::Mat6 m_Ks;
-					math::Vec3 m_dx, m_pr;
-					math::Vec3 m_ep, m_sp;
 					math::Vec6 m_es, m_ss;
-					math::Mat3 m_R1, m_A;
-					math::Mat3 m_Ar, m_Av;
-					math::Vec3 m_t[2];
-					math::Mat3 m_Q[2], m_J[2], m_T[2];
+					math::Mat3 m_Kp, m_R1, m_Ji;
+					math::Vec3 m_ep, m_sp, m_tr;
+
 					math::Vector<12> m_fe;
-					math::Matrix<3, 6> m_Ap;
+					math::Matrix<3, 6> m_A;
 					math::Matrix<6, 12> m_B;
-					math::Matrix<12, 12> m_G;
 					math::Matrix<12, 12> m_Ke;
 				};
 
@@ -56,13 +51,12 @@ namespace fea
 				void compute(analysis::Data&) override;
 
 				//compute
-				void compute_B(Data&) const;
-				void compute_G(Data&) const;
-				void compute_T(Data&) const;
-				void compute_ss(Data&);
+				void compute_shear(Data&);
+				void compute_section(Data&);
+				void compute_kinematics(Data&);
 
 				//data
-				math::Mat3 m_Qr;
+				math::Mat3 m_Rr;
 				math::Mat6 m_Ks;
 				math::Vec3 m_major_axis;
 
