@@ -147,15 +147,16 @@ namespace fea
 				if(assembler_data.m_request->m_f || assembler_data.m_request->m_K)
 				{
 					compute_section(data);
-					compute_kinematics(data);
-					data.m_fe = m_Lr * data.m_B.transpose() * data.m_ss;
+					compute_strains_gradient(data);
 				}
 				if(assembler_data.m_request->m_K)
 				{
-					data.m_Ke = m_Lr * data.m_B.transpose() * data.m_Ks * data.m_B;
+					compute_strains_hessian(data);
+					(m_Lr * (data.m_B.transpose() * data.m_Ks * data.m_B + data.m_G)).write(assembler_data.m_K);
 				}
 				if(assembler_data.m_request->m_f)
 				{
+					(m_Lr * data.m_B.transpose() * data.m_ss).write(assembler_data.m_f);
 				}
 			}
 
@@ -203,9 +204,36 @@ namespace fea
 					if(!m_shear) compute_shear(data);
 				}
 			}
-			void Beam3D::compute_kinematics(Data& data)
+			void Beam3D::compute_strains_hessian(Data& data)
 			{
-				// //data
+				//data
+				const math::Vec3& tr = data.m_tr;
+				const math::Mat3& T1 = data.m_T1;
+				const math::Mat3& T2 = data.m_T2;
+				const math::Mat3& Ji = data.m_Ji;
+				const math::Mat3& R1 = data.m_R1;
+				const math::Mat3 T1t = T1.transpose();
+				const math::Mat3 T2t = T2.transpose();
+				const math::Mat3 Jit = Ji.transpose();
+				const math::Mat3 R1t = R1.transpose();
+				const math::Mat3 Rrt = m_Rr.transpose();
+				const math::Vec3 fs(data.m_ss.data() + 0);
+				const math::Vec3 ms(data.m_ss.data() + 3);
+				const math::Mat3 Fs = math::ASO3(tr).jacobian_inverse_gradient(fs, false);
+				//hessian
+				data.m_G.zeros();
+				data.m_G.span<3, 3>(0, 9) = -R1 * Fs * Ji * Rrt * T2 / m_Lr;
+				data.m_G.span<3, 3>(6, 9) = +R1 * Fs * Ji * Rrt * T2 / m_Lr;
+				data.m_G.span<3, 3>(9, 0) = -T2t * m_Rr * Jit * Fs.transpose() * R1t / m_Lr;
+				data.m_G.span<3, 3>(9, 6) = +T2t * m_Rr * Jit * Fs.transpose() * R1t / m_Lr;
+				data.m_G.span<3, 3>(0, 3) = +R1 * (Fs * Jit + (Ji * fs).spin()) * Rrt * T1 / m_Lr;
+				data.m_G.span<3, 3>(6, 3) = -R1 * (Fs * Jit + (Ji * fs).spin()) * Rrt * T1 / m_Lr;
+				data.m_G.span<3, 3>(3, 0) = +T1t * m_Rr * (Ji * Fs.transpose() - (Ji * fs).spin()) * R1t / m_Lr;
+				data.m_G.span<3, 3>(3, 6) = -T1t * m_Rr * (Ji * Fs.transpose() - (Ji * fs).spin()) * R1t / m_Lr;
+			}
+			void Beam3D::compute_strains_gradient(Data& data)
+			{
+				//data
 				const math::Mat3& Ji = data.m_Ji;
 				const math::Mat3& Gi = data.m_Gi;
 				const math::Mat3& T1 = data.m_T1;

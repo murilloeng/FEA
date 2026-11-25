@@ -13,7 +13,7 @@ int main(void)
 {
 	try
 	{
-		test::beam3D::elastic::deployable_ring();
+		test::beam3D::inelastic::cantilever_force();
 	}
 	catch(const std::exception& exception)
 	{

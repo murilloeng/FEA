@@ -28,11 +28,9 @@ namespace fea
 					math::Vec6 m_es, m_ss;
 					math::Vec3 m_ep, m_sp, m_tr, m_xr;
 					math::Mat3 m_Kp, m_R1, m_Ji, m_Gi, m_T1, m_T2;
-
-					math::Vector<12> m_fe;
 					math::Matrix<3, 6> m_A;
 					math::Matrix<6, 12> m_B;
-					math::Matrix<12, 12> m_Ke;
+					math::Matrix<12, 12> m_G;
 				};
 
 			public:
@@ -53,7 +51,8 @@ namespace fea
 				//compute
 				void compute_shear(Data&);
 				void compute_section(Data&);
-				void compute_kinematics(Data&);
+				void compute_strains_hessian(Data&);
+				void compute_strains_gradient(Data&);
 
 				//data
 				math::Mat3 m_Rr;
