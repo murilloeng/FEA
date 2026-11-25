@@ -26,8 +26,8 @@ namespace fea
 				{
 					math::Mat6 m_Ks;
 					math::Vec6 m_es, m_ss;
-					math::Mat3 m_Kp, m_R1, m_Ji;
-					math::Vec3 m_ep, m_sp, m_tr;
+					math::Vec3 m_ep, m_sp, m_tr, m_xr;
+					math::Mat3 m_Kp, m_R1, m_Ji, m_Gi, m_T1, m_T2;
 
 					math::Vector<12> m_fe;
 					math::Matrix<3, 6> m_A;

@@ -130,10 +130,15 @@ namespace fea
 				const math::Vec3 x2 = z2 + u2;
 				data.m_R1 = q1.matrix() * m_Rr;
 				data.m_tr = m_Rr.transpose() * (q1.inverse() * q2).log().vector();
-				data.m_Ji = math::ASO3(data.m_tr).jacobian_inverse().transpose();
+				//groups
+				data.m_xr = data.m_R1.transpose() * (x2 - x1);
+				data.m_T1 = node(0)->rotation_aso3().jacobian();
+				data.m_T2 = node(1)->rotation_aso3().jacobian();
+				data.m_Ji = math::ASO3(data.m_tr).jacobian_inverse();
+				data.m_Gi = math::ASO3(data.m_tr).jacobian_inverse_gradient(data.m_xr, true);
 				//strains
 				data.m_es.span<3, 1>(3, 0) = data.m_tr / m_Lr;
-				data.m_es.span<3, 1>(0, 0) = data.m_Ji * data.m_R1.transpose() * (x2 - x1) / m_Lr - e1;
+				data.m_es.span<3, 1>(0, 0) = data.m_Ji.transpose() * data.m_xr / m_Lr - e1;
 				//compute
 				if(assembler_data.m_request->m_U)
 				{
@@ -147,6 +152,7 @@ namespace fea
 				}
 				if(assembler_data.m_request->m_K)
 				{
+					data.m_Ke = m_Lr * data.m_B.transpose() * data.m_Ks * data.m_B;
 				}
 				if(assembler_data.m_request->m_f)
 				{
@@ -200,19 +206,22 @@ namespace fea
 			void Beam3D::compute_kinematics(Data& data)
 			{
 				// //data
-				// const math::Mat3 Rt = data.m_R1.transpose();
-				// const math::Vec3 v = Rt * data.m_dx;
-				// //variations
-				// data.m_Ar = data.m_A * Rt;
-				// data.m_Av = jacobian_inverse_gradient(data.m_pr, v, v, false);
+				const math::Mat3& Ji = data.m_Ji;
+				const math::Mat3& Gi = data.m_Gi;
+				const math::Mat3& T1 = data.m_T1;
+				const math::Mat3& T2 = data.m_T2;
+				const math::Mat3 Xr = data.m_xr.spin();
+				const math::Mat3 Rrt = m_Rr.transpose();
+				const math::Mat3 R1t = data.m_R1.transpose();
+				const math::Mat3 Jit = data.m_Ji.transpose();
 				//gradient
 				data.m_B.zeros();
-				// data.m_B.span<3, 3>(0, 0) = -data.m_Ar / m_Lr;
-				// data.m_B.span<3, 3>(0, 6) = +data.m_Ar / m_Lr;
-				// data.m_B.span<3, 3>(0, 9) = +data.m_Av * data.m_Ar;
-				// data.m_B.span<3, 3>(3, 3) = -data.m_Ar / m_Lr;
-				// data.m_B.span<3, 3>(3, 9) = +data.m_Ar / m_Lr;
-				// data.m_B.span<3, 3>(0, 3) = data.m_A * v.spin() * Rt - data.m_Av * data.m_Ar;
+				data.m_B.span<3, 3>(0, 0) = -Jit * R1t / m_Lr;
+				data.m_B.span<3, 3>(0, 6) = +Jit * R1t / m_Lr;
+				data.m_B.span<3, 3>(3, 9) = +Ji * Rrt * T2 / m_Lr;
+				data.m_B.span<3, 3>(3, 3) = -Jit * Rrt * T1 / m_Lr;
+				data.m_B.span<3, 3>(0, 9) = +Gi * Ji * Rrt * T2 / m_Lr;
+				data.m_B.span<3, 3>(0, 3) = (Jit * Xr - Gi * Jit) * Rrt * T1 / m_Lr;
 			}
 		}
 	}
